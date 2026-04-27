@@ -1,0 +1,133 @@
+'use client';
+import { useState } from 'react';
+import Link from 'next/link';
+import { Search, Bell, MessageCircle, User, ChevronDown, MapPin, Menu, X, Plus } from 'lucide-react';
+import { LOCATIONS, POPULAR_SEARCHES } from '@/lib/db';
+
+export function Header() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState('Toàn Quốc');
+  const [showLocationDrop, setShowLocationDrop] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+
+  return (
+    <header className="bg-white shadow-sm sticky top-0 z-50">
+      {/* Top bar */}
+      <div className="bg-orange-500">
+        <div className="max-w-7xl mx-auto px-4 py-1 flex justify-between items-center text-xs text-white">
+          <span>Chào mừng đến với Chợ Việt!</span>
+          <div className="flex gap-4">
+            <Link href="/help" className="hover:underline">Trợ giúp</Link>
+            <Link href="/about" className="hover:underline">Giới thiệu</Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Main header */}
+      <div className="max-w-7xl mx-auto px-4 py-3">
+        <div className="flex items-center gap-3">
+          {/* Logo */}
+          <Link href="/" className="flex-shrink-0">
+            <div className="flex items-center gap-1">
+              <div className="w-9 h-9 bg-orange-500 rounded-xl flex items-center justify-center">
+                <span className="text-white font-black text-lg">C</span>
+              </div>
+              <span className="font-black text-orange-500 text-xl hidden sm:block">ChợViệt</span>
+            </div>
+          </Link>
+
+          {/* Search bar */}
+          <div className="flex-1 flex items-center border-2 border-orange-500 rounded-xl overflow-hidden bg-white max-w-3xl">
+            {/* Location selector */}
+            <div className="relative hidden md:block">
+              <button
+                onClick={() => setShowLocationDrop(!showLocationDrop)}
+                className="flex items-center gap-1 px-3 py-2.5 text-sm font-medium text-gray-700 border-r border-gray-200 whitespace-nowrap hover:bg-gray-50"
+              >
+                <MapPin size={14} className="text-orange-500" />
+                <span className="max-w-[100px] truncate">{selectedLocation}</span>
+                <ChevronDown size={12} />
+              </button>
+              {showLocationDrop && (
+                <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl z-50 min-w-[180px] py-1">
+                  {LOCATIONS.map(loc => (
+                    <button
+                      key={loc}
+                      onClick={() => { setSelectedLocation(loc); setShowLocationDrop(false); }}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-orange-50 hover:text-orange-600 ${selectedLocation === loc ? 'text-orange-500 font-semibold bg-orange-50' : ''}`}
+                    >
+                      {loc}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Search input */}
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Tìm kiếm tất cả..."
+              className="flex-1 px-4 py-2.5 text-sm outline-none bg-transparent"
+              onKeyDown={e => e.key === 'Enter' && window.location.assign(`/search?q=${searchQuery}`)}
+            />
+            <button className="bg-orange-500 hover:bg-orange-600 px-4 py-2.5 transition-colors">
+              <Search size={18} className="text-white" />
+            </button>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button className="relative p-2 hover:bg-gray-100 rounded-xl hidden sm:flex">
+              <Bell size={20} className="text-gray-600" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+            <button className="relative p-2 hover:bg-gray-100 rounded-xl hidden sm:flex">
+              <MessageCircle size={20} className="text-gray-600" />
+            </button>
+            <Link href="/profile" className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-xl">
+              <User size={20} className="text-gray-600" />
+              <span className="text-sm font-medium hidden md:block">Đăng nhập</span>
+            </Link>
+            <Link href="/post" className="btn-brand flex items-center gap-1 text-sm">
+              <Plus size={16} />
+              <span className="hidden sm:block">Đăng tin</span>
+            </Link>
+            <button onClick={() => setShowMobileMenu(!showMobileMenu)} className="p-2 hover:bg-gray-100 rounded-xl md:hidden">
+              {showMobileMenu ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Popular searches */}
+        <div className="hidden md:flex items-center gap-2 mt-2 text-xs">
+          <span className="text-gray-400">Tìm nhiều:</span>
+          <div className="flex flex-wrap gap-1">
+            {POPULAR_SEARCHES.map(s => (
+              <Link key={s} href={`/search?q=${s}`} className="text-orange-500 hover:underline">
+                {s}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      {showMobileMenu && (
+        <div className="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-2">
+          <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+            <input
+              type="text"
+              placeholder="Tìm kiếm..."
+              className="flex-1 px-3 py-2 text-sm outline-none"
+            />
+            <button className="bg-orange-500 p-2">
+              <Search size={16} className="text-white" />
+            </button>
+          </div>
+        </div>
+      )}
+    </header>
+  );
+}
