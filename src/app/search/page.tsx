@@ -39,7 +39,7 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
                     href={`/search?category=${cat.slug}`}
                     className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-sm ${searchParams.category === cat.slug ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
                   >
-                    <span>{cat.icon} {cat.name}</span>
+                    <span>{cat.image} {cat.name}</span>
                     {cat.count ? <span className="text-xs text-gray-400">{cat.count}</span> : null}
                   </a>
                 </li>

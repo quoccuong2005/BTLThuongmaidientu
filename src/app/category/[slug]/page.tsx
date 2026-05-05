@@ -18,7 +18,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
       {/* Category header */}
       <div className="bg-white rounded-2xl shadow-sm p-5 mb-4 flex items-center gap-4">
         <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center text-4xl">
-          {category.icon}
+          {category.image}
         </div>
         <div>
           <h1 className="text-xl font-black text-gray-800">{category.name}</h1>
@@ -34,7 +34,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
         </div>
       ) : (
         <div className="bg-white rounded-xl p-16 text-center shadow-sm">
-          <p className="text-5xl mb-4">{category.icon}</p>
+          <p className="text-5xl mb-4">{category.image}</p>
           <p className="font-semibold text-gray-700">Chưa có tin đăng trong danh mục này</p>
           <p className="text-sm text-gray-400 mt-1">Hãy là người đầu tiên đăng tin!</p>
         </div>

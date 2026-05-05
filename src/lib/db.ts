@@ -4,20 +4,19 @@
 import { Product, Category, Banner } from '@/models/Product';
 
 export const CATEGORIES: Category[] = [
-  { id: '1', name: 'Bất động sản', slug: 'bat-dong-san', icon: '🏠' },
-  { id: '2', name: 'Xe cộ', slug: 'xe-co', icon: '🚗' },
-  { id: '3', name: 'Đồ điện tử', slug: 'do-dien-tu', icon: '📱' },
-  { id: '4', name: 'Thú cưng', slug: 'thu-cung', icon: '🐾' },
-  { id: '5', name: 'Thời trang', slug: 'thoi-trang', icon: '👗' },
-  { id: '6', name: 'Đồ gia dụng', slug: 'do-gia-dung', icon: '🛋️' },
-  { id: '7', name: 'Việc làm', slug: 'viec-lam', icon: '💼' },
-  { id: '8', name: 'Dịch vụ', slug: 'dich-vu', icon: '🔧' },
-  { id: '9', name: 'Mẹ & Bé', slug: 'me-va-be', icon: '👶' },
-  { id: '10', name: 'Thể thao', slug: 'the-thao', icon: '⚽' },
-  { id: '11', name: 'Đồ ăn', slug: 'do-an', icon: '🍜' },
-  { id: '12', name: 'Du lịch', slug: 'du-lich', icon: '✈️' },
+  { id: '1', name: 'Bất động sản', slug: 'bat-dong-san', image: 'https://chonweb.vn/hsc_content/hsc_up_dinhkem/1513736817.png' },
+  { id: '2', name: 'Xe cộ', slug: 'xe-co', image: 'https://marketplace.canva.com/pT-R0/MAG_F9pT-R0/1/tl/canva-car-sign.-simple-car-vector.-vector-illustration-eps10-MAG_F9pT-R0.png' },
+  { id: '3', name: 'Đồ điện tử', slug: 'do-dien-tu', image: 'https://www.shutterstock.com/image-vector/laptop-vector-thick-line-icon-260nw-2321117367.jpg' },
+  { id: '4', name: 'Thú cưng', slug: 'thu-cung', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_T0LXPZJK_zsHYRhMXMf8MIb0HRwuhnpDFA&s' },
+  { id: '5', name: 'Thời trang', slug: 'thoi-trang', image: 'https://png.pngtree.com/element_our/20190528/ourlarge/pngtree-clothing-icon-image_1144362.jpg' },
+  { id: '6', name: 'Đồ gia dụng', slug: 'do-gia-dung', image: 'https://png.pngtree.com/png-vector/20250716/ourmid/pngtree-vector-illustration-of-different-household-items-on-a-shelf-png-image_7269074.png' },
+  { id: '7', name: 'Việc làm', slug: 'viec-lam', image: 'https://png.pngtree.com/png-vector/20221019/ourlarge/pngtree-workspace-icon-image-png-image_6352620.png' },
+  { id: '8', name: 'Dịch vụ', slug: 'dich-vu', image: 'https://png.pngtree.com/png-vector/20191027/ourmid/pngtree-room-service-line-icon-vector-png-image_1886395.jpg' },
+  { id: '9', name: 'Mẹ & Bé', slug: 'me-va-be', image: 'https://insacmau.com/wp-content/uploads/2024/12/logo-me-be-7.png' },
+  { id: '10', name: 'Thể thao', slug: 'the-thao', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDe9s8vDpexbYEFMQIDysdsYDchUNdCZlMgw&s' },
+  { id: '11', name: 'Đồ ăn', slug: 'do-an', image: 'https://www.shutterstock.com/image-vector/restaurant-icon-logo-menu-food-600w-1277757076.jpg' },
+  { id: '12', name: 'Du lịch', slug: 'du-lich', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYy7JCrn7KsJpIUCNtb8f8NslMNVCfB7u2x9cPAB4dcg&s' },
 ];
-
 export const BANNERS: Banner[] = [
   { id: '1', title: 'Mua bán xe máy', image: 'https://picsum.photos/seed/banner1/800/300', link: '/xe-co' },
   { id: '2', title: 'Điện thoại cũ giá rẻ', image: 'https://picsum.photos/seed/banner2/800/300', link: '/do-dien-tu' },

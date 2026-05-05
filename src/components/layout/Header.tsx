@@ -86,7 +86,7 @@ export function Header() {
             <button className="relative p-2 hover:bg-gray-100 rounded-xl hidden sm:flex">
               <MessageCircle size={20} className="text-gray-600" />
             </button>
-            <Link href="/login" className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-xl">
+            <Link href="/profile" className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-xl">
               <User size={20} className="text-gray-600" />
               <span className="text-sm font-medium hidden md:block">Đăng nhập</span>
             </Link>

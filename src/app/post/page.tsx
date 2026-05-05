@@ -41,7 +41,7 @@ export default function PostPage() {
             >
               <option value="">Chọn danh mục</option>
               {CATEGORIES.map(cat => (
-                <option key={cat.id} value={cat.slug}>{cat.icon} {cat.name}</option>
+                <option key={cat.id} value={cat.slug}>{cat.image} {cat.name}</option>
               ))}
             </select>
           </div>

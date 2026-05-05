@@ -44,10 +44,12 @@ export function Footer() {
             <h4 className="font-bold text-gray-800 mb-3">Tải ứng dụng</h4>
             <div className="space-y-2">
               <a href="#" className="flex items-center gap-2 bg-black text-white text-xs px-3 py-2 rounded-lg hover:bg-gray-800">
-                <span>🍎</span><span>App Store</span>
+                <span><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShEyZFjeVplXmeytqBnKOyTcG51GKvUNmnDw&s" alt="App Store" className="w-5 h-5" /></span>
+                <span>App Store</span>
               </a>
               <a href="#" className="flex items-center gap-2 bg-black text-white text-xs px-3 py-2 rounded-lg hover:bg-gray-800">
-                <span>▶</span><span>Google Play</span>
+                <span><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Google_Play_2016_icon.svg/960px-Google_Play_2016_icon.svg.png" alt="Google Play" className="w-5 h-5" /></span>
+                <span>Google Play</span>
               </a>
             </div>
             <div className="mt-4">
@@ -59,7 +61,7 @@ export function Footer() {
 
         <div className="border-t border-gray-100 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center gap-3">
           <p className="text-xs text-gray-400">© 2024 ChợViệt. Tất cả quyền được bảo lưu.</p>
-          <p className="text-xs text-gray-400">Được phát triển với ❤️ tại Việt Nam</p>
+          <p className="text-xs text-gray-400">Được phát triển với emtrongdz tại Việt Nam</p>
         </div>
       </div>
     </footer>
