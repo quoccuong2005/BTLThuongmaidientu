@@ -1,8 +1,44 @@
+"use client";
+
 import React from 'react';
 import Link from 'next/link';
-import { Mail, Lock, User, ArrowRight } from 'lucide-react';
-
+import { Mail, Lock, User, Phone, ArrowRight } from 'lucide-react';
+import { RegisterUser } from '../api/register/register';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 export default function RegisterPage() {
+
+  const router = useRouter();
+
+  const [formData, setFormData] = useState({
+    name: '',
+    username: '',
+    email: '',
+    phone: '',
+    password: ''
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const result = await RegisterUser(formData);
+
+    if (result.success) {
+      toast.success('Đăng ký thành công! Vui lòng đăng nhập.');
+      router.push('/login');
+    } else {
+      toast.error(result.message);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -19,7 +55,7 @@ export default function RegisterPage() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-100">
-          <form className="space-y-6" action="#" method="POST">
+          <form className="space-y-6" onSubmit={handleRegister}>
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                 Họ và tên
@@ -29,13 +65,37 @@ export default function RegisterPage() {
                   <User className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
+                  value={formData.name}
+                  onChange={handleInputChange}
                   id="name"
                   name="name"
                   type="text"
                   autoComplete="name"
                   required
                   className="focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2.5 border"
-                  placeholder="Nguyễn Văn A"
+                  placeholder="Nguyen Van A"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                Tên đăng nhập
+              </label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <User className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  id="username"
+                  name="username"
+                  type="text"
+                  autoComplete="username"
+                  required
+                  className="focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2.5 border"
+                  placeholder="nguyenvana"
                 />
               </div>
             </div>
@@ -49,13 +109,37 @@ export default function RegisterPage() {
                   <Mail className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
+                  value={formData.email}
+                  onChange={handleInputChange}
                   id="email"
                   name="email"
                   type="email"
                   autoComplete="email"
                   required
                   className="focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2.5 border"
-                  placeholder="you@example.com"
+                  placeholder="user@example.com"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                Số điện thoại
+              </label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Phone className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  required
+                  className="focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2.5 border"
+                  placeholder="0901234567"
                 />
               </div>
             </div>
@@ -69,33 +153,15 @@ export default function RegisterPage() {
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
+                  value={formData.password}
+                  onChange={handleInputChange}
                   id="password"
                   name="password"
                   type="password"
                   autoComplete="new-password"
                   required
                   className="focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2.5 border"
-                  placeholder="••••••••"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">
-                Xác nhận mật khẩu
-              </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="confirm-password"
-                  name="confirm-password"
-                  type="password"
-                  autoComplete="new-password"
-                  required
-                  className="focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2.5 border"
-                  placeholder="••••••••"
+                  placeholder="password123"
                 />
               </div>
             </div>

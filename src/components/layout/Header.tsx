@@ -1,14 +1,35 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { Search, Bell, MessageCircle, User, ChevronDown, MapPin, Menu, X, Plus } from 'lucide-react';
+import { Search, Bell, MessageCircle, User, ChevronDown, MapPin, Menu, X, Plus, LogOut, ShoppingCart } from 'lucide-react';
 import { LOCATIONS, POPULAR_SEARCHES } from '@/lib/db';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCart } from '@/context/CartContext';
 
 export function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('Toàn Quốc');
   const [showLocationDrop, setShowLocationDrop] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const { itemCount } = useCart();
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('sessionId');
+    setUser(null);
+    window.location.reload();
+  };
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
@@ -86,10 +107,43 @@ export function Header() {
             <button className="relative p-2 hover:bg-gray-100 rounded-xl hidden sm:flex">
               <MessageCircle size={20} className="text-gray-600" />
             </button>
-            <Link href="/login" className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-xl">
-              <User size={20} className="text-gray-600" />
-              <span className="text-sm font-medium hidden md:block">Đăng nhập</span>
+            <Link href="/cart" className="relative p-2 hover:bg-gray-100 rounded-xl flex">
+              <ShoppingCart size={20} className="text-gray-600" />
+              {itemCount > 0 && (
+                <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border border-white">
+                  {itemCount}
+                </span>
+              )}
             </Link>
+            {user ? (
+              <div className="flex items-center gap-3">
+                <Link href="/profile" className="flex items-center gap-2 p-1.5 hover:bg-gray-100 rounded-xl group transition-colors">
+                  <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 font-bold border border-orange-200 overflow-hidden">
+                    {user.avatar ? (
+                      <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                    ) : (
+                      user.name?.charAt(0).toUpperCase()
+                    )}
+                  </div>
+                  <div className="hidden md:block text-left">
+                    <p className="text-xs text-gray-400 leading-tight">Xin chào,</p>
+                    <p className="text-sm font-semibold text-gray-800 leading-tight truncate max-w-[100px]">{user.name}</p>
+                  </div>
+                </Link>
+                <button 
+                  onClick={handleLogout}
+                  className="p-2 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-xl transition-colors"
+                  title="Đăng xuất"
+                >
+                  <LogOut size={20} />
+                </button>
+              </div>
+            ) : (
+              <Link href="/login" className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                <User size={20} className="text-gray-600" />
+                <span className="text-sm font-medium hidden md:block">Đăng nhập</span>
+              </Link>
+            )}
             <Link href="/post" className="btn-brand flex items-center gap-1 text-sm">
               <Plus size={16} />
               <span className="hidden sm:block">Đăng tin</span>

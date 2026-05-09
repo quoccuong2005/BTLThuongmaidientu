@@ -1,8 +1,46 @@
+"use client"
 import React from 'react';
 import Link from 'next/link';
 import { Mail, Lock, ArrowRight, Github, Facebook } from 'lucide-react';
+import { Loginuser } from '../api/login/login';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    identifier: '',
+    password: ''
+  });
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const result = await Loginuser(formData);
+
+    if (result.success) {
+      toast.success('Đăng nhập thành công!');
+      // Lưu thông tin vào localStorage
+      localStorage.setItem('sessionId', result.data.data.sessionId);
+      localStorage.setItem('user', JSON.stringify(result.data.data.user));
+
+      // Chuyển hướng về trang chủ
+      router.push('/');
+      // Refresh trang để header cập nhật trạng thái (cách đơn giản nhất)
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    } else {
+      toast.error('Tên đăng nhập hoặc mật khẩu không chính xác!');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -19,7 +57,7 @@ export default function LoginPage() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-100">
-          <form className="space-y-6" action="#" method="POST">
+          <form className="space-y-6" onSubmit={handleLogin}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Địa chỉ Email
@@ -29,10 +67,12 @@ export default function LoginPage() {
                   <Mail className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
+                  value={formData.identifier}
+                  onChange={handleInputChange}
+                  id="identifier"
+                  name="identifier"
+                  type="text"
+                  autoComplete="identifier"
                   required
                   className="focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2.5 border"
                   placeholder="you@example.com"
@@ -49,6 +89,8 @@ export default function LoginPage() {
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
+                  value={formData.password}
+                  onChange={handleInputChange}
                   id="password"
                   name="password"
                   type="password"

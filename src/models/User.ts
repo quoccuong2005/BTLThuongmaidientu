@@ -2,16 +2,16 @@
 export interface User {
   id: string;
   name: string;
-  avatar?: string;
-  phone?: string;
-  location: string;
-  joinedAt: string;
-  totalListings: number;
-  rating: number;
+  gender: string | null;
+  dob: string | null;
+  avatar: string | null;
+  username: string;
+  email: string;
+  phone: string;
+  login_streak: number;
+  last_login_at: string | null;
+  role_id: string | null;
+
+
 }
 
-export interface AuthState {
-  user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-}

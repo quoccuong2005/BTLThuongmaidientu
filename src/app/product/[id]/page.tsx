@@ -1,8 +1,9 @@
 import { notFound } from 'next/navigation';
 import { ProductController } from '@/controllers/ProductController';
-import { MapPin, Clock, Eye, Phone, MessageCircle, Heart, Share2, AlertTriangle, CheckCircle } from 'lucide-react';
+import { MapPin, Clock, Eye, Phone, MessageCircle, Heart, Share2, AlertTriangle, CheckCircle, ShoppingCart, CreditCard } from 'lucide-react';
 import { ProductCard } from '@/components/ui/ProductCard';
 import { SectionHeader } from '@/components/ui/SectionHeader';
+import { ProductActions } from '@/components/product/ProductActions';
 
 interface ProductPageProps {
   params: { id: string };
@@ -69,6 +70,9 @@ export default function ProductPage({ params }: ProductPageProps) {
                 </span>
               )}
             </div>
+
+            {/* Main Action Buttons */}
+            <ProductActions product={product} variant="main" />
 
             {/* Meta info */}
             <div className="grid grid-cols-2 gap-3 py-4 border-t border-b border-gray-100">
@@ -146,17 +150,7 @@ export default function ProductPage({ params }: ProductPageProps) {
             </div>
 
             {/* CTA buttons */}
-            <div className="space-y-3">
-              <button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm shadow-md shadow-orange-200">
-                <Phone size={16} /> Hiện số điện thoại
-              </button>
-              <button className="w-full border-2 border-orange-500 text-orange-500 hover:bg-orange-50 font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm">
-                <MessageCircle size={16} /> Nhắn tin
-              </button>
-              <button className="w-full border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm">
-                <Heart size={15} /> Lưu tin
-              </button>
-            </div>
+            <ProductActions product={product} variant="sidebar" />
 
             {/* Stats */}
             <div className="mt-4 pt-4 border-t border-gray-100 flex justify-around text-center">

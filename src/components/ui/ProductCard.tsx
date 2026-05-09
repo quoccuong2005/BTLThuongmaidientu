@@ -1,7 +1,10 @@
+'use client';
 import Link from 'next/link';
-import { MapPin, Eye, Clock } from 'lucide-react';
+import { MapPin, Eye, Clock, ShoppingCart, CreditCard } from 'lucide-react';
 import { Product } from '@/models/Product';
 import { ProductController } from '@/controllers/ProductController';
+import { useCart } from '@/context/CartContext';
+import { toast } from 'sonner';
 
 interface ProductCardProps {
   product: Product;
@@ -9,6 +12,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, variant = 'default' }: ProductCardProps) {
+  const { addToCart } = useCart();
   const discount = ProductController.getDiscount(product.price, product.originalPrice);
   const relativeTime = ProductController.getRelativeTime(product.postedAt);
 
@@ -36,6 +40,30 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
             <span>·</span>
             <span>{relativeTime}</span>
           </div>
+        </div>
+        <div className="flex flex-col gap-2 justify-center ml-2">
+          <button 
+            onClick={(e) => { 
+              e.preventDefault(); 
+              e.stopPropagation(); 
+              addToCart(product);
+              toast.success('Đã thêm vào giỏ hàng!');
+            }}
+            className="p-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+          >
+            <ShoppingCart size={16} />
+          </button>
+          <button 
+            onClick={(e) => { 
+              e.preventDefault(); 
+              e.stopPropagation(); 
+              addToCart(product);
+              window.location.assign('/cart');
+            }}
+            className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            <CreditCard size={16} />
+          </button>
         </div>
       </Link>
     );
@@ -96,6 +124,34 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
             <Clock size={10} />
             {relativeTime}
           </span>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="grid grid-cols-2 gap-2 mt-3">
+          <button 
+            onClick={(e) => { 
+              e.preventDefault(); 
+              e.stopPropagation(); 
+              addToCart(product);
+              toast.success('Đã thêm vào giỏ hàng!');
+            }}
+            className="flex items-center justify-center gap-1 py-1.5 bg-orange-50 text-orange-600 rounded-lg text-[10px] font-bold hover:bg-orange-100 transition-colors border border-orange-100"
+          >
+            <ShoppingCart size={12} />
+            GIỎ HÀNG
+          </button>
+          <button 
+            onClick={(e) => { 
+              e.preventDefault(); 
+              e.stopPropagation(); 
+              addToCart(product);
+              window.location.assign('/cart');
+            }}
+            className="flex items-center justify-center gap-1 py-1.5 bg-red-600 text-white rounded-lg text-[10px] font-bold hover:bg-red-700 transition-colors shadow-sm"
+          >
+            <CreditCard size={12} />
+            MUA NGAY
+          </button>
         </div>
       </div>
     </Link>
