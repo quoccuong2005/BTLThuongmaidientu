@@ -82,9 +82,9 @@ export class OrderController {
     }
   }
 
-  static async cancelOrder(id: string | number): Promise<boolean> {
+  static async cancelOrder(id: string | number, reason: string): Promise<boolean> {
     try {
-      const response = await api.post(`/orders/${id}/cancel`);
+      const response = await api.post(`/orders/${id}/cancel`, { cancel_reason: reason });
       return response.status === 200 || response.status === 201;
     } catch (error) {
       console.error('Error cancelling order:', error);

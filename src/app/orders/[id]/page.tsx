@@ -15,6 +15,7 @@ export default function OrderDetailPage() {
   const [isCancelling, setIsCancelling] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
 
   const fetchDetail = async () => {
     if (!id) return;
@@ -34,14 +35,18 @@ export default function OrderDetailPage() {
   }, [id]);
 
   const handleCancel = async () => {
-    if (!order) return;
+    if (!order || !cancelReason.trim()) {
+      toast.error('Vui lòng nhập lý do hủy đơn hàng');
+      return;
+    }
     setShowConfirmModal(false);
 
     try {
       setIsCancelling(true);
-      const success = await OrderController.cancelOrder(order.id);
+      const success = await OrderController.cancelOrder(order.id, cancelReason);
       if (success) {
         toast.success('Đã hủy đơn hàng thành công');
+        setCancelReason('');
         fetchDetail(); // Refresh order info
       } else {
         toast.error('Hủy đơn hàng thất bại');
@@ -279,9 +284,19 @@ export default function OrderDetailPage() {
               <AlertCircle size={32} className="text-red-500" />
             </div>
             <h3 className="text-xl font-bold text-gray-900 text-center mb-2">Xác nhận hủy đơn</h3>
-            <p className="text-gray-500 text-center mb-8">
+            <p className="text-gray-500 text-center mb-6">
               Bạn có chắc chắn muốn hủy đơn hàng <span className="font-bold text-gray-900">#ORD-{order.id}</span>? Hành động này không thể hoàn tác.
             </p>
+            <div className="mb-6">
+              <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Lý do hủy đơn</label>
+              <textarea 
+                className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 text-sm focus:ring-2 focus:ring-red-100 focus:border-red-200 outline-none transition-all resize-none"
+                placeholder="Nhập lý do hủy (ví dụ: Thay đổi địa chỉ, Đặt nhầm sản phẩm...)"
+                rows={3}
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+              ></textarea>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <button 
                 onClick={() => setShowConfirmModal(false)}
