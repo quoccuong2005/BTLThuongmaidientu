@@ -19,9 +19,10 @@ export default function LoginPage() {
 
     try {
       // Gọi thử API Đăng nhập Admin
-const res = await adminApi.login({ identifier: identifier, password: password });
-      // Lấy token (tùy thuộc vào backend trả về res.token, res.data.accessToken...)
-      const token = res.token || res.data?.token || res.accessToken;
+      const res = await adminApi.login({ identifier: identifier, password: password });
+      
+      // SỬA TẠI ĐÂY: Bắt đúng tên "sessionId" mà Backend trả về
+      const token = res.data?.sessionId || res.sessionId;
       
       if (token) {
         localStorage.setItem('admin_token', token);
@@ -50,17 +51,39 @@ const res = await adminApi.login({ identifier: identifier, password: password })
           
           <form className="space-y-6" onSubmit={handleLogin}>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Email hoặc Username</label>
+              <label htmlFor="identifier" className="block text-sm font-medium text-gray-700">Email hoặc Username</label>
               <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Mail className="h-5 w-5 text-gray-400" /></div>
-                <input type="text" required className="block w-full pl-10 border-gray-300 rounded-md py-2.5 border outline-none" value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-gray-400" />
+                </div>
+                <input 
+                  id="identifier"
+                  name="identifier"
+                  type="text" 
+                  autoComplete="username"
+                  required 
+                  className="block w-full pl-10 border-gray-300 rounded-md py-2.5 border outline-none" 
+                  value={identifier} 
+                  onChange={(e) => setIdentifier(e.target.value)} 
+                />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Mật khẩu</label>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">Mật khẩu</label>
               <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Lock className="h-5 w-5 text-gray-400" /></div>
-                <input type="password" required className="block w-full pl-10 border-gray-300 rounded-md py-2.5 border outline-none" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
+                </div>
+                <input 
+                  id="password"
+                  name="password"
+                  type="password" 
+                  autoComplete="current-password"
+                  required 
+                  className="block w-full pl-10 border-gray-300 rounded-md py-2.5 border outline-none" 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                />
               </div>
             </div>
             <button type="submit" disabled={loading} className="w-full flex justify-center py-2.5 px-4 rounded-md text-white bg-orange-600 hover:bg-orange-700">

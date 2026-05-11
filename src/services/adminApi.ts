@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://152.42.220.73/api/v1';
+const API_URL = process.env.NEXT_Private_API_URL || 'http://152.42.220.73/api/v1';
 
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : '';
