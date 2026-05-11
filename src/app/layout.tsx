@@ -8,6 +8,9 @@ import { CartProvider } from '@/context/CartContext';
 export const metadata: Metadata = {
   title: 'Chợ Việt - Website Mua Bán Rao Vặt Trực Tuyến',
   description: 'Mua bán, trao đổi đồ cũ mới. Xe cộ, bất động sản, điện tử, thú cưng và nhiều hơn nữa.',
+  icons: {
+    icon: '/icon.png',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -1,110 +1,115 @@
 // CONTROLLER: ProductController
 // Handles all business logic for products
 
-import { Product, SearchFilters, PaginatedResult } from '@/models/Product';
-import { MOCK_PRODUCTS } from '@/lib/db';
+import { Product, SearchFilters, PaginatedResult, ProductApiResponse, SingleProductApiResponse } from '@/models/Product';
+import api from '@/lib/axios';
 
 export class ProductController {
-  /**
-   * Get featured/recommended products for homepage
-   */
-  static getFeaturedProducts(limit = 12): Product[] {
-    return MOCK_PRODUCTS
-      .sort((a, b) => (b.views || 0) - (a.views || 0))
-      .slice(0, limit);
+  private static mapApiProduct(item: any): Product {
+    return {
+      id: item.id,
+      title: item.name,
+      price: parseFloat(item.display_price),
+      image: item.images && item.images.length > 0 ? item.images[0].url : 'https://placehold.co/400x300?text=No+Image',
+      images: item.images?.map((img: any) => img.url),
+      location: 'Toàn Quốc',
+      category: item.category?.name || 'Danh mục',
+      categorySlug: String(item.category_id),
+      condition: 'new',
+      postedAt: item.created_at,
+      seller: 'Chợ Việt',
+      views: item.view_count,
+      description: item.description,
+      totalSold: item.total_sold,
+      rating: item.rate_count > 0 ? item.rate_total / item.rate_count / 100 : 5, // Mapping rate_total to 1-5 scale
+      variants: item.products,
+    };
   }
 
-  /**
-   * Get newest products
-   */
-  static getNewProducts(limit = 8): Product[] {
-    return MOCK_PRODUCTS
-      .sort((a, b) => new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime())
-      .slice(0, limit);
+  static async getFeaturedProducts(limit = 12): Promise<Product[]> {
+    try {
+      const response = await api.get<ProductApiResponse>(`/products?limit=${limit}&sort=view_count&order=DESC`);
+      return response.data.data.items.map(this.mapApiProduct);
+    } catch (error) {
+      console.error("Error fetching featured products:", error);
+      return [];
+    }
   }
 
-  /**
-   * Get urgent products
-   */
-  static getUrgentProducts(limit = 4): Product[] {
-    return MOCK_PRODUCTS.filter(p => p.isUrgent).slice(0, limit);
+  static async getNewProducts(limit = 8): Promise<Product[]> {
+    try {
+      const response = await api.get<ProductApiResponse>(`/products?limit=${limit}&sort=created_at&order=DESC`);
+      return response.data.data.items.map(this.mapApiProduct);
+    } catch (error) {
+      console.error("Error fetching new products:", error);
+      return [];
+    }
   }
 
-  /**
-   * Search products with filters
-   */
-  static searchProducts(
+  static async getUrgentProducts(limit = 4): Promise<Product[]> {
+    return this.getNewProducts(limit);
+  }
+
+  static async searchProducts(
     filters: SearchFilters,
     page = 1,
     pageSize = 20
-  ): PaginatedResult<Product> {
-    let results = [...MOCK_PRODUCTS];
+  ): Promise<PaginatedResult<Product>> {
+    try {
+      const params: any = {
+        page,
+        limit: pageSize,
+      };
 
-    if (filters.keyword) {
-      const kw = filters.keyword.toLowerCase();
-      results = results.filter(p =>
-        p.title.toLowerCase().includes(kw) ||
-        p.category.toLowerCase().includes(kw)
-      );
+      if (filters.keyword) params.keyword = filters.keyword;
+      if (filters.category) params.category_id = filters.category;
+      
+      if (filters.sortBy === 'price_asc') {
+        params.sort = 'display_price';
+        params.order = 'ASC';
+      } else if (filters.sortBy === 'price_desc') {
+        params.sort = 'display_price';
+        params.order = 'DESC';
+      } else if (filters.sortBy === 'popular') {
+        params.sort = 'view_count';
+        params.order = 'DESC';
+      } else {
+        params.sort = 'created_at';
+        params.order = 'DESC';
+      }
+
+      const response = await api.get<ProductApiResponse>('/products', { params });
+      const { items, pagination } = response.data.data;
+
+      return {
+        data: items.map(this.mapApiProduct),
+        total: pagination.count * pagination.total_pages,
+        page: pagination.page,
+        pageSize: pagination.limit,
+        totalPages: pagination.total_pages,
+      };
+    } catch (error) {
+      console.error("Error searching products:", error);
+      return { data: [], total: 0, page, pageSize, totalPages: 0 };
     }
-
-    if (filters.category) {
-      results = results.filter(p => p.categorySlug === filters.category);
-    }
-
-    if (filters.location && filters.location !== 'Toàn Quốc') {
-      results = results.filter(p => p.location.includes(filters.location!));
-    }
-
-    if (filters.minPrice) {
-      results = results.filter(p => p.price >= filters.minPrice!);
-    }
-
-    if (filters.maxPrice) {
-      results = results.filter(p => p.price <= filters.maxPrice!);
-    }
-
-    if (filters.condition && filters.condition !== 'all') {
-      results = results.filter(p => p.condition === filters.condition);
-    }
-
-    // Sort
-    switch (filters.sortBy) {
-      case 'price_asc':
-        results.sort((a, b) => a.price - b.price);
-        break;
-      case 'price_desc':
-        results.sort((a, b) => b.price - a.price);
-        break;
-      case 'popular':
-        results.sort((a, b) => (b.views || 0) - (a.views || 0));
-        break;
-      default:
-        results.sort((a, b) => new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime());
-    }
-
-    const total = results.length;
-    const totalPages = Math.ceil(total / pageSize);
-    const start = (page - 1) * pageSize;
-    const data = results.slice(start, start + pageSize);
-
-    return { data, total, page, pageSize, totalPages };
   }
 
-  /**
-   * Get single product by ID
-   */
-  static getProductById(id: string): Product | null {
-    return MOCK_PRODUCTS.find(p => p.id === id) || null;
+  static async getProductById(id: string): Promise<Product | null> {
+    try {
+      const response = await api.get<SingleProductApiResponse>(`/products/${id}`);
+      if (response.data && response.data.data) {
+        return this.mapApiProduct(response.data.data);
+      }
+      return null;
+    } catch (error) {
+      console.error(`Error fetching product ${id}:`, error);
+      return null;
+    }
   }
 
-  /**
-   * Get products by category
-   */
-  static getProductsByCategory(categorySlug: string, limit = 8): Product[] {
-    return MOCK_PRODUCTS
-      .filter(p => p.categorySlug === categorySlug)
-      .slice(0, limit);
+  static async getProductsByCategory(category_id: string, limit = 8): Promise<Product[]> {
+    const result = await this.searchProducts({ category: category_id }, 1, limit);
+    return result.data;
   }
 
   /**

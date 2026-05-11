@@ -8,19 +8,20 @@ import { useRouter } from 'next/navigation';
 interface ProductActionsProps {
   product: Product;
   variant?: 'main' | 'sidebar';
+  quantity?: number;
 }
 
-export function ProductActions({ product, variant = 'main' }: ProductActionsProps) {
+export function ProductActions({ product, variant = 'main', quantity = 1 }: ProductActionsProps) {
   const { addToCart } = useCart();
   const router = useRouter();
 
   const handleAddToCart = () => {
-    addToCart(product);
-    toast.success('Đã thêm vào giỏ hàng!');
+    addToCart(product, quantity);
+    toast.success(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
   };
 
   const handleBuyNow = () => {
-    addToCart(product);
+    addToCart(product, quantity);
     router.push('/cart');
   };
 

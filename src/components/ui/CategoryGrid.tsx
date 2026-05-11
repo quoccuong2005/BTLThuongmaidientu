@@ -16,8 +16,12 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
             href={`/category/${cat.slug}`}
             className="flex flex-col items-center gap-1.5 p-2 md:p-3 rounded-xl hover:bg-orange-50 group transition-colors text-center"
           >
-            <div className="w-12 h-12 md:w-14 md:h-14 bg-orange-50 group-hover:bg-orange-100 rounded-2xl flex items-center justify-center text-2xl md:text-3xl transition-colors">
-              {cat.icon}
+            <div className="w-12 h-12 md:w-14 md:h-14 bg-orange-50 group-hover:bg-orange-100 rounded-2xl flex items-center justify-center text-2xl md:text-3xl transition-colors overflow-hidden">
+              {cat.icon.startsWith('http') ? (
+                <img src={cat.icon} alt={cat.name} className="w-full h-full object-cover" />
+              ) : (
+                cat.icon
+              )}
             </div>
             <span className="text-xs font-medium text-gray-700 group-hover:text-orange-600 leading-tight line-clamp-2 transition-colors">
               {cat.name}

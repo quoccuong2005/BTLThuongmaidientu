@@ -1,73 +1,113 @@
 'use client';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product } from '@/models/Product';
-
-interface CartItem extends Product {
-  quantity: number;
-}
+import { CartController, CartItem } from '@/controllers/CartController';
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (product: Product) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  clearCart: () => void;
-  toggleSelection: (productId: string) => void;
+  addToCart: (product: Product, quantity?: number) => void;
+  removeFromCart: (productId: string | number) => Promise<void>;
+  updateQuantity: (productId: string | number, quantity: number) => Promise<void>;
+  clearCart: () => Promise<void>;
+  toggleSelection: (productId: string | number) => void;
   toggleSelectAll: () => void;
-  selectedItemIds: string[];
+  selectedItemIds: (string | number)[];
   itemCount: number;
   totalPrice: number;
   selectedTotalPrice: number;
+  isLoading: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
-  const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
+  const [selectedItemIds, setSelectedItemIds] = useState<(string | number)[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load cart from localStorage
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
-        const parsed = JSON.parse(savedCart);
-        setItems(parsed);
-        // Default select all when loading for the first time
-        setSelectedItemIds(parsed.map((item: CartItem) => item.id));
-      } catch (e) {
-        console.error('Failed to parse cart from localStorage', e);
+    const syncCart = async () => {
+      setIsLoading(true);
+      const sessionId = localStorage.getItem('sessionId');
+
+      if (sessionId) {
+        const serverItems = await CartController.getCart();
+        if (serverItems.length > 0) {
+          setItems(serverItems);
+          setSelectedItemIds(serverItems.map(i => i.id));
+          setIsLoading(false);
+          return;
+        }
       }
-    }
+      const savedCart = localStorage.getItem('cart');
+      if (savedCart) {
+        try {
+          const parsed = JSON.parse(savedCart);
+          setItems(parsed);
+          setSelectedItemIds(parsed.map((item: CartItem) => item.id));
+        } catch (e) {
+          console.error('Failed to parse cart from localStorage', e);
+        }
+      }
+      setIsLoading(false);
+    };
+
+    syncCart();
   }, []);
 
-  // Save cart to localStorage
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(items));
+    if (!localStorage.getItem('sessionId')) {
+      localStorage.setItem('cart', JSON.stringify(items));
+    }
   }, [items]);
 
-  const addToCart = (product: Product) => {
+  const addToCart = async (product: Product, quantity: number = 1) => {
+    const sessionId = localStorage.getItem('sessionId');
+
+    if (sessionId) {
+      const success = await CartController.addToCart(product.id, quantity);
+      if (!success) {
+        console.error('Failed to sync addToCart with server');
+      }
+    }
+
     setItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === product.id);
       if (existingItem) {
         return prevItems.map(item =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
         );
       }
-      return [...prevItems, { ...product, quantity: 1 }];
+      // If new item, add to selected list as well
+      setSelectedItemIds(prev => [...prev, product.id]);
+      return [...prevItems, { ...product, quantity }];
     });
   };
 
-  const removeFromCart = (productId: string) => {
+  const removeFromCart = async (productId: string | number) => {
+    if (!productId) {
+      console.warn('Attempted to remove product with undefined ID');
+      return;
+    }
+    const sessionId = localStorage.getItem('sessionId');
+    if (sessionId) {
+      await CartController.removeFromCart(productId);
+    }
     setItems(prevItems => prevItems.filter(item => item.id !== productId));
     setSelectedItemIds(prev => prev.filter(id => id !== productId));
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = async (productId: string | number, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(productId);
       return;
     }
+
+    const sessionId = localStorage.getItem('sessionId');
+    if (sessionId) {
+      await CartController.updateQuantity(productId, quantity);
+    }
+
     setItems(prevItems =>
       prevItems.map(item =>
         item.id === productId ? { ...item, quantity } : item
@@ -75,12 +115,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
-  const clearCart = () => {
+  const clearCart = async () => {
+    const sessionId = localStorage.getItem('sessionId');
+    if (sessionId) {
+      await CartController.clearCart();
+    }
     setItems([]);
     setSelectedItemIds([]);
   };
 
-  const toggleSelection = (productId: string) => {
+  const toggleSelection = (productId: string | number) => {
     setSelectedItemIds(prev =>
       prev.includes(productId)
         ? prev.filter(id => id !== productId)
@@ -114,7 +158,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       selectedItemIds,
       itemCount,
       totalPrice,
-      selectedTotalPrice
+      selectedTotalPrice,
+      isLoading
     }}>
       {children}
     </CartContext.Provider>

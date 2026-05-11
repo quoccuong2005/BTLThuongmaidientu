@@ -5,13 +5,16 @@ import { useRouter } from 'next/navigation';
 import {
   User, Mail, Phone, Calendar, Shield,
   MapPin, Camera, Edit3, Settings,
-  ShoppingBag, Heart, Star, ChevronRight, Loader2
+  ShoppingBag, Heart, Star, ChevronRight, Loader2, CheckCircle2
 } from 'lucide-react';
 import { GetProfile, UpdateProfile, UploadImage, ChangePassword } from '@/app/api/user/user';
+import { AddressController } from '@/controllers/AddressController';
+import { Address } from '@/models/Address';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
+  const [defaultAddress, setDefaultAddress] = useState<Address | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -42,6 +45,11 @@ export default function ProfilePage() {
         gender: userData.gender || 'male',
         dob: userData.dob ? userData.dob.split('T')[0] : ''
       });
+
+      // Lấy địa chỉ mặc định
+      const addrList = await AddressController.getAddresses();
+      const defaultAddr = addrList.find(a => a.is_default) || addrList[0] || null;
+      setDefaultAddress(defaultAddr);
     } else if (!isSilent) {
       router.push('/login');
       localStorage.removeItem('sessionId');
@@ -533,17 +541,78 @@ export default function ProfilePage() {
 
           {/* Main Content Area */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 flex flex-col items-center justify-center min-h-[400px]">
-              <div className="w-24 h-24 bg-orange-50 rounded-full flex items-center justify-center mb-6">
-                <ShoppingBag size={40} className="text-orange-200" />
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 min-h-[400px] flex flex-col">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center">
+                    <MapPin size={24} className="text-orange-500" />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-black text-gray-900">Địa chỉ giao hàng</h4>
+                    <p className="text-sm text-gray-500">Nơi nhận hàng mặc định của bạn</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => router.push('/profile/addresses')}
+                  className="px-5 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold rounded-xl transition-all flex items-center gap-2 border border-gray-100"
+                >
+                  <Edit3 size={16} />
+                  Tùy chỉnh
+                </button>
               </div>
-              <h4 className="text-xl font-bold text-gray-900 mb-2">Bạn chưa đăng tin nào</h4>
-              <p className="text-gray-500 text-center max-w-xs mb-8">
-                Bán những món đồ bạn không dùng tới và bắt đầu kiếm tiền ngay hôm nay!
-              </p>
-              <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition-all hover:shadow-lg hover:-translate-y-1">
-                Đăng tin ngay <ChevronRight size={20} />
-              </button>
+
+              {defaultAddress ? (
+                <div className="bg-gray-50/50 rounded-3xl p-8 border-2 border-dashed border-gray-100 flex-1 flex flex-col justify-center">
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="text-lg font-black text-gray-900 flex items-center gap-2">
+                            <User size={18} className="text-gray-400" />
+                            {defaultAddress.recipient_name}
+                          </span>
+                          {defaultAddress.is_default && (
+                            <span className="bg-orange-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 shadow-sm shadow-orange-100">
+                              <CheckCircle2 size={10} />
+                              Mặc định
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-600 font-bold">
+                          <Phone size={16} className="text-gray-400" />
+                          {defaultAddress.phone}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                      <p className="text-gray-700 leading-relaxed font-medium">
+                        {defaultAddress.street}
+                        <br />
+                        <span className="text-gray-500 text-sm">
+                          {defaultAddress.ward}, {defaultAddress.district}, {defaultAddress.province}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 flex flex-col items-center justify-center">
+                  <div className="w-24 h-24 bg-orange-50 rounded-full flex items-center justify-center mb-6">
+                    <MapPin size={40} className="text-orange-200" />
+                  </div>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">Chưa có địa chỉ</h4>
+                  <p className="text-gray-500 text-center max-w-xs mb-8">
+                    Bạn chưa có địa chỉ giao hàng nào. Thêm ngay để đặt hàng nhanh chóng hơn!
+                  </p>
+                  <button 
+                    onClick={() => router.push('/profile/addresses')}
+                    className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition-all hover:shadow-lg hover:-translate-y-1"
+                  >
+                    Thêm địa chỉ ngay <ChevronRight size={20} />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 

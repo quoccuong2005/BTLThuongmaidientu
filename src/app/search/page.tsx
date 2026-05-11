@@ -8,14 +8,14 @@ interface SearchPageProps {
   searchParams: { q?: string; category?: string; sort?: string; location?: string };
 }
 
-export default function SearchPage({ searchParams }: SearchPageProps) {
-  const { data: products, total } = ProductController.searchProducts({
+export default async function SearchPage({ searchParams }: SearchPageProps) {
+  const { data: products, total } = await ProductController.searchProducts({
     keyword: searchParams.q,
     category: searchParams.category,
     sortBy: (searchParams.sort as any) || 'newest',
   });
 
-  const categories = CategoryController.getAllCategories();
+  const categories = await CategoryController.getAllCategories();
 
   return (
     <div className="max-w-7xl mx-auto px-3 md:px-4 py-4">
@@ -39,7 +39,14 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
                     href={`/search?category=${cat.slug}`}
                     className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-sm ${searchParams.category === cat.slug ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
                   >
-                    <span>{cat.icon} {cat.name}</span>
+                    <span className="flex items-center gap-2">
+                      {cat.icon.startsWith('http') ? (
+                        <img src={cat.icon} alt={cat.name} className="w-5 h-5 object-cover rounded-md" />
+                      ) : (
+                        <span>{cat.icon}</span>
+                      )}
+                      {cat.name}
+                    </span>
                     {cat.count ? <span className="text-xs text-gray-400">{cat.count}</span> : null}
                   </a>
                 </li>

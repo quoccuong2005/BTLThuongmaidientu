@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
   const page = Number(searchParams.get('page')) || 1;
   const pageSize = Number(searchParams.get('pageSize')) || 20;
 
-  const result = ProductController.searchProducts(filters, page, pageSize);
+  const result = await ProductController.searchProducts(filters, page, pageSize);
 
   return NextResponse.json(result);
 }

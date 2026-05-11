@@ -15,7 +15,7 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
   const { addToCart } = useCart();
   const discount = ProductController.getDiscount(product.price, product.originalPrice);
   const relativeTime = ProductController.getRelativeTime(product.postedAt);
-
+  console.log("aaa", product)
   if (variant === 'horizontal') {
     return (
       <Link href={`/product/${product.id}`} className="flex gap-3 bg-white rounded-xl p-3 border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group">
@@ -42,10 +42,10 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
           </div>
         </div>
         <div className="flex flex-col gap-2 justify-center ml-2">
-          <button 
-            onClick={(e) => { 
-              e.preventDefault(); 
-              e.stopPropagation(); 
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               addToCart(product);
               toast.success('Đã thêm vào giỏ hàng!');
             }}
@@ -53,10 +53,10 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
           >
             <ShoppingCart size={16} />
           </button>
-          <button 
-            onClick={(e) => { 
-              e.preventDefault(); 
-              e.stopPropagation(); 
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               addToCart(product);
               window.location.assign('/cart');
             }}
@@ -128,10 +128,10 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
 
         {/* Action Buttons */}
         <div className="grid grid-cols-2 gap-2 mt-3">
-          <button 
-            onClick={(e) => { 
-              e.preventDefault(); 
-              e.stopPropagation(); 
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               addToCart(product);
               toast.success('Đã thêm vào giỏ hàng!');
             }}
@@ -140,10 +140,10 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
             <ShoppingCart size={12} />
             GIỎ HÀNG
           </button>
-          <button 
-            onClick={(e) => { 
-              e.preventDefault(); 
-              e.stopPropagation(); 
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               addToCart(product);
               window.location.assign('/cart');
             }}

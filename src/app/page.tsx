@@ -9,12 +9,12 @@ import { TrustBadges } from '@/components/home/TrustBadges';
 import { QuickPostBanner } from '@/components/home/QuickPostBanner';
 
 // This is a Server Component - data fetching at the page level (Controller layer)
-export default function HomePage() {
+export default async function HomePage() {
   // Controller calls - business logic stays in controllers
-  const categories = CategoryController.getTopCategories(12);
-  const featuredProducts = ProductController.getFeaturedProducts(8);
-  const newProducts = ProductController.getNewProducts(8);
-  const urgentProducts = ProductController.getUrgentProducts(4);
+  const categories = await CategoryController.getTopCategories(12);
+  const featuredProducts = await ProductController.getFeaturedProducts(8);
+  const newProducts = await ProductController.getNewProducts(8);
+  const urgentProducts = await ProductController.getUrgentProducts(4);
 
   return (
     <div className="max-w-7xl mx-auto px-3 md:px-4 py-4 space-y-5">
@@ -39,7 +39,7 @@ export default function HomePage() {
       <CategoryGrid categories={categories} />
 
       {/* Trust badges */}
-      <TrustBadges />
+      {/* <TrustBadges /> */}
 
       {/* Featured products */}
       <section className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
@@ -52,7 +52,7 @@ export default function HomePage() {
       </section>
 
       {/* Quick post CTA */}
-      <QuickPostBanner />
+      {/* <QuickPostBanner /> */}
 
       {/* Newest listings */}
       <section className="bg-white rounded-2xl shadow-sm p-4 md:p-6">

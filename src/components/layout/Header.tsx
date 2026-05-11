@@ -1,7 +1,8 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { Search, Bell, MessageCircle, User, ChevronDown, MapPin, Menu, X, Plus, LogOut, ShoppingCart } from 'lucide-react';
+import Image from 'next/image';
+import { Search, Bell, MessageCircle, User, ChevronDown, MapPin, Menu, X, Plus, LogOut, ShoppingCart, ShoppingBag } from 'lucide-react';
 import { LOCATIONS, POPULAR_SEARCHES } from '@/lib/db';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -45,16 +46,11 @@ export function Header() {
       </div>
 
       {/* Main header */}
-      <div className="max-w-7xl mx-auto px-4 py-3">
+      <div className="max-w-7xl mx-auto ">
         <div className="flex items-center gap-3">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
-            <div className="flex items-center gap-1">
-              <div className="w-9 h-9 bg-orange-500 rounded-xl flex items-center justify-center">
-                <span className="text-white font-black text-lg">C</span>
-              </div>
-              <span className="font-black text-orange-500 text-xl hidden sm:block">ChợViệt</span>
-            </div>
+            <Image src="/Logochoviet.png" alt="Logo" width={120} height={120} />
           </Link>
 
           {/* Search bar */}
@@ -107,7 +103,10 @@ export function Header() {
             <button className="relative p-2 hover:bg-gray-100 rounded-xl hidden sm:flex">
               <MessageCircle size={20} className="text-gray-600" />
             </button>
-            <Link href="/cart" className="relative p-2 hover:bg-gray-100 rounded-xl flex">
+            <Link href="/orders" className="relative p-2 hover:bg-gray-100 rounded-xl flex" title="Đơn hàng">
+              <ShoppingBag size={20} className="text-gray-600" />
+            </Link>
+            <Link href="/cart" className="relative p-2 hover:bg-gray-100 rounded-xl flex" title="Giỏ hàng">
               <ShoppingCart size={20} className="text-gray-600" />
               {itemCount > 0 && (
                 <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border border-white">
@@ -130,7 +129,7 @@ export function Header() {
                     <p className="text-sm font-semibold text-gray-800 leading-tight truncate max-w-[100px]">{user.name}</p>
                   </div>
                 </Link>
-                <button 
+                <button
                   onClick={handleLogout}
                   className="p-2 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-xl transition-colors"
                   title="Đăng xuất"
@@ -144,27 +143,14 @@ export function Header() {
                 <span className="text-sm font-medium hidden md:block">Đăng nhập</span>
               </Link>
             )}
-            <Link href="/post" className="btn-brand flex items-center gap-1 text-sm">
-              <Plus size={16} />
-              <span className="hidden sm:block">Đăng tin</span>
-            </Link>
+
             <button onClick={() => setShowMobileMenu(!showMobileMenu)} className="p-2 hover:bg-gray-100 rounded-xl md:hidden">
               {showMobileMenu ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
 
-        {/* Popular searches */}
-        <div className="hidden md:flex items-center gap-2 mt-2 text-xs">
-          <span className="text-gray-400">Tìm nhiều:</span>
-          <div className="flex flex-wrap gap-1">
-            {POPULAR_SEARCHES.map(s => (
-              <Link key={s} href={`/search?q=${s}`} className="text-orange-500 hover:underline">
-                {s}
-              </Link>
-            ))}
-          </div>
-        </div>
+
       </div>
 
       {/* Mobile menu */}
