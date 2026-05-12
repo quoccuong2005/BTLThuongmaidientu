@@ -28,13 +28,13 @@ export function ProductActions({ product, variant = 'main', quantity = 1 }: Prod
   if (variant === 'sidebar') {
     return (
       <div className="space-y-3">
-        <button 
+        <button
           onClick={handleBuyNow}
           className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm shadow-md shadow-red-200 active:scale-[0.98]"
         >
           <CreditCard size={16} /> Mua hàng ngay
         </button>
-        <button 
+        <button
           onClick={handleAddToCart}
           className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm shadow-md shadow-orange-200 active:scale-[0.98]"
         >
@@ -57,14 +57,14 @@ export function ProductActions({ product, variant = 'main', quantity = 1 }: Prod
 
   return (
     <div className="flex flex-wrap gap-3 mb-6">
-      <button 
+      <button
         onClick={handleBuyNow}
         className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-red-100 transform active:scale-95"
       >
         <CreditCard size={20} />
         <span>MUA NGAY</span>
       </button>
-      <button 
+      <button
         onClick={handleAddToCart}
         className="flex-1 bg-orange-100 text-orange-600 hover:bg-orange-200 font-bold py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-2 transform active:scale-95 border border-orange-200"
       >

@@ -1,63 +1,66 @@
 import { ProductController } from '@/controllers/ProductController';
 import { CategoryController } from '@/controllers/CategoryController';
-import { BANNERS } from '@/lib/db';
 import { ProductCard } from '@/components/ui/ProductCard';
 import { CategoryGrid } from '@/components/ui/CategoryGrid';
-import { BannerCarousel } from '@/components/ui/BannerCarousel';
 import { SectionHeader } from '@/components/ui/SectionHeader';
-import { TrustBadges } from '@/components/home/TrustBadges';
-import { QuickPostBanner } from '@/components/home/QuickPostBanner';
 
-// This is a Server Component - data fetching at the page level (Controller layer)
 export default async function HomePage() {
-  // Controller calls - business logic stays in controllers
   const categories = await CategoryController.getTopCategories(12);
   const featuredProducts = await ProductController.getFeaturedProducts(8);
   const newProducts = await ProductController.getNewProducts(8);
-  const urgentProducts = await ProductController.getUrgentProducts(4);
 
   return (
-    <div className="max-w-7xl mx-auto px-3 md:px-4 py-4 space-y-5">
-      {/* Hero: Banner + Side listings */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2">
-          <BannerCarousel banners={BANNERS} />
-        </div>
-        {/* Urgent listings sidebar */}
-        <div className="bg-white rounded-2xl shadow-sm p-4">
-          <SectionHeader title="🔥 Tin gấp" viewAllHref="/search?urgent=true" />
-          <div className="space-y-3">
-            {urgentProducts.length > 0
-              ? urgentProducts.map(p => <ProductCard key={p.id} product={p} variant="horizontal" />)
-              : newProducts.slice(0, 3).map(p => <ProductCard key={p.id} product={p} variant="horizontal" />)
-            }
+    <div className="max-w-7xl mx-auto px-3 md:px-4 py-6 space-y-6">
+      <section className="rounded-3xl bg-gradient-to-r from-orange-500 via-orange-500 to-orange-600 text-white overflow-hidden shadow-lg">
+        <div className="grid gap-6 lg:grid-cols-[1.8fr_1.2fr] p-6 md:p-8">
+          <div className="space-y-4">
+            <p className="text-sm uppercase tracking-[0.3em] text-orange-100/90">Chợ Việt - Kênh mua bán tin cậy</p>
+            <h1 className="text-3xl sm:text-4xl font-extrabold leading-tight">Tìm tin đăng chất lượng, giao dịch nhanh chóng và an toàn</h1>
+            <p className="max-w-2xl text-sm sm:text-base text-orange-100/85">
+              Khám phá hàng ngàn tin đăng mới mỗi ngày, những ưu đãi hot và sản phẩm gấp được chọn lọc riêng cho bạn.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="rounded-3xl bg-white/10 border border-white/20 p-4 text-center">
+                <p className="text-2xl font-semibold">1k+</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-orange-100/80">Tin đăng</p>
+              </div>
+              <div className="rounded-3xl bg-white/10 border border-white/20 p-4 text-center">
+                <p className="text-2xl font-semibold">12h</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-orange-100/80">Tin mới mỗi giờ</p>
+              </div>
+              <div className="rounded-3xl bg-white/10 border border-white/20 p-4 text-center">
+                <p className="text-2xl font-semibold">100%</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-orange-100/80">Đảm bảo uy tín</p>
+              </div>
+            </div>
+          </div>
+          <div className="relative overflow-hidden rounded-[1.75rem] bg-white/10 p-6 flex items-center justify-center">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.24),_transparent_55%)]" />
+            <div className="relative text-center">
+              <p className="text-sm uppercase tracking-[0.3em] text-orange-100/90 mb-3">Nổi bật hôm nay</p>
+              <div className="rounded-3xl border border-white/20 bg-white/10 p-5">
+                <p className="text-xl font-bold">Tin gấp</p>
+                <p className="mt-2 text-sm text-orange-100/90">Các tin đăng có nhu cầu bán nhanh, ưu tiên hiển thị tại đây.</p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Categories */}
       <CategoryGrid categories={categories} />
 
-      {/* Trust badges */}
-      {/* <TrustBadges /> */}
-
-      {/* Featured products */}
-      <section className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
-        <SectionHeader title="Tin đăng nổi bật" viewAllHref="/search?sort=popular" icon="⭐" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+      <section className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+        <SectionHeader title="Tin đăng nổi bật" viewAllHref="/search?sort=popular" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {featuredProducts.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>
 
-      {/* Quick post CTA */}
-      {/* <QuickPostBanner /> */}
-
-      {/* Newest listings */}
-      <section className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
-        <SectionHeader title="Tin mới đăng" viewAllHref="/search?sort=newest" icon="🆕" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+      <section className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+        <SectionHeader title="Tin mới đăng" viewAllHref="/search?sort=newest" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {newProducts.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}

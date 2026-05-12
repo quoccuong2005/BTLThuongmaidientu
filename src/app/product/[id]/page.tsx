@@ -33,7 +33,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       {/* Related products */}
       {related.length > 0 && (
         <section className="mt-16">
-          <SectionHeader title="Sản phẩm tương tự" viewAllHref={`/category/${product.categorySlug}`} icon="🛍️" />
+          <SectionHeader title="Sản phẩm tương tự" viewAllHref={`/category/${product.categorySlug}`} />
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-6">
             {related.slice(0, 10).map(p => (
               <ProductCard key={p.id} product={p} />

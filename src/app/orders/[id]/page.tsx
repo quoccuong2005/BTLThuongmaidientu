@@ -63,7 +63,7 @@ export default function OrderDetailPage() {
 
   const handleComplete = async () => {
     if (!order) return;
-    
+
     try {
       setIsCompleting(true);
       const success = await OrderController.completeOrder(order.id);
@@ -198,7 +198,7 @@ export default function OrderDetailPage() {
             <div className="space-y-8 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100">
               <div className="relative pl-8">
                 <div className="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-green-500 border-4 border-white shadow-sm flex items-center justify-center">
-                   <div className="w-2 h-2 bg-white rounded-full"></div>
+                  <div className="w-2 h-2 bg-white rounded-full"></div>
                 </div>
                 <p className="text-sm font-bold text-gray-900">Đặt hàng thành công</p>
                 <p className="text-xs text-gray-400 mt-1">{createdAt}</p>
@@ -255,11 +255,9 @@ export default function OrderDetailPage() {
                   <span className="text-gray-500">Phí vận chuyển:</span>
                   <span className="text-green-600 font-semibold">Miễn phí</span>
                 </div>
-                <div className="flex justify-between items-end pt-2">
-                  <span className="text-gray-900 font-bold">Tổng thanh toán:</span>
-                  <span className="text-2xl font-black text-orange-500">
-                    {ProductController.formatPrice(parseFloat(order.total_amount))}
-                  </span>
+                <div className="pt-3 border-t border-gray-100 flex justify-between font-black text-xl text-gray-900">
+                  <span>Tổng tiền</span>
+                  <span className="text-orange-500">{ProductController.formatPrice(parseFloat(order.total_amount))}</span>
                 </div>
               </div>
             </div>
@@ -285,7 +283,7 @@ export default function OrderDetailPage() {
           )}
 
           {order.status === 'delivered' && (
-            <button 
+            <button
               onClick={handleComplete}
               disabled={isCompleting}
               className="w-full py-4 bg-green-500 text-white font-bold rounded-2xl hover:bg-green-600 transition-all shadow-lg shadow-green-100 flex items-center justify-center gap-2 transform active:scale-95 disabled:opacity-50"
@@ -309,7 +307,7 @@ export default function OrderDetailPage() {
             </p>
             <div className="mb-6">
               <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Lý do hủy đơn</label>
-              <textarea 
+              <textarea
                 className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 text-sm focus:ring-2 focus:ring-red-100 focus:border-red-200 outline-none transition-all resize-none"
                 placeholder="Nhập lý do hủy (ví dụ: Thay đổi địa chỉ, Đặt nhầm sản phẩm...)"
                 rows={3}
@@ -318,13 +316,13 @@ export default function OrderDetailPage() {
               ></textarea>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <button 
+              <button
                 onClick={() => setShowConfirmModal(false)}
                 className="py-3.5 px-4 rounded-xl border border-gray-200 font-bold text-gray-600 hover:bg-gray-50 transition-colors"
               >
                 Quay lại
               </button>
-              <button 
+              <button
                 onClick={handleCancel}
                 className="py-3.5 px-4 rounded-xl bg-red-600 font-bold text-white hover:bg-red-700 transition-all shadow-lg shadow-red-100 transform active:scale-95"
               >
