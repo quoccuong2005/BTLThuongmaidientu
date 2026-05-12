@@ -16,6 +16,7 @@ export default function OrderDetailPage() {
   const [isCompleting, setIsCompleting] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
+  const [vnpayUrl, setVnpayUrl] = useState<string | null>(null);
 
   const fetchDetail = async () => {
     if (!id) return;
@@ -23,6 +24,8 @@ export default function OrderDetailPage() {
       setIsLoading(true);
       const data = await OrderController.getOrderDetails(id as string);
       setOrder(data);
+      const stored = localStorage.getItem(`vnpay_url_${id}`);
+      if (stored) setVnpayUrl(stored);
     } catch (error) {
       console.error('Failed to fetch order details:', error);
     } finally {
@@ -81,16 +84,24 @@ export default function OrderDetailPage() {
     switch (status) {
       case 'pending_payment':
         return { label: 'Chờ thanh toán', icon: <Clock size={16} />, color: 'text-amber-600 bg-amber-50 border-amber-100' };
-      case 'processing':
-        return { label: 'Đang xử lý', icon: <Package size={16} />, color: 'text-blue-600 bg-blue-50 border-blue-100' };
-      case 'shipped':
-        return { label: 'Đang giao hàng', icon: <Truck size={16} />, color: 'text-indigo-600 bg-indigo-50 border-indigo-100' };
+      case 'paid':
+        return { label: 'Chờ xác nhận', icon: <Package size={16} />, color: 'text-blue-600 bg-blue-50 border-blue-100' };
+      case 'confirmed':
+        return { label: 'Chờ lấy hàng', icon: <Package size={16} />, color: 'text-blue-600 bg-blue-50 border-blue-100' };
+      case 'shipping':
+        return { label: 'Đang giao', icon: <Truck size={16} />, color: 'text-purple-600 bg-purple-50 border-purple-100' };
       case 'delivered':
-        return { label: 'Đã giao hàng', icon: <CheckCircle2 size={16} />, color: 'text-green-600 bg-green-50 border-green-100' };
+        return { label: 'Đã giao hàng', icon: <CheckCircle2 size={16} />, color: 'text-teal-600 bg-teal-50 border-teal-100' };
       case 'completed':
         return { label: 'Hoàn thành', icon: <CheckCircle2 size={16} />, color: 'text-green-600 bg-green-50 border-green-100' };
       case 'cancelled':
         return { label: 'Đã hủy', icon: <XCircle size={16} />, color: 'text-red-600 bg-red-50 border-red-100' };
+      case 'return_requested':
+        return { label: 'Yêu cầu hoàn', icon: <AlertCircle size={16} />, color: 'text-yellow-600 bg-yellow-50 border-yellow-100' };
+      case 'returned':
+        return { label: 'Đã hoàn hàng', icon: <AlertCircle size={16} />, color: 'text-gray-600 bg-gray-50 border-gray-100' };
+      case 'refunded':
+        return { label: 'Đã hoàn tiền', icon: <CheckCircle2 size={16} />, color: 'text-green-600 bg-green-50 border-green-100' };
       default:
         return { label: status, icon: <AlertCircle size={16} />, color: 'text-gray-600 bg-gray-50 border-gray-100' };
     }
@@ -254,8 +265,17 @@ export default function OrderDetailPage() {
             </div>
           </div>
 
+          {order.status === 'pending_payment' && order.payment_method === 'vnpay' && vnpayUrl && (
+            <button
+              onClick={() => { window.location.href = vnpayUrl; }}
+              className="w-full py-4 bg-orange-500 text-white font-bold rounded-2xl hover:bg-orange-600 transition-all shadow-lg shadow-orange-100 flex items-center justify-center gap-2 transform active:scale-95"
+            >
+              <CreditCard size={18} /> Thanh toán ngay qua VNPAY
+            </button>
+          )}
+
           {order.status === 'pending_payment' && (
-            <button 
+            <button
               onClick={() => setShowConfirmModal(true)}
               disabled={isCancelling}
               className="w-full py-4 bg-red-50 text-red-600 font-bold rounded-2xl hover:bg-red-100 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"

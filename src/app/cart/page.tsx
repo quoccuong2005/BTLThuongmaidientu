@@ -83,6 +83,9 @@ export default function CartPage() {
       
       if (paymentMethod === 'vnpay') {
         if (paymentUrl) {
+          if (result.order?.id) {
+            localStorage.setItem(`vnpay_url_${result.order.id}`, paymentUrl);
+          }
           await clearCart();
           window.location.href = paymentUrl;
           return;
