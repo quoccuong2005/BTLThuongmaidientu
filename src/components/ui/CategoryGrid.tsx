@@ -7,28 +7,33 @@ interface CategoryGridProps {
 
 export function CategoryGrid({ categories }: CategoryGridProps) {
   return (
-    <section className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
-      <h2 className="text-lg font-bold text-gray-800 mb-4">Danh mục</h2>
-      <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 md:gap-3">
+    <section className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+          <span className="text-xl"></span>
+          Danh mục phổ biến
+        </h2>
+        <a href="/search" className="text-orange-500 hover:text-orange-600 text-sm font-medium flex items-center gap-0.5">
+          Xem tất cả <span>›</span>
+        </a>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         {categories.map(cat => (
           <Link
             key={cat.id}
             href={`/category/${cat.slug}`}
-            className="flex flex-col items-center gap-1.5 p-2 md:p-3 rounded-xl hover:bg-orange-50 group transition-colors text-center"
+            className="flex flex-col items-center gap-3 p-4 rounded-3xl border border-gray-200 bg-white hover:shadow-lg hover:-translate-y-1 transition-all text-center group"
           >
-            <div className="w-12 h-12 md:w-14 md:h-14 bg-orange-50 group-hover:bg-orange-100 rounded-2xl flex items-center justify-center text-2xl md:text-3xl transition-colors overflow-hidden">
-              {cat.icon.startsWith('http') ? (
-                <img src={cat.icon} alt={cat.name} className="w-full h-full object-cover" />
+            <div className="h-16 w-16 bg-orange-50 group-hover:bg-orange-100 rounded-full flex items-center justify-center text-3xl transition-colors overflow-hidden">
+              {typeof cat.icon === 'string' && cat.icon.startsWith('http') ? (
+                <img src={cat.icon} alt={cat.name} className="h-full w-full object-cover" />
               ) : (
-                cat.icon
+                <span>{cat.icon || '📁'}</span>
               )}
             </div>
-            <span className="text-xs font-medium text-gray-700 group-hover:text-orange-600 leading-tight line-clamp-2 transition-colors">
+            <span className="text-sm font-semibold text-gray-900 line-clamp-2">
               {cat.name}
             </span>
-            {cat.count !== undefined && cat.count > 0 && (
-              <span className="text-xs text-gray-400">{cat.count}</span>
-            )}
           </Link>
         ))}
       </div>

@@ -54,7 +54,7 @@ export default function CartPage() {
 
     try {
       setIsProcessing(true);
-      
+
       const orderItems = items
         .filter(item => selectedItemIds.includes(item.id))
         .map(item => ({
@@ -76,11 +76,11 @@ export default function CartPage() {
       console.log('Sending order data:', orderData);
       const result = await OrderController.createOrder(orderData);
       console.log('Order creation result:', result);
-      
+
       // If payment method is vnpay, the response contains a payment URL
       // We check for both paymentUrl and payment_url to be safe
       const paymentUrl = result.paymentUrl || result.payment_url;
-      
+
       if (paymentMethod === 'vnpay') {
         if (paymentUrl) {
           await clearCart();
@@ -94,7 +94,7 @@ export default function CartPage() {
 
       toast.success('Đặt hàng thành công!');
       await clearCart();
-      
+
       // Redirect to the newly created order's detail page
       if (result.order?.id) {
         router.push(`/orders/${result.order.id}`);
@@ -215,67 +215,67 @@ export default function CartPage() {
 
         {/* Summary */}
         <div className="space-y-4">
-            
-            {/* Address Selection */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50 mb-4">
-              <h3 className="font-bold mb-4 flex items-center gap-2">
-                <MapPin size={18} className="text-orange-500" /> Địa chỉ nhận hàng
-              </h3>
-              {addresses.length > 0 ? (
-                <div className="space-y-3">
-                  {addresses.map(addr => (
-                    <label key={addr.id} className={`block p-3 rounded-xl border-2 cursor-pointer transition-all ${selectedAddressId === addr.id ? 'border-orange-500 bg-orange-50' : 'border-gray-100'}`}>
-                      <div className="flex items-start gap-3">
-                        <input
-                          type="radio"
-                          name="address"
-                          checked={selectedAddressId === addr.id}
-                          onChange={() => setSelectedAddressId(addr.id)}
-                          className="mt-1 text-orange-500 focus:ring-orange-500"
-                        />
-                        <div className="text-sm">
-                          <p className="font-bold">{addr.recipient_name} | {addr.phone}</p>
-                          <p className="text-gray-500">{addr.street}, {addr.ward}, {addr.district}, {addr.province}</p>
-                        </div>
+
+          {/* Address Selection */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50 mb-4">
+            <h3 className="font-bold mb-4 flex items-center gap-2">
+              <MapPin size={18} className="text-orange-500" /> Địa chỉ nhận hàng
+            </h3>
+            {addresses.length > 0 ? (
+              <div className="space-y-3">
+                {addresses.map(addr => (
+                  <label key={addr.id} className={`block p-3 rounded-xl border-2 cursor-pointer transition-all ${selectedAddressId === addr.id ? 'border-orange-500 bg-orange-50' : 'border-gray-100'}`}>
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="radio"
+                        name="address"
+                        checked={selectedAddressId === addr.id}
+                        onChange={() => setSelectedAddressId(addr.id)}
+                        className="mt-1 text-orange-500 focus:ring-orange-500"
+                      />
+                      <div className="text-sm">
+                        <p className="font-bold">{addr.recipient_name} | {addr.phone}</p>
+                        <p className="text-gray-500">{addr.street}, {addr.ward}, {addr.district}, {addr.province}</p>
                       </div>
-                    </label>
-                  ))}
-                  <Link href="/profile" className="text-sm text-orange-500 hover:underline block text-center">+ Thêm địa chỉ mới</Link>
-                </div>
-              ) : (
-                <div className="text-center py-4">
-                  <p className="text-sm text-gray-500 mb-2">Bạn chưa có địa chỉ nào</p>
-                  <Link href="/profile" className="btn-brand py-2 px-4 text-sm">Thêm địa chỉ</Link>
-                </div>
-              )}
-            </div>
-
-            {/* Payment Method */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50 mb-4">
-              <h3 className="font-bold mb-4 flex items-center gap-2">
-                <CardIcon size={18} className="text-orange-500" /> Phương thức thanh toán
-              </h3>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => setPaymentMethod('vnpay')}
-                  className={`py-2 px-3 rounded-xl border-2 text-sm font-semibold transition-all ${paymentMethod === 'vnpay' ? 'border-orange-500 bg-orange-50 text-orange-600' : 'border-gray-100 text-gray-500'}`}
-                >
-                  VNPAY
-                </button>
-                <button
-                  onClick={() => setPaymentMethod('cod')}
-                  className={`py-2 px-3 rounded-xl border-2 text-sm font-semibold transition-all ${paymentMethod === 'cod' ? 'border-orange-500 bg-orange-50 text-orange-600' : 'border-gray-100 text-gray-500'}`}
-                >
-                  COD
-                </button>
+                    </div>
+                  </label>
+                ))}
+                <Link href="/profile" className="text-sm text-orange-500 hover:underline block text-center">+ Thêm địa chỉ mới</Link>
               </div>
-            </div>
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-sm text-gray-500 mb-2">Bạn chưa có địa chỉ nào</p>
+                <Link href="/profile" className="btn-brand py-2 px-4 text-sm">Thêm địa chỉ</Link>
+              </div>
+            )}
+          </div>
 
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50 sticky top-24">
+          {/* Payment Method */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50 mb-4">
+            <h3 className="font-bold mb-4 flex items-center gap-2">
+              <CardIcon size={18} className="text-orange-500" /> Phương thức thanh toán
+            </h3>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setPaymentMethod('vnpay')}
+                className={`py-2 px-3 rounded-xl border-2 text-sm font-semibold transition-all ${paymentMethod === 'vnpay' ? 'border-orange-500 bg-orange-50 text-orange-600' : 'border-gray-100 text-gray-500'}`}
+              >
+                VNPAY
+              </button>
+              <button
+                onClick={() => setPaymentMethod('cod')}
+                className={`py-2 px-3 rounded-xl border-2 text-sm font-semibold transition-all ${paymentMethod === 'cod' ? 'border-orange-500 bg-orange-50 text-orange-600' : 'border-gray-100 text-gray-500'}`}
+              >
+                COD
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50 sticky top-24">
             <h2 className="font-bold text-lg mb-4">Tổng cộng</h2>
             <div className="space-y-3 mb-6">
               <div className="flex justify-between text-gray-500">
-                <span>Tạm tính ({selectedItemIds.length} sản phẩm)</span>
+                <span>Tạm tính </span>
                 <span>{ProductController.formatPrice(selectedTotalPrice)}</span>
               </div>
               <div className="flex justify-between text-gray-500">
@@ -295,7 +295,7 @@ export default function CartPage() {
                 : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 }`}
             >
-              {isProcessing ? 'ĐANG XỬ LÝ...' : `MUA HÀNG (${selectedItemIds.length})`}
+              {isProcessing ? 'ĐANG XỬ LÝ...' : `MUA HÀNG `}
             </button>
             <p className="text-center text-xs text-gray-400 mt-4">
               Hỗ trợ thanh toán qua thẻ, ví điện tử hoặc COD
