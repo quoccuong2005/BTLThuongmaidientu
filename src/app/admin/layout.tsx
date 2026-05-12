@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Package, Tags, ShieldAlert, KeyRound, LogOut } from 'lucide-react';
+import { LayoutDashboard, Package, Tags, ShieldAlert, KeyRound, LogOut,ShoppingCart } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -48,6 +48,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/admin/products" className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-lg">
             <Package size={20} /> Dòng Sản phẩm
           </Link>
+          {/* NÚT QUẢN LÝ ĐƠN HÀNG */}
+<Link href="/admin/orders" className="flex items-center gap-3 p-3 text-gray-600 hover:bg-orange-50 hover:text-orange-500 rounded-xl transition-all font-medium">
+   <ShoppingCart size={20} />
+   <span>Đơn hàng</span>
+</Link>
           
           <div className="pt-4 pb-2">
             <span className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Phân quyền Hệ thống</span>

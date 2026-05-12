@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_Private_API_URL || 'http://152.42.220.73/api/v1';
+const API_URL = process.env.API_URL || 'http://152.42.220.73/api/v1';
 
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : '';
@@ -59,6 +59,12 @@ export const adminApi = {
   updateRole: (id: string | number, data: any) => fetchWithAuth(`/roles/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteRole: (id: string | number) => fetchWithAuth(`/roles/${id}`, { method: 'DELETE' }),
   assignRolePermissions: (id: string | number, permissionIds: number[]) => fetchWithAuth(`/roles/${id}/permissions`, { method: 'PATCH', body: JSON.stringify({ permissionIds }) }),
+
+
+  // --- QUẢN LÝ ĐƠN HÀNG ---
+  getOrders: () => fetchWithAuth('/admin/orders', { method: 'GET' }),
+  getOrderDetail: (id: string | number) => fetchWithAuth(`/admin/orders/${id}`, { method: 'GET' }),
+  updateOrderStatus: (id: string | number, status: string) => fetchWithAuth(`/admin/orders/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
 
   // ================= 7. UPLOAD =================
   uploadImage: (file: File) => {

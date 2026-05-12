@@ -1,10 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    domains: ['picsum.photos', 'via.placeholder.com'],
-    remotePatterns: [
-      { protocol: 'https', hostname: 'picsum.photos' },
-    ],
+  async rewrites() {
+    return [
+      {
+        // Khi Frontend gọi đến /api/proxy/...
+        source: '/api/proxy/:path*',
+        // Next.js sẽ âm thầm gọi đến địa chỉ IP thật này
+        destination: `${process.env.API_URL}/:path*`,
+      },
+    ]
   },
 };
 
