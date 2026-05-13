@@ -2,11 +2,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, Bell, MessageCircle, User, ChevronDown, MapPin, Menu, X, Plus, LogOut, ShoppingCart, ShoppingBag } from 'lucide-react';
+import { Search, Bell, MessageCircle, User, ChevronDown, MapPin, Menu, X, Plus, LogOut, ShoppingCart, ShoppingBag, Heart } from 'lucide-react';
 import { LOCATIONS, POPULAR_SEARCHES } from '@/lib/db';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
+import { useWishlist } from '@/context/WishlistContext';
 
 export function Header() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -15,6 +16,7 @@ export function Header() {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [user, setUser] = useState<any>(null);
   const { itemCount } = useCart();
+  const { wishlistedProductIds } = useWishlist();
 
   const router = useRouter();
 
@@ -105,6 +107,14 @@ export function Header() {
             </button>
             <Link href="/orders" className="relative p-2 hover:bg-gray-100 rounded-xl flex" title="Đơn hàng">
               <ShoppingBag size={20} className="text-gray-600" />
+            </Link>
+            <Link href="/wishlist" className="relative p-2 hover:bg-gray-100 rounded-xl flex" title="Yêu thích">
+              <Heart size={20} className="text-gray-600" />
+              {wishlistedProductIds.size > 0 && (
+                <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border border-white">
+                  {wishlistedProductIds.size}
+                </span>
+              )}
             </Link>
             <Link href="/cart" className="relative p-2 hover:bg-gray-100 rounded-xl flex" title="Giỏ hàng">
               <ShoppingCart size={20} className="text-gray-600" />

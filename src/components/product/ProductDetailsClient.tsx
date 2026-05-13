@@ -4,13 +4,21 @@ import { Product, ProductVariant } from '@/models/Product';
 import { ProductController } from '@/controllers/ProductController';
 import { ProductActions } from './ProductActions';
 import { Star, CheckCircle2, ChevronRight, ChevronLeft } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 
 interface ProductDetailsClientProps {
   product: Product;
 }
 
 export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(product.variants?.[0] || null);
+  const searchParams = useSearchParams();
+  const variantParam = searchParams.get('variant');
+  
+  const initialVariant = product.variants?.find(v => v.id.toString() === variantParam) 
+                      || product.variants?.[0] 
+                      || null;
+
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(initialVariant);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
@@ -149,7 +157,8 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
             <ProductActions 
               product={{ ...product, id: currentId, title: currentTitle, image: currentImage, price: currentPrice }} 
               variant="main" 
-              quantity={quantity} 
+              quantity={quantity}
+              wishlistTargetId={selectedVariant?.id}
             />
 
             {/* Description */}
@@ -182,7 +191,8 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
           <ProductActions 
             product={{ ...product, id: currentId, title: currentTitle, image: currentImage, price: currentPrice }} 
             variant="sidebar" 
-            quantity={quantity} 
+            quantity={quantity}
+            wishlistTargetId={selectedVariant?.id}
           />
 
           <div className="mt-8 grid grid-cols-3 gap-2">

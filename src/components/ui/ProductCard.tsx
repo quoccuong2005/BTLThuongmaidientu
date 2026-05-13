@@ -4,7 +4,6 @@ import { MapPin, Eye, Clock, ShoppingCart, CreditCard } from 'lucide-react';
 import { Product } from '@/models/Product';
 import { ProductController } from '@/controllers/ProductController';
 import { useCart } from '@/context/CartContext';
-import { toast } from 'sonner';
 
 interface ProductCardProps {
   product: Product;
@@ -13,10 +12,10 @@ interface ProductCardProps {
 
 export function ProductCard({ product, variant = 'default' }: ProductCardProps) {
   const { addToCart } = useCart();
+  
   const discount = ProductController.getDiscount(product.price, product.originalPrice);
   const relativeTime = ProductController.getRelativeTime(product.postedAt);
-  console.log('ProductCard render:', product); // Debug render
-  console.log("aaa", product)
+
   if (variant === 'horizontal') {
     return (
       <Link href={`/product/${product.id}`} className="flex gap-3 bg-white rounded-xl p-3 border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group">
@@ -63,7 +62,7 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
           {discount && <span className="bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 rounded">-{discount}%</span>}
         </div>
         {/* Condition */}
-        <div className="absolute top-2 right-2">
+        <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
           <span className={`text-xs font-semibold px-1.5 py-0.5 rounded ${product.condition === 'new' ? 'bg-blue-500 text-white' : 'bg-gray-700 text-white'}`}>
             {product.condition === 'new' ? 'Mới' : 'Cũ'}
           </span>

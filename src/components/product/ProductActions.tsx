@@ -2,6 +2,7 @@
 import { ShoppingCart, CreditCard, Phone, MessageCircle, Heart } from 'lucide-react';
 import { Product } from '@/models/Product';
 import { useCart } from '@/context/CartContext';
+import { useWishlist } from '@/context/WishlistContext';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
@@ -9,11 +10,23 @@ interface ProductActionsProps {
   product: Product;
   variant?: 'main' | 'sidebar';
   quantity?: number;
+  /**
+   * ID hợp lệ của Product (variant) để lưu Wishlist.
+   * - Nếu sản phẩm CÓ variants: truyền vào selectedVariant.id
+   * - Nếu sản phẩm KHÔNG có variants: bỏ qua, nút Yêu thích sẽ bị disable
+   */
+  wishlistTargetId?: number;
 }
 
-export function ProductActions({ product, variant = 'main', quantity = 1 }: ProductActionsProps) {
+export function ProductActions({ product, variant = 'main', quantity = 1, wishlistTargetId }: ProductActionsProps) {
   const { addToCart } = useCart();
+  const { wishlistedProductIds, handleWishlistClick } = useWishlist();
   const router = useRouter();
+
+  // Chỉ check isWishlisted nếu có wishlistTargetId hợp lệ
+  const isWishlisted = wishlistTargetId ? wishlistedProductIds.has(wishlistTargetId) : false;
+  // Nút Yêu thích chỉ hoạt động khi đã có targetId (tức là đã chọn variant)
+  const canWishlist = !!wishlistTargetId;
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
@@ -23,6 +36,14 @@ export function ProductActions({ product, variant = 'main', quantity = 1 }: Prod
   const handleBuyNow = () => {
     addToCart(product, quantity);
     router.push('/cart');
+  };
+
+  const handleWishlistButtonClick = () => {
+    if (!canWishlist) {
+      toast.info('Vui lòng chọn phân loại sản phẩm trước');
+      return;
+    }
+    handleWishlistClick(wishlistTargetId!);
   };
 
   if (variant === 'sidebar') {
@@ -48,8 +69,20 @@ export function ProductActions({ product, variant = 'main', quantity = 1 }: Prod
             <MessageCircle size={14} /> Nhắn tin
           </button>
         </div>
-        <button className="w-full border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm">
-          <Heart size={15} /> Lưu tin
+        <button 
+          onClick={handleWishlistButtonClick}
+          disabled={!canWishlist}
+          title={!canWishlist ? 'Chọn phân loại để lưu yêu thích' : (isWishlisted ? 'Bỏ yêu thích' : 'Lưu yêu thích')}
+          className={`w-full border py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm font-medium ${
+            !canWishlist
+              ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed'
+              : isWishlisted 
+                ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100' 
+                : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+          }`}
+        >
+          <Heart size={15} className={isWishlisted && canWishlist ? 'fill-red-600 text-red-600' : ''} /> 
+          {isWishlisted && canWishlist ? 'Đã lưu yêu thích' : 'Lưu yêu thích'}
         </button>
       </div>
     );
@@ -66,10 +99,24 @@ export function ProductActions({ product, variant = 'main', quantity = 1 }: Prod
       </button>
       <button
         onClick={handleAddToCart}
-        className="flex-1 bg-orange-100 text-orange-600 hover:bg-orange-200 font-bold py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-2 transform active:scale-95 border border-orange-200"
+        className="flex-1 bg-orange-100 text-orange-600 hover:bg-orange-200 font-bold py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-2 transform active:scale-95 border border-orange-200 min-w-[180px]"
       >
         <ShoppingCart size={20} />
         <span>THÊM VÀO GIỎ</span>
+      </button>
+      <button
+        onClick={handleWishlistButtonClick}
+        disabled={!canWishlist}
+        className={`px-6 rounded-xl border-2 transition-all flex items-center justify-center transform min-h-[56px] ${
+          !canWishlist
+            ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed'
+            : isWishlisted 
+              ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100 active:scale-95' 
+              : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 active:scale-95'
+        }`}
+        title={!canWishlist ? 'Chọn phân loại để lưu yêu thích' : (isWishlisted ? 'Bỏ yêu thích' : 'Lưu yêu thích')}
+      >
+        <Heart size={24} className={isWishlisted && canWishlist ? 'fill-red-600 text-red-600' : ''} />
       </button>
     </div>
   );
