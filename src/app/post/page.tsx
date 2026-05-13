@@ -8,7 +8,7 @@ export default function PostPage() {
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
-  const [condition, setCondition] = useState('used');
+  const [condition, setCondition] = useState('new');
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
@@ -17,7 +17,7 @@ export default function PostPage() {
           <span className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
             <Plus size={16} className="text-white" />
           </span>
-          Đăng tin mới
+          Đăng sản phẩm mới
         </h1>
 
         <div className="space-y-5">
@@ -41,7 +41,7 @@ export default function PostPage() {
             >
               <option value="">Chọn danh mục</option>
               {CATEGORIES.map(cat => (
-                <option key={cat.id} value={cat.slug}>{cat.icon} {cat.name}</option>
+                <option key={cat.id} value={cat.slug}>{cat.name}</option>
               ))}
             </select>
           </div>
@@ -53,7 +53,7 @@ export default function PostPage() {
               type="text"
               value={title}
               onChange={e => setTitle(e.target.value)}
-              placeholder="Nhập tiêu đề tin đăng..."
+              placeholder="Nhập tên sản phẩm..."
               maxLength={100}
               className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-orange-400 transition-colors"
             />
@@ -63,17 +63,10 @@ export default function PostPage() {
           {/* Condition */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Tình trạng *</label>
-            <div className="flex gap-3">
-              {[['new', 'Mới'], ['used', 'Đã qua sử dụng']].map(([val, label]) => (
-                <button
-                  key={val}
-                  onClick={() => setCondition(val)}
-                  className={`flex-1 py-2.5 rounded-xl border-2 text-sm font-medium transition-all ${condition === val ? 'border-orange-500 bg-orange-50 text-orange-600' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}
-                >
-                  {label}
-                </button>
-              ))}
+            <div className="rounded-xl border-2 border-orange-500 bg-orange-50 px-4 py-2.5 text-sm font-semibold text-orange-700">
+              Hàng mới chính hãng
             </div>
+            <input type="hidden" value={condition} readOnly />
           </div>
 
           {/* Price */}
@@ -107,10 +100,10 @@ export default function PostPage() {
 
           {/* Submit */}
           <button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded-xl transition-colors shadow-lg shadow-orange-200 text-base">
-            Đăng tin miễn phí
+            Đăng sản phẩm
           </button>
           <p className="text-xs text-center text-gray-400">
-            Bằng cách đăng tin, bạn đồng ý với{' '}
+            Bằng cách đăng sản phẩm, bạn đồng ý với{' '}
             <a href="#" className="text-orange-500 hover:underline">Điều khoản sử dụng</a> của chúng tôi
           </p>
         </div>

@@ -19,9 +19,30 @@ export const CATEGORIES: Category[] = [
 ];
 
 export const BANNERS: Banner[] = [
-  { id: '1', title: 'Mua bán xe máy', image: 'https://picsum.photos/seed/banner1/800/300', link: '/xe-co' },
-  { id: '2', title: 'Điện thoại cũ giá rẻ', image: 'https://picsum.photos/seed/banner2/800/300', link: '/do-dien-tu' },
-  { id: '3', title: 'Cho thuê nhà', image: 'https://picsum.photos/seed/banner3/800/300', link: '/bat-dong-san' },
+  {
+    id: '1',
+    title: 'Flash Sale 6.6 - Giảm đến 50%',
+    image: 'https://images.unsplash.com/photo-1607082350899-7e105aa886ae?auto=format&fit=crop&w=1400&q=80',
+    link: '/search?sort=popular',
+  },
+  {
+    id: '2',
+    title: 'Mở bán công nghệ mới - Voucher độc quyền',
+    image: 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&w=1400&q=80',
+    link: '/category/do-dien-tu',
+  },
+  {
+    id: '3',
+    title: 'Siêu deal gia dụng - Freeship toàn quốc',
+    image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=1400&q=80',
+    link: '/category/do-gia-dung',
+  },
+  {
+    id: '4',
+    title: 'Thời trang hè - Giảm thêm với mã GIAM30',
+    image: '/banners/banner-04.jpg',
+    link: '/category/thoi-trang',
+  },
 ];
 
 export const MOCK_PRODUCTS: Product[] = [
@@ -115,6 +136,6 @@ export const LOCATIONS = [
 ];
 
 export const POPULAR_SEARCHES = [
-  'iPhone 15', 'xe máy Honda', 'laptop cũ', 'phòng trọ',
-  'Samsung Galaxy', 'chó mèo', 'máy lạnh', 'tủ lạnh',
+  'iPhone 15', 'xe máy điện', 'laptop gaming', 'thời trang nữ',
+  'Samsung Galaxy', 'đồ gia dụng', 'máy lạnh', 'tủ lạnh',
 ];

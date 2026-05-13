@@ -49,7 +49,7 @@ export function ProductActions({ product, variant = 'main', quantity = 1 }: Prod
           </button>
         </div>
         <button className="w-full border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm">
-          <Heart size={15} /> Lưu tin
+          <Heart size={15} /> Lưu yêu thích
         </button>
       </div>
     );

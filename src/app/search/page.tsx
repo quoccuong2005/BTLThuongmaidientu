@@ -2,7 +2,7 @@ import { ProductController } from '@/controllers/ProductController';
 import { CategoryController } from '@/controllers/CategoryController';
 import { ProductCard } from '@/components/ui/ProductCard';
 import { SectionHeader } from '@/components/ui/SectionHeader';
-import { Filter, SlidersHorizontal } from 'lucide-react';
+import { Filter, SearchX, SlidersHorizontal } from 'lucide-react';
 
 interface SearchPageProps {
   searchParams: { q?: string; category?: string; sort?: string; location?: string };
@@ -72,11 +72,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </div>
           </div>
 
-          {/* Condition filter */}
+          {/* Product type filter */}
           <div className="bg-white rounded-xl p-4 shadow-sm">
-            <h3 className="font-bold text-gray-800 mb-3">Tình trạng</h3>
+            <h3 className="font-bold text-gray-800 mb-3">Loại sản phẩm</h3>
             <div className="space-y-2">
-              {[['Tất cả', 'all'], ['Mới', 'new'], ['Đã qua sử dụng', 'used']].map(([label, val]) => (
+              {[['Tất cả sản phẩm', 'all'], ['Hàng mới chính hãng', 'new']].map(([label, val]) => (
                 <label key={val} className="flex items-center gap-2 cursor-pointer">
                   <input type="radio" name="condition" className="accent-orange-500" defaultChecked={val === 'all'} />
                   <span className="text-sm text-gray-600">{label}</span>
@@ -93,9 +93,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div>
                 <h1 className="font-bold text-gray-800">
-                  {searchParams.q ? `Kết quả cho "${searchParams.q}"` : 'Tất cả tin đăng'}
+                  {searchParams.q ? `Kết quả cho "${searchParams.q}"` : 'Tất cả sản phẩm'}
                 </h1>
-                <p className="text-sm text-gray-500 mt-0.5">{total} tin đăng</p>
+                <p className="text-sm text-gray-500 mt-0.5">{total} sản phẩm</p>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-500">Sắp xếp:</span>
@@ -122,7 +122,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </div>
           ) : (
             <div className="bg-white rounded-xl p-12 text-center shadow-sm">
-              <p className="text-4xl mb-3">🔍</p>
+              <SearchX size={36} className="mx-auto mb-3 text-orange-500" />
               <p className="font-semibold text-gray-700">Không tìm thấy kết quả</p>
               <p className="text-sm text-gray-400 mt-1">Thử tìm kiếm với từ khóa khác</p>
             </div>
