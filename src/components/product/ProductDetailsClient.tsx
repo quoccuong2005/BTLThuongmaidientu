@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Product, ProductVariant } from '@/models/Product';
 import { ProductController } from '@/controllers/ProductController';
 import { ProductActions } from './ProductActions';
-import { Star, CheckCircle2, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Star, CheckCircle2, ChevronRight, ChevronLeft, CreditCard, Heart, PackageCheck, RefreshCcw, TicketPercent, Truck, UserCog, Users } from 'lucide-react';
 
 interface ProductDetailsClientProps {
   product: Product;
@@ -159,6 +159,27 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
                 {product.description}
               </div>
             </div>
+
+            <div className="mt-2 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 md:grid-cols-3">
+              <div className="rounded-xl border border-orange-200 bg-orange-50 p-3">
+                <p className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-orange-700">
+                  <TicketPercent size={14} /> vouchers
+                </p>
+                <p className="mt-1 text-sm font-semibold text-slate-900">Áp dụng mã giảm GIAM30 và freeship khi thanh toán.</p>
+              </div>
+              <div className="rounded-xl border border-orange-200 bg-orange-50 p-3">
+                <p className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-orange-700">
+                  <CreditCard size={14} /> payments
+                </p>
+                <p className="mt-1 text-sm font-semibold text-slate-900">Hỗ trợ COD, thẻ nội địa và ví điện tử phổ biến.</p>
+              </div>
+              <div className="rounded-xl border border-orange-200 bg-orange-50 p-3">
+                <p className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-orange-700">
+                  <RefreshCcw size={14} /> returns
+                </p>
+                <p className="mt-1 text-sm font-semibold text-slate-900">Đổi trả trong 7 ngày với sản phẩm lỗi từ nhà bán.</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -196,7 +217,37 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
             </div>
             <div className="p-3 bg-gray-50 rounded-2xl text-center">
               <p className="font-black text-gray-900">12</p>
-              <p className="text-[10px] text-gray-400 uppercase font-bold">Tin đăng</p>
+              <p className="text-[10px] text-gray-400 uppercase font-bold">Sản phẩm</p>
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-slate-200 p-3">
+            <p className="text-xs font-bold uppercase tracking-wide text-slate-500">reviews</p>
+            <div className="mt-2 space-y-2 text-sm text-slate-700">
+              <p className="font-semibold">4.9/5 từ khách đã mua</p>
+              <p className="text-xs text-slate-600">Nội dung đánh giá chi tiết sẽ lấy từ module reviews.</p>
+            </div>
+          </div>
+
+          <div className="mt-3 rounded-2xl border border-slate-200 p-3">
+            <p className="text-xs font-bold uppercase tracking-wide text-slate-500">feature modules</p>
+            <div className="mt-2 grid grid-cols-3 gap-2 text-[10px] font-semibold text-slate-600">
+              {[
+                { key: 'users', icon: Users },
+                { key: 'admin', icon: UserCog },
+                { key: 'orders', icon: Truck },
+                { key: 'products', icon: PackageCheck },
+                { key: 'payments', icon: CreditCard },
+                { key: 'returns', icon: RefreshCcw },
+                { key: 'vouchers', icon: TicketPercent },
+                { key: 'reviews', icon: Star },
+                { key: 'wish_list', icon: Heart },
+              ].map(item => (
+                <div key={item.key} className="rounded-lg border border-slate-200 px-2 py-2 text-center">
+                  <item.icon size={12} className="mx-auto mb-1 text-orange-600" />
+                  {item.key}
+                </div>
+              ))}
             </div>
           </div>
         </div>

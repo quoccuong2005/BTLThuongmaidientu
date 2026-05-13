@@ -26,7 +26,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         </div>
         <div>
           <h1 className="text-xl font-black text-gray-800">{category.name}</h1>
-          <p className="text-sm text-gray-500">{products.length} tin đăng</p>
+          <p className="text-sm text-gray-500">{products.length} sản phẩm</p>
         </div>
       </div>
 
@@ -38,9 +38,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         </div>
       ) : (
         <div className="bg-white rounded-xl p-16 text-center shadow-sm">
-
-          <p className="font-semibold text-gray-700">Chưa có tin đăng trong danh mục này</p>
-          <p className="text-sm text-gray-400 mt-1">Hãy là người đầu tiên đăng tin!</p>
+          <p className="font-semibold text-gray-700">Danh mục này đang được cập nhật sản phẩm</p>
+          <p className="text-sm text-gray-400 mt-1">Vui lòng quay lại sau hoặc khám phá danh mục khác.</p>
         </div>
       )}
     </div>

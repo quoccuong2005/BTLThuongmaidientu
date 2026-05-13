@@ -11,7 +11,7 @@ export class CategoryController {
           id: item.id,
           name: item.name,
           slug: String(item.id), // Lấy slug là id theo yêu cầu
-          icon: item.image_url || '📁',
+          icon: item.image_url || '',
           count: 0,
         }));
       }
@@ -31,7 +31,7 @@ export class CategoryController {
           id: item.id,
           name: item.name,
           slug: String(item.id),
-          icon: item.image_url || '📁',
+          icon: item.image_url || '',
           count: 0,
         };
       }

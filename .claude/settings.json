@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python src/ui-ux-pro-max/scripts/search.py \"asian marketplace ecommerce shopee vibrant conversion-optimized mobile-first bento grid\" --design-system -p \"BTL Thuong Mai Dien Tu\" -f markdown)"
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "enabledPlugins": {
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true
+  },
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/admin/.claude/plugins/marketplaces/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/**)",
+      "Bash(python scripts/search.py \"asian marketplace ecommerce shopee vibrant conversion-optimized mobile-first\" --design-system -p \"BTL Thuong Mai Dien Tu\" -f markdown)"
+    ]
+  }
+}
