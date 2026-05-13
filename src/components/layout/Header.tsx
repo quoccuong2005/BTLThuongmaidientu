@@ -14,6 +14,7 @@ import {
   Search,
   ShoppingBag,
   ShoppingCart,
+  Heart,
   User,
   Zap,
   X,
@@ -131,6 +132,13 @@ export function Header() {
               <ShoppingBag size={20} />
             </Link>
             <Link
+              href="/wishlist"
+              title="Danh sách yêu thích"
+              className="tap-bounce relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-transparent text-slate-600 hover:border-orange-100 hover:bg-orange-50 hover:text-orange-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
+            >
+              <Heart size={20} />
+            </Link>
+            <Link
               href="/cart"
               title="Giỏ hàng"
               className="tap-bounce relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-transparent text-slate-600 hover:border-orange-100 hover:bg-orange-50 hover:text-orange-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
@@ -226,6 +234,9 @@ export function Header() {
             </Link>
             <Link href="/cart" className="rounded-xl border border-slate-200 px-3 py-2 font-semibold text-slate-700">
               Giỏ hàng ({itemCount})
+            </Link>
+            <Link href="/wishlist" className="rounded-xl border border-slate-200 px-3 py-2 font-semibold text-slate-700">
+              Danh sách yêu thích
             </Link>
             <Link href="/help" className="rounded-xl border border-slate-200 px-3 py-2 font-semibold text-slate-700">
               Trợ giúp
