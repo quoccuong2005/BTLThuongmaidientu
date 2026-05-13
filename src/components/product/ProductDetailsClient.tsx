@@ -57,7 +57,7 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
             {/* View count floating badge */}
             <div className="absolute top-6 right-6 px-4 py-2 bg-black/30 backdrop-blur-md rounded-full text-white text-xs font-bold border border-white/20 flex items-center gap-2">
               <Star size={14} className="text-yellow-400 fill-yellow-400" />
-              {product.rating || 5} · {(product.views || 0).toLocaleString()} lượt xem
+              {product.rating || 5} · {(product.views || 0).toLocaleString('vi-VN')} lượt xem
             </div>
           </div>
           {/* Thumbnails */}
