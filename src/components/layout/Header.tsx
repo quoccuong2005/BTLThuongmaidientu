@@ -91,9 +91,8 @@ export function Header() {
                       setSelectedLocation(loc);
                       setShowLocationDrop(false);
                     }}
-                    className={`w-full px-3 py-2 text-left text-sm hover:bg-orange-50 ${
-                      selectedLocation === loc ? 'font-semibold text-orange-600' : 'text-slate-700'
-                    }`}
+                    className={`w-full px-3 py-2 text-left text-sm hover:bg-orange-50 ${selectedLocation === loc ? 'font-semibold text-orange-600' : 'text-slate-700'
+                      }`}
                   >
                     {loc}
                   </button>
@@ -143,32 +142,60 @@ export function Header() {
                 </span>
               )}
             </Link>
-            <button
-              className="tap-bounce inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-transparent text-slate-600 hover:border-orange-100 hover:bg-orange-50 hover:text-orange-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
-              aria-label="Thông báo"
-            >
-              <Bell size={20} />
+            {user ? (
+              <div className="relative group">
+                <button className="flex items-center gap-2 p-1.5 hover:bg-gray-100 rounded-xl transition-colors">
+                  <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 font-bold border border-orange-200 overflow-hidden">
+                    {user.avatar ? (
+                      <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                    ) : (
+                      user.name?.charAt(0).toUpperCase()
+                    )}
+                  </div>
+                  <div className="hidden md:block text-left">
+                    <p className="text-xs text-gray-400 leading-tight">Xin chào,</p>
+                    <p className="text-sm font-semibold text-gray-800 leading-tight truncate max-w-[100px]">{user.name}</p>
+                  </div>
+                  <ChevronDown size={14} className="text-gray-400 hidden md:block transition-transform duration-200 group-hover:rotate-180" />
+                </button>
+
+                {/* Dropdown */}
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-2xl shadow-2xl shadow-gray-200/60 border border-gray-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-1 group-hover:translate-y-0 z-50">
+                  <Link
+                    href="/profile"
+                    className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors mx-1 rounded-xl"
+                  >
+                    <User size={16} />
+                    <span className="font-semibold">Tài khoản của tôi</span>
+                  </Link>
+                  <Link
+                    href="/orders"
+                    className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors mx-1 rounded-xl"
+                  >
+                    <ShoppingBag size={16} />
+                    <span className="font-semibold">Đơn hàng</span>
+                  </Link>
+                  <div className="my-1 mx-3 border-t border-gray-100" />
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition-colors mx-1 rounded-xl font-semibold"
+                  >
+                    <LogOut size={16} />
+                    <span>Đăng xuất</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <Link href="/login" className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                <User size={20} className="text-gray-600" />
+                <span className="text-sm font-medium hidden md:block">Đăng nhập</span>
+              </Link>
+            )}
+
+            <button onClick={() => setShowMobileMenu(!showMobileMenu)} className="p-2 hover:bg-gray-100 rounded-xl md:hidden">
+              {showMobileMenu ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
-
-          {user ? (
-            <button
-              onClick={handleLogout}
-              className="tap-bounce hidden min-h-11 items-center gap-1 rounded-xl border border-transparent px-2 text-sm font-semibold text-slate-700 hover:border-orange-100 hover:bg-orange-50 hover:text-orange-600 sm:inline-flex"
-            >
-              <LogOut size={18} />
-              Đăng xuất
-            </button>
-          ) : (
-            <Link
-              href="/login"
-              className="tap-bounce hidden min-h-11 items-center gap-1 rounded-xl border border-transparent px-2 text-sm font-semibold text-slate-700 hover:border-orange-100 hover:bg-orange-50 hover:text-orange-600 sm:inline-flex"
-            >
-              <User size={18} />
-              Đăng nhập
-            </Link>
-          )}
-
           <button
             onClick={() => setShowMobileMenu(prev => !prev)}
             className="tap-bounce inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-slate-700 hover:bg-orange-50 sm:hidden"
