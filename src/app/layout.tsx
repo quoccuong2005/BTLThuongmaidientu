@@ -5,6 +5,7 @@ import { Footer } from '@/components/layout/Footer';
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { Toaster } from 'sonner';
 import { CartProvider } from '@/context/CartContext';
+import { WishlistProvider } from '@/context/WishlistContext';
 
 export const metadata: Metadata = {
   title: 'ChoViet Commerce - Mua sắm trực tuyến',
@@ -19,11 +20,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="vi">
       <body>
         <CartProvider>
-          <Toaster position="top-right" richColors />
-          <Header />
-          <main className="min-h-screen pb-20 md:pb-0">{children}</main>
-          <Footer />
-          <MobileBottomNav />
+          <WishlistProvider>
+            <Toaster position="top-right" richColors />
+            <Header />
+            <main className="min-h-screen pb-20 md:pb-0">{children}</main>
+            <Footer />
+            <MobileBottomNav />
+          </WishlistProvider>
         </CartProvider>
       </body>
     </html>
