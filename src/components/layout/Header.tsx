@@ -17,6 +17,7 @@ import {
   User,
   Zap,
   X,
+  Ticket
 } from 'lucide-react';
 import { LOCATIONS, POPULAR_SEARCHES } from '@/lib/db';
 import { useCart } from '@/context/CartContext';
@@ -124,6 +125,13 @@ export function Header() {
 
           <div className="hidden items-center gap-1 sm:flex">
             <Link
+              href="/vouchers"
+              title="Kho Voucher"
+              className="tap-bounce inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-transparent text-slate-600 hover:border-orange-100 hover:bg-orange-50 hover:text-orange-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
+            >
+              <Ticket size={20} />
+            </Link>
+            <Link
               href="/orders"
               title="Đơn hàng"
               className="tap-bounce inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-transparent text-slate-600 hover:border-orange-100 hover:bg-orange-50 hover:text-orange-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
@@ -221,6 +229,9 @@ export function Header() {
       {showMobileMenu && (
         <div className="border-t border-slate-200 bg-white px-3 pb-3 pt-2 sm:hidden">
           <div className="grid grid-cols-2 gap-2 text-sm">
+            <Link href="/vouchers" className="rounded-xl border border-slate-200 px-3 py-2 font-semibold text-slate-700">
+              Kho Voucher
+            </Link>
             <Link href="/orders" className="rounded-xl border border-slate-200 px-3 py-2 font-semibold text-slate-700">
               Đơn hàng của tôi
             </Link>

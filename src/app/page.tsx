@@ -7,6 +7,7 @@ import { BannerCarousel } from '@/components/ui/BannerCarousel';
 import { FlashSaleSection } from '@/components/home/FlashSaleSection';
 import { TrustBadges } from '@/components/home/TrustBadges';
 import { QuickPostBanner } from '@/components/home/QuickPostBanner';
+import { VouchersClient } from '@/components/vouchers/VouchersClient';
 import { BANNERS } from '@/lib/db';
 import { BadgeCheck, Cpu, CreditCard, Gauge, Heart, PackageCheck, Radar, RefreshCcw, ScanLine, ShieldCheck, ShoppingCart, Sparkles, Star, TicketPercent, Truck, UserCog, Users, Zap } from 'lucide-react';
 
@@ -158,16 +159,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
-        <div className="tech-card rounded-3xl border border-orange-200 bg-orange-50 p-5 md:col-span-2">
-          <p className="text-xs uppercase tracking-[0.2em] text-orange-700">Voucher độc quyền</p>
-          <p className="mt-2 text-xl font-bold text-gray-900">Nhập mã GIAM30 để nhận ưu đãi tối đa 300K</p>
-          <p className="mt-1 text-sm text-slate-700">Áp dụng cho nhiều ngành hàng, tự động trừ khi thanh toán.</p>
-        </div>
-        <div className="tech-card rounded-3xl border border-orange-200 bg-orange-50 p-5">
-          <p className="text-xs uppercase tracking-[0.2em] text-orange-700">Freeship extra</p>
-          <p className="mt-2 text-xl font-bold text-gray-900">Đơn từ 99K giao nhanh miễn phí</p>
-          <p className="mt-1 text-sm text-slate-700">Miễn phí giao hàng cho khu vực nội thành.</p>
+      <section className="tech-card bg-white rounded-3xl shadow-sm border border-orange-100 p-4 md:p-6">
+        <SectionHeader title="Mã Giảm Giá & Ưu Đãi" viewAllHref="/vouchers" icon={<TicketPercent size={18} />} />
+        <div className="mt-4">
+          <VouchersClient limit={2} compact={true} />
         </div>
       </section>
 

@@ -3,7 +3,9 @@ import { useCart } from '@/context/CartContext';
 import { ProductController } from '@/controllers/ProductController';
 import { OrderController } from '@/controllers/OrderController';
 import { AddressController } from '@/controllers/AddressController';
-import { Trash2, Plus, Minus, ArrowLeft, ShoppingBag, MapPin, CreditCard as CardIcon } from 'lucide-react';
+import { VoucherController } from '@/controllers/VoucherController';
+import { MyVoucher } from '@/models/Voucher';
+import { Trash2, Plus, Minus, ArrowLeft, ShoppingBag, MapPin, CreditCard as CardIcon, Ticket, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -28,6 +30,10 @@ export default function CartPage() {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
   const [paymentMethod, setPaymentMethod] = useState('vnpay');
+  const [applicableVouchers, setApplicableVouchers] = useState<MyVoucher[]>([]);
+  const [selectedVoucher, setSelectedVoucher] = useState<MyVoucher | null>(null);
+  const [appliedDiscountAmount, setAppliedDiscountAmount] = useState<number>(0);
+  const [showVoucherModal, setShowVoucherModal] = useState(false);
 
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -40,6 +46,35 @@ export default function CartPage() {
     };
     fetchAddresses();
   }, []);
+
+  useEffect(() => {
+    if (selectedTotalPrice > 0) {
+      VoucherController.getApplicableVouchers(selectedTotalPrice).then(vouchers => {
+        const safeVouchers = Array.isArray(vouchers) ? vouchers : [];
+        setApplicableVouchers(safeVouchers);
+        if (selectedVoucher) {
+          const isValid = safeVouchers.find(v => v.id === selectedVoucher.id);
+          if (!isValid) {
+            setSelectedVoucher(null);
+            setAppliedDiscountAmount(0);
+          } else {
+            VoucherController.applyVoucher(selectedVoucher.voucher_id, selectedTotalPrice).then(res => {
+              if (res.valid) {
+                setAppliedDiscountAmount(res.discount_amount);
+              } else {
+                setSelectedVoucher(null);
+                setAppliedDiscountAmount(0);
+              }
+            });
+          }
+        }
+      });
+    } else {
+      setApplicableVouchers([]);
+      setSelectedVoucher(null);
+      setAppliedDiscountAmount(0);
+    }
+  }, [selectedTotalPrice]);
 
   const handleCheckout = async () => {
     if (selectedItemIds.length === 0) {
@@ -67,11 +102,15 @@ export default function CartPage() {
         return;
       }
 
-      const orderData = {
+      const orderData: any = {
         items: orderItems,
         address_id: selectedAddressId,
         payment_method: paymentMethod
       };
+
+      if (selectedVoucher) {
+        orderData.voucher_id = selectedVoucher.voucher_id;
+      }
 
       console.log('Sending order data:', orderData);
       const result = await OrderController.createOrder(orderData);
@@ -111,6 +150,8 @@ export default function CartPage() {
       setIsProcessing(false);
     }
   };
+
+  const finalPrice = Math.max(0, selectedTotalPrice - appliedDiscountAmount);
 
   const isAllSelected = selectedItemIds.length === items.length && items.length > 0;
 
@@ -274,6 +315,34 @@ export default function CartPage() {
             </div>
           </div>
 
+          {/* Voucher Selection */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50 mb-4">
+            <h3 className="font-bold mb-4 flex items-center gap-2">
+              <Ticket size={18} className="text-orange-500" /> Mã giảm giá
+            </h3>
+            {selectedVoucher ? (
+              <div className="flex justify-between items-center p-3 border border-orange-200 bg-orange-50 rounded-xl">
+                <div>
+                  <p className="font-bold text-orange-600">{selectedVoucher.voucher.code}</p>
+                  <p className="text-xs text-orange-500">Giảm {ProductController.formatPrice(appliedDiscountAmount)}</p>
+                </div>
+                <button onClick={() => setShowVoucherModal(true)} className="text-sm font-semibold text-orange-600 hover:text-orange-700">Đổi mã</button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowVoucherModal(true)}
+                disabled={applicableVouchers.length === 0}
+                className={`w-full flex justify-between items-center p-3 border rounded-xl transition-all ${applicableVouchers.length > 0
+                    ? 'border-gray-200 hover:border-orange-200 hover:bg-orange-50 cursor-pointer'
+                    : 'border-gray-100 bg-gray-50 cursor-not-allowed opacity-70'
+                  }`}
+              >
+                <span className={applicableVouchers.length > 0 ? "text-gray-700 font-medium" : "text-gray-400"}>Chọn hoặc nhập mã giảm giá</span>
+                <span className={applicableVouchers.length > 0 ? "text-orange-500 font-semibold" : "text-gray-400"}>{applicableVouchers.length} mã khả dụng</span>
+              </button>
+            )}
+          </div>
+
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50 sticky top-24">
             <h2 className="font-bold text-lg mb-4">Tổng cộng</h2>
             <div className="space-y-3 mb-6">
@@ -281,13 +350,19 @@ export default function CartPage() {
                 <span>Tạm tính </span>
                 <span>{ProductController.formatPrice(selectedTotalPrice)}</span>
               </div>
+              {selectedVoucher && (
+                <div className="flex justify-between text-orange-500">
+                  <span>Giảm giá</span>
+                  <span>-{ProductController.formatPrice(appliedDiscountAmount)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-gray-500">
                 <span>Phí vận chuyển</span>
                 <span className="text-green-500 font-medium">Miễn phí</span>
               </div>
               <div className="pt-3 border-t border-gray-100 flex justify-between font-black text-xl text-gray-900">
                 <span>Tổng tiền</span>
-                <span className="text-orange-500">{ProductController.formatPrice(selectedTotalPrice)}</span>
+                <span className="text-orange-500">{ProductController.formatPrice(finalPrice)}</span>
               </div>
             </div>
             <button
@@ -306,6 +381,74 @@ export default function CartPage() {
           </div>
         </div>
       </div>
+
+      {showVoucherModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl max-w-md w-full max-h-[80vh] flex flex-col shadow-2xl">
+            <div className="flex justify-between items-center p-4 border-b border-gray-100">
+              <h3 className="font-bold text-lg">Chọn mã giảm giá</h3>
+              <button onClick={() => setShowVoucherModal(false)} className="p-2 hover:bg-gray-100 rounded-full">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-4 overflow-y-auto flex-1 space-y-3 bg-slate-50">
+              {applicableVouchers.length === 0 ? (
+                <div className="text-center py-8">
+                  <Ticket className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <p className="text-slate-500">Không có mã nào áp dụng cho đơn hàng này.</p>
+                </div>
+              ) : (
+                applicableVouchers?.map(v => (
+                  <label key={v.id} className={`bg-white rounded-xl p-3 border flex gap-3 shadow-sm cursor-pointer transition-all ${selectedVoucher?.id === v.id ? 'border-orange-500 ring-1 ring-orange-500' : 'border-gray-200 hover:border-orange-200'}`}>
+                    <div className="w-16 h-16 bg-orange-100 text-orange-500 rounded-lg flex flex-col justify-center items-center font-bold">
+                      <span className="text-lg">{v.voucher.type === 'percent' ? `${v.voucher.discount_value}%` : `${v.voucher.discount_value / 1000}k`}</span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-bold text-sm">{v.voucher.code}</p>
+                      <p className="text-xs text-slate-500 mt-1 line-clamp-2">{v.voucher.name}</p>
+                      <p className="text-xs text-orange-500 font-semibold mt-1">Giảm {ProductController.formatPrice(v.voucher.actualDiscount!)}</p>
+                    </div>
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        name="voucher"
+                        checked={selectedVoucher?.id === v.id}
+                        onChange={async () => {
+                          setShowVoucherModal(false);
+                          const result = await VoucherController.applyVoucher(v.voucher_id, selectedTotalPrice);
+                          if (result.valid) {
+                            setSelectedVoucher(v);
+                            setAppliedDiscountAmount(result.discount_amount);
+                            toast.success(`Áp dụng thành công, giảm ${ProductController.formatPrice(result.discount_amount)}`);
+                          } else {
+                            toast.error(result.message);
+                            setSelectedVoucher(null);
+                            setAppliedDiscountAmount(0);
+                          }
+                        }}
+                        className="w-5 h-5 text-orange-500 focus:ring-orange-500 border-gray-300 cursor-pointer"
+                      />
+                    </div>
+                  </label>
+                ))
+              )}
+            </div>
+            <div className="p-4 border-t border-gray-100 bg-white rounded-b-3xl">
+              <button
+                onClick={() => {
+                  setSelectedVoucher(null);
+                  setAppliedDiscountAmount(0);
+                  setShowVoucherModal(false);
+                }}
+                className="w-full py-3 text-gray-500 font-semibold hover:bg-gray-50 rounded-xl transition-colors border border-gray-200"
+              >
+                Không dùng mã giảm giá
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
