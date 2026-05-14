@@ -24,12 +24,16 @@ export class VoucherController {
 
   static async getApplicableVouchers(subtotal: number, categoryIds?: number[]): Promise<MyVoucher[]> {
     try {
-      let url = `/vouchers/my/applicable?subtotal=${subtotal}`;
-      if (categoryIds && categoryIds.length > 0) {
-        url += `&category_ids=${categoryIds.join(',')}`;
-      }
-      const response = await api.get(url);
-      
+      let url = `/vouchers/my/applicable`;
+      const response = await api.get(url, {
+        params: {
+          subtotal: subtotal,
+          category_ids: categoryIds?.join(',')
+        }
+      });
+
+      if (Array.isArray(response.data?.data?.applicable)) return response.data.data.applicable;
+      if (Array.isArray(response.data?.applicable)) return response.data.applicable;
       if (Array.isArray(response.data)) return response.data;
       if (Array.isArray(response.data?.data)) return response.data.data;
       return [];

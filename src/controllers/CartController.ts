@@ -23,6 +23,7 @@ export class CartController {
                  '',
           quantity: item.quantity,
           location: 'Toàn Quốc',
+          category_id: item.product?.category_id || item.category_id,
           category: 'Danh mục',
           categorySlug: '',
           condition: 'new',

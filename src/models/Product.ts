@@ -9,6 +9,7 @@ export interface Product {
   image: string;
   images?: string[];
   location: string;
+  category_id?: number;
   category: string;
   categorySlug: string;
   condition: 'new' | 'used';

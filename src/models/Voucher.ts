@@ -14,6 +14,7 @@ export interface Voucher {
   is_collected: boolean;
   start_date: string;
   end_date: string;
+
 }
 
 export interface MyVoucher {
@@ -26,4 +27,6 @@ export interface MyVoucher {
   days_left: number;
   is_expired: boolean;
   voucher: Voucher;
+  discount_amount?: number;
+  reason?: string;
 }

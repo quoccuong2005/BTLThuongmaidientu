@@ -34,7 +34,6 @@ export default function CartPage() {
   const [selectedVoucher, setSelectedVoucher] = useState<MyVoucher | null>(null);
   const [appliedDiscountAmount, setAppliedDiscountAmount] = useState<number>(0);
   const [showVoucherModal, setShowVoucherModal] = useState(false);
-
   useEffect(() => {
     const fetchAddresses = async () => {
       const addrList = await AddressController.getAddresses();
@@ -49,8 +48,13 @@ export default function CartPage() {
 
   useEffect(() => {
     if (selectedTotalPrice > 0) {
-      VoucherController.getApplicableVouchers(selectedTotalPrice).then(vouchers => {
+      const selectedItems = items.filter(item => selectedItemIds.includes(item.id));
+      const categoryIds = Array.from(new Set(selectedItems.map(item => item.category_id).filter(Boolean))) as number[];
+
+      VoucherController.getApplicableVouchers(selectedTotalPrice, categoryIds).then(vouchers => {
+
         const safeVouchers = Array.isArray(vouchers) ? vouchers : [];
+
         setApplicableVouchers(safeVouchers);
         if (selectedVoucher) {
           const isValid = safeVouchers.find(v => v.id === selectedVoucher.id);
@@ -58,7 +62,7 @@ export default function CartPage() {
             setSelectedVoucher(null);
             setAppliedDiscountAmount(0);
           } else {
-            VoucherController.applyVoucher(selectedVoucher.voucher_id, selectedTotalPrice).then(res => {
+            VoucherController.applyVoucher(selectedVoucher.voucher_id, selectedTotalPrice, categoryIds).then(res => {
               if (res.valid) {
                 setAppliedDiscountAmount(res.discount_amount);
               } else {
@@ -116,8 +120,7 @@ export default function CartPage() {
       const result = await OrderController.createOrder(orderData);
       console.log('Order creation result:', result);
 
-      // If payment method is vnpay, the response contains a payment URL
-      // We check for both paymentUrl and payment_url to be safe
+
       const paymentUrl = result.paymentUrl || result.payment_url;
 
       if (paymentMethod === 'vnpay') {
@@ -137,7 +140,7 @@ export default function CartPage() {
       toast.success('Đặt hàng thành công!');
       await clearCart();
 
-      // Redirect to the newly created order's detail page
+
       if (result.order?.id) {
         router.push(`/orders/${result.order.id}`);
       } else {
@@ -333,8 +336,8 @@ export default function CartPage() {
                 onClick={() => setShowVoucherModal(true)}
                 disabled={applicableVouchers.length === 0}
                 className={`w-full flex justify-between items-center p-3 border rounded-xl transition-all ${applicableVouchers.length > 0
-                    ? 'border-gray-200 hover:border-orange-200 hover:bg-orange-50 cursor-pointer'
-                    : 'border-gray-100 bg-gray-50 cursor-not-allowed opacity-70'
+                  ? 'border-gray-200 hover:border-orange-200 hover:bg-orange-50 cursor-pointer'
+                  : 'border-gray-100 bg-gray-50 cursor-not-allowed opacity-70'
                   }`}
               >
                 <span className={applicableVouchers.length > 0 ? "text-gray-700 font-medium" : "text-gray-400"}>Chọn hoặc nhập mã giảm giá</span>
@@ -406,7 +409,7 @@ export default function CartPage() {
                     <div className="flex-1">
                       <p className="font-bold text-sm">{v.voucher.code}</p>
                       <p className="text-xs text-slate-500 mt-1 line-clamp-2">{v.voucher.name}</p>
-                      <p className="text-xs text-orange-500 font-semibold mt-1">Giảm {ProductController.formatPrice(v.voucher.actualDiscount!)}</p>
+                      <p className="text-xs text-orange-500 font-semibold mt-1">Giảm {ProductController.formatPrice(v.discount_amount || 0)}</p>
                     </div>
                     <div className="flex items-center">
                       <input
@@ -415,7 +418,10 @@ export default function CartPage() {
                         checked={selectedVoucher?.id === v.id}
                         onChange={async () => {
                           setShowVoucherModal(false);
-                          const result = await VoucherController.applyVoucher(v.voucher_id, selectedTotalPrice);
+                          const selectedItems = items.filter(item => selectedItemIds.includes(item.id));
+                          const categoryIds = Array.from(new Set(selectedItems.map(item => item.category_id).filter(Boolean))) as number[];
+
+                          const result = await VoucherController.applyVoucher(v.voucher_id, selectedTotalPrice, categoryIds);
                           if (result.valid) {
                             setSelectedVoucher(v);
                             setAppliedDiscountAmount(result.discount_amount);

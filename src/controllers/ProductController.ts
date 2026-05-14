@@ -63,7 +63,7 @@ export class ProductController {
 
       if (filters.keyword) params.keyword = filters.keyword;
       if (filters.category) params.category_id = filters.category;
-      
+
       if (filters.sortBy === 'price_asc') {
         params.sort = 'display_price';
         params.order = 'ASC';
@@ -112,33 +112,29 @@ export class ProductController {
     return result.data;
   }
 
-  /**
-   * Format price to Vietnamese currency
-   */
-  static formatPrice(price: number): string {
-    if (price >= 1_000_000_000) {
-      return `${(price / 1_000_000_000).toFixed(1)} tỷ`;
+
+  static formatPrice(price: number | string): string {
+    const p = typeof price === 'string' ? parseFloat(price) : price;
+    if (p === undefined || p === null || isNaN(p)) {
+      return '0 đ';
     }
-    if (price >= 1_000_000) {
-      return `${(price / 1_000_000).toFixed(1)} triệu`;
+    if (p >= 1_000_000_000) {
+      return `${(p / 1_000_000_000).toFixed(1)} tỷ`;
     }
-    if (price >= 1_000) {
-      return `${(price / 1_000).toFixed(0)} nghìn`;
+    if (p >= 1_000_000) {
+      return `${(p / 1_000_000).toFixed(1)} triệu`;
     }
-    return `${price.toLocaleString('vi-VN')} đ`;
+
+    return `${p.toLocaleString('vi-VN')} đ`;
   }
 
-  /**
-   * Calculate discount percentage
-   */
+
   static getDiscount(price: number, originalPrice?: number): number | null {
     if (!originalPrice || originalPrice <= price) return null;
     return Math.round(((originalPrice - price) / originalPrice) * 100);
   }
 
-  /**
-   * Format relative time
-   */
+
   static getRelativeTime(dateStr: string): string {
     const date = new Date(dateStr);
     const now = new Date();
