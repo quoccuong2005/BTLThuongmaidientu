@@ -4,13 +4,21 @@ import { Product, ProductVariant } from '@/models/Product';
 import { ProductController } from '@/controllers/ProductController';
 import { ProductActions } from './ProductActions';
 import { Star, CheckCircle2, ChevronRight, ChevronLeft, CreditCard, Heart, PackageCheck, RefreshCcw, TicketPercent, Truck, UserCog, Users } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 
 interface ProductDetailsClientProps {
   product: Product;
 }
 
 export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(product.variants?.[0] || null);
+  const searchParams = useSearchParams();
+  const variantParam = searchParams.get('variant');
+  
+  const initialVariant = product.variants?.find(v => v.id.toString() === variantParam) 
+                      || product.variants?.[0] 
+                      || null;
+
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(initialVariant);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
@@ -57,7 +65,7 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
             {/* View count floating badge */}
             <div className="absolute top-6 right-6 px-4 py-2 bg-black/30 backdrop-blur-md rounded-full text-white text-xs font-bold border border-white/20 flex items-center gap-2">
               <Star size={14} className="text-yellow-400 fill-yellow-400" />
-              {product.rating || 5} · {(product.views || 0).toLocaleString()} lượt xem
+              {product.rating || 5} · {(product.views || 0).toLocaleString('vi-VN')} lượt xem
             </div>
           </div>
           {/* Thumbnails */}
@@ -161,6 +169,7 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
                     product={{ ...product, id: currentId, title: currentTitle, image: currentImage, price: currentPrice }}
                     variant="main"
                     quantity={quantity}
+                    wishlistTargetId={selectedVariant?.id}
                   />
                 </div>
               </div>
@@ -219,6 +228,7 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
             product={{ ...product, id: currentId, title: currentTitle, image: currentImage, price: currentPrice }}
             variant="sidebar"
             quantity={quantity}
+            wishlistTargetId={selectedVariant?.id}
           />
 
           <div className="mt-10 grid grid-cols-3 gap-4 pt-8 border-t border-gray-100">

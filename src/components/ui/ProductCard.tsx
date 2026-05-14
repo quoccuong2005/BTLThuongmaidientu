@@ -96,7 +96,7 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
         {product.views && (
           <div className="absolute bottom-2 right-2 bg-black/40 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
             <Eye size={12} />
-            <span className="font-bold">{product.views.toLocaleString()}</span>
+            <span className="font-bold">{product.views.toLocaleString('vi-VN')}</span>
           </div>
         )}
 
