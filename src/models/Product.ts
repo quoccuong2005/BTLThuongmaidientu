@@ -61,7 +61,9 @@ export interface SingleProductApiResponse {
     };
     name: string;
     description: string;
+    default_price: string;
     display_price: string;
+    is_featured: boolean | number;
     view_count: number;
     total_sold: number;
     rate_total: number;
@@ -87,7 +89,9 @@ export interface ProductApiResponse {
       category_id: number;
       name: string;
       description: string;
+      default_price: string;
       display_price: string;
+      is_featured: boolean | number;
       view_count: number;
       total_sold: number;
       rate_total: number;
@@ -173,30 +177,4 @@ export interface ProductVariant {
   stock: number;
 }
 
-export interface SingleProductApiResponse {
-  statusCode: number;
-  message: string;
-  data: {
-    id: number;
-    created_at: string;
-    updated_at: string;
-    category_id: number;
-    category: {
-      id: number;
-      name: string;
-      image_url: string;
-    };
-    name: string;
-    description: string;
-    display_price: string;
-    view_count: number;
-    total_sold: number;
-    rate_total: number;
-    rate_count: number;
-    products: ProductVariant[];
-    images: {
-      url: string;
-      sort_order: number;
-    }[];
-  };
-}
+

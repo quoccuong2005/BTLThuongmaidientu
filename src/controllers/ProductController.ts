@@ -10,6 +10,7 @@ export class ProductController {
       id: item.id,
       title: item.name,
       price: parseFloat(item.display_price),
+      originalPrice: item.default_price ? parseFloat(item.default_price) : undefined,
       image: item.images && item.images.length > 0 ? item.images[0].url : 'https://placehold.co/400x300?text=No+Image',
       images: item.images?.map((img: any) => img.url),
       location: 'Toàn Quốc',
@@ -23,6 +24,7 @@ export class ProductController {
       totalSold: item.total_sold,
       rating: item.rate_count > 0 ? item.rate_total / item.rate_count / 100 : 5, // Mapping rate_total to 1-5 scale
       variants: item.products,
+      isFeatured: item.is_featured === 1 || item.is_featured === true,
     };
   }
 
