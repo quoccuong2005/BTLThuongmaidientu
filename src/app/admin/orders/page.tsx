@@ -79,13 +79,17 @@ export default function OrdersAdminPage() {
     return idMatch || nameMatch;
   });
 
-  // Helper: Chọn màu sắc cho từng trạng thái
+// Helper: Chọn màu sắc cho từng trạng thái
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'PENDING_PAYMENT': return <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold">Chờ thanh toán</span>;
-      case 'PROCESSING': return <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">Đang xử lý</span>;
-      case 'DELIVERED': return <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Đã giao hàng</span>;
-      case 'CANCELLED': return <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">Đã hủy</span>;
+    const s = (status || '').toLowerCase(); // Ép về chữ thường để so sánh
+    switch (s) {
+      case 'pending_payment': return <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold">Chờ thanh toán</span>;
+      case 'confirmed': return <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">Đã xác nhận</span>;
+      case 'processing': return <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold">Đang xử lý</span>;
+      case 'shipping': return <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">Đang giao</span>;
+      case 'delivered': 
+      case 'completed': return <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Hoàn thành</span>;
+      case 'cancelled': return <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">Đã hủy</span>;
       default: return <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold">{status || 'Chưa rõ'}</span>;
     }
   };
@@ -130,9 +134,10 @@ export default function OrdersAdminPage() {
               filteredOrders.map((order: any) => (
                 <tr key={order.id} className="border-b border-gray-50 hover:bg-gray-50">
                   <td className="p-4 font-medium text-gray-800">#{order.id}</td>
-                  <td className="p-4 text-gray-600">
-                    <p className="font-medium">{order.user?.name || 'Khách vãng lai'}</p>
-                    <p className="text-xs text-gray-400">{order.user?.email}</p>
+<td className="p-4 text-gray-600">
+                    {/* Bắt thêm trường customer_name hoặc full_name của Backend */}
+                    <p className="font-medium">{order.customer_name || order.user?.name || order.full_name || 'Khách vãng lai'}</p>
+                    <p className="text-xs text-gray-400">{order.email || order.user?.email}</p>
                   </td>
                   <td className="p-4 text-orange-600 font-medium">
                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.total_amount || order.totalPrice || 0)}
@@ -163,15 +168,17 @@ export default function OrdersAdminPage() {
             <form onSubmit={handleUpdateStatus}>
               <div className="mb-6">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Chọn trạng thái mới</label>
-                <select 
+<select 
                   className="w-full border border-gray-300 p-2.5 rounded-xl outline-none focus:border-orange-500 bg-white"
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value)}
                 >
-                  <option value="PENDING_PAYMENT">Chờ thanh toán</option>
-                  <option value="PROCESSING">Đang xử lý</option>
-                  <option value="DELIVERED">Đã giao hàng</option>
-                  <option value="CANCELLED">Đã hủy</option>
+                  <option value="pending_payment">Chờ thanh toán</option>
+                  <option value="confirmed">Đã xác nhận</option>
+                  <option value="processing">Đang xử lý</option>
+                  <option value="shipping">Đang giao hàng</option>
+                  <option value="completed">Hoàn thành</option>
+                  <option value="cancelled">Đã hủy</option>
                 </select>
               </div>
               <div className="flex justify-end gap-3">

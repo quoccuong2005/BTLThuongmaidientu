@@ -1,4 +1,4 @@
-const API_URL = process.env.API_URL || 'http://152.42.220.73/api/v1';
+const API_URL = '/api/proxy';
 
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : '';
@@ -36,21 +36,33 @@ export const adminApi = {
   deleteCategory: (id: string | number) => fetchWithAuth(`/categories/${id}`, { method: 'DELETE' }),
 
   // ================= 3. PRODUCT LINES =================
-  getProductLines: () => fetchWithAuth('/products', { method: 'GET' }), // Lấy danh sách (giả định)
+  // GET: Lấy danh sách sản phẩm (Hỗ trợ phân trang, tìm kiếm)
+  getProductLines: (params?: { page?: number; limit?: number; category_id?: number; keyword?: string; sort?: string; order?: string }) => {
+    const queryString = params ? '?' + new URLSearchParams(params as any).toString() : '';
+    return fetchWithAuth(`/products${queryString}`, { method: 'GET' });
+  },
+  // GET: Lấy chi tiết 1 sản phẩm
+  getProductLineDetail: (id: string | number) => fetchWithAuth(`/products/${id}`, { method: 'GET' }),
   createProductLine: (data: any) => fetchWithAuth('/products/admin', { method: 'POST', body: JSON.stringify(data) }),
   updateProductLine: (id: string | number, data: any) => fetchWithAuth(`/products/admin/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteProductLine: (id: string | number) => fetchWithAuth(`/products/admin/${id}`, { method: 'DELETE' }),
 
+  // ================= 5. PRODUCT IMAGES =================
+  // GET: Lấy toàn bộ ảnh của 1 sản phẩm
+  getProductImages: (productLineId: string | number) => fetchWithAuth(`/product-images/by-product-line/${productLineId}`, { method: 'GET' }),
+  // GET: Lấy chi tiết 1 ảnh
+  getProductImageDetail: (id: string | number) => fetchWithAuth(`/product-images/${id}`, { method: 'GET' }),
+  createProductImage: (data: { product_line_id: number; url: string; sort_order?: number }) => 
+    fetchWithAuth('/product-images', { method: 'POST', body: JSON.stringify(data) }),
+  updateProductImage: (id: string | number, data: any) => fetchWithAuth(`/product-images/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProductImage: (id: string | number) => fetchWithAuth(`/product-images/${id}`, { method: 'DELETE' }),
+  
   // ================= 4. VARIANTS (SKU) =================
   createVariant: (productLineId: string | number, data: any) => fetchWithAuth(`/admin/products/${productLineId}/variants`, { method: 'POST', body: JSON.stringify(data) }),
   getVariantDetail: (id: string | number) => fetchWithAuth(`/admin/products/variants/${id}`, { method: 'GET' }),
   updateVariant: (id: string | number, data: any) => fetchWithAuth(`/admin/products/variants/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteVariant: (id: string | number) => fetchWithAuth(`/admin/products/variants/${id}`, { method: 'DELETE' }),
 
-  // ================= 5. PRODUCT IMAGES =================
-  createProductImage: (data: any) => fetchWithAuth('/product-images', { method: 'POST', body: JSON.stringify(data) }),
-  updateProductImage: (id: string | number, data: any) => fetchWithAuth(`/product-images/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
-  deleteProductImage: (id: string | number) => fetchWithAuth(`/product-images/${id}`, { method: 'DELETE' }),
 
   // ================= 6. ROLES =================
   getRoles: () => fetchWithAuth('/roles', { method: 'GET' }),
@@ -72,4 +84,11 @@ export const adminApi = {
     formData.append('file', file); // Đúng tên field 'file' theo doc của bạn
     return fetchWithAuth('/upload/image', { method: 'POST', body: formData });
   },
+
+
+  // ================= 8. VOUCHERS (MÃ GIẢM GIÁ) =================
+  getVouchers: () => fetchWithAuth('/admin/vouchers', { method: 'GET' }),
+  createVoucher: (data: any) => fetchWithAuth('/admin/vouchers', { method: 'POST', body: JSON.stringify(data) }),
+  updateVoucher: (id: string | number, data: any) => fetchWithAuth(`/admin/vouchers/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteVoucher: (id: string | number) => fetchWithAuth(`/admin/vouchers/${id}`, { method: 'DELETE' }),
 };

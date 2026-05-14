@@ -2,9 +2,12 @@
 import { useState, useEffect } from 'react';
 import { adminApi } from '@/services/adminApi';
 // 1. Thêm icon Search vào đây
-import { Trash2, Plus, X, Edit, Search } from 'lucide-react'; 
+import { Trash2, Plus, X, Edit, Search, ImageIcon, Layers } from 'lucide-react'; 
+// (Thêm useRouter nếu bạn muốn chuyển trang)
+import { useRouter } from 'next/navigation';
 
 export default function ProductsAdminPage() {
+  const router = useRouter(); // Thêm dòng này để lát nữa chuyển trang
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -171,14 +174,43 @@ export default function ProductsAdminPage() {
                   <td className="p-4 text-orange-600 font-medium">
                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(prod.display_price || 0)}
                   </td>
-                  <td className="p-4 text-right">
-                    <button onClick={() => handleOpenEdit(prod)} className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors mr-2" title="Sửa sản phẩm">
-                      <Edit size={18} />
-                    </button>
-                    <button onClick={() => handleDelete(prod.id)} className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors" title="Xóa sản phẩm">
-                      <Trash2 size={18} />
-                    </button>
-                  </td>
+                  <td className="p-4 text-right flex justify-end gap-1">
+  {/* Nút Quản lý Ảnh */}
+  <button 
+    onClick={() => router.push(`/admin/products/${prod.id}/images`)} 
+    className="p-2 text-green-600 hover:bg-green-50 rounded transition-colors" 
+    title="Quản lý Ảnh sản phẩm"
+  >
+    <ImageIcon size={18} />
+  </button>
+
+  {/* Nút Quản lý Biến thể (Màu sắc, Dung lượng, Giá riêng) */}
+  <button 
+    onClick={() => router.push(`/admin/products/${prod.id}/variants`)} 
+    className="p-2 text-purple-600 hover:bg-purple-50 rounded transition-colors" 
+    title="Quản lý Biến thể (SKU)"
+  >
+    <Layers size={18} />
+  </button>
+
+  {/* Nút Sửa (Cũ) */}
+  <button 
+    onClick={() => handleOpenEdit(prod)} 
+    className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors" 
+    title="Sửa thông tin chung"
+  >
+    <Edit size={18} />
+  </button>
+
+  {/* Nút Xóa (Cũ) */}
+  <button 
+    onClick={() => handleDelete(prod.id)} 
+    className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors" 
+    title="Xóa sản phẩm"
+  >
+    <Trash2 size={18} />
+  </button>
+</td>
                 </tr>
               ))
             )}

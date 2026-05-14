@@ -18,22 +18,26 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // Gọi thử API Đăng nhập Admin
       const res = await adminApi.login({ identifier: identifier, password: password });
       
-      // SỬA TẠI ĐÂY: Bắt đúng tên "sessionId" mà Backend trả về
-      const token = res.data?.sessionId || res.sessionId;
+      // 🟢 MÁY QUÉT: In toàn bộ dữ liệu Backend trả về ra Console để xem
+      console.log('DỮ LIỆU ĐĂNG NHẬP TRẢ VỀ:', res);
+      
+      // Tạm thời vẫn giữ nguyên cách lấy cũ của bạn
+      const token = res.data?.sessionId || res.sessionId || res.token || res.data?.token; 
       
       if (token) {
+        // In ra xem cái token lấy được trông như thế nào
+        console.log('TOKEN LẤY ĐƯỢC:', token);
+
         localStorage.setItem('admin_token', token);
         document.cookie = `admin_token=${token}; path=/; max-age=86400`;
         alert('Đăng nhập Admin thành công!');
         router.push('/admin');
       } else {
-        throw new Error("Tài khoản không hợp lệ!");
+        throw new Error("Không tìm thấy Token/SessionId từ Backend trả về!");
       }
     } catch (err: any) {
-      // Chỗ này sau này bạn viết thêm catch cho User API. Hiện tại nếu lỗi thì báo lỗi.
       setError(err.message || 'Đăng nhập thất bại. Vui lòng thử lại!');
     } finally {
       setLoading(false);

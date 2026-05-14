@@ -2,35 +2,27 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Package, Tags, ShieldAlert, KeyRound, LogOut,ShoppingCart } from 'lucide-react';
+// 1. THÊM ICON TICKET VÀO ĐÂY
+import { LayoutDashboard, Package, Tags, ShieldAlert, KeyRound, LogOut, ShoppingCart, Ticket } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter(); // Thêm hook useRouter để chuyển hướng
+  const router = useRouter(); 
   
-  // Kiểm tra xem có phải đang ở trang đăng nhập không
   const isLoginPage = pathname === '/admin/login';
 
-  // Hàm xử lý Đăng xuất
   const handleLogout = () => {
     if (confirm('Bạn có chắc chắn muốn đăng xuất khỏi Admin?')) {
-      // 1. Xóa thẻ bài trong localStorage
       localStorage.removeItem('admin_token');
-      
-      // 2. Xóa thẻ bài trong Cookie bằng cách cài đặt ngày hết hạn về quá khứ
       document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-      
-      // 3. Đá về trang chủ giao diện user
       router.push('/');
     }
   };
 
-  // Nếu là trang đăng nhập -> Trả về form đăng nhập trơ trọi (không sidebar)
   if (isLoginPage) {
     return <div className="min-h-screen bg-gray-50">{children}</div>;
   }
 
-  // Nếu là các trang quản trị khác -> Hiện Sidebar bình thường
   return (
     <div className="flex h-screen bg-gray-50 text-gray-800">
       <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
@@ -39,33 +31,36 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
         
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-          <Link href="/admin" className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-lg">
+          <Link href="/admin" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${pathname === '/admin' ? 'bg-orange-50 text-orange-600' : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600'}`}>
             <LayoutDashboard size={20} /> Tổng quan
           </Link>
-          <Link href="/admin/categories" className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-lg">
+          <Link href="/admin/categories" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${pathname === '/admin/categories' ? 'bg-orange-50 text-orange-600' : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600'}`}>
             <Tags size={20} /> Quản lý danh mục
           </Link>
-          <Link href="/admin/products" className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-lg">
+          <Link href="/admin/products" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${pathname.startsWith('/admin/products') ? 'bg-orange-50 text-orange-600' : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600'}`}>
             <Package size={20} /> Dòng Sản phẩm
           </Link>
-          {/* NÚT QUẢN LÝ ĐƠN HÀNG */}
-<Link href="/admin/orders" className="flex items-center gap-3 p-3 text-gray-600 hover:bg-orange-50 hover:text-orange-500 rounded-xl transition-all font-medium">
-   <ShoppingCart size={20} />
-   <span>Đơn hàng</span>
-</Link>
+
+          {/* 2. ĐƯỜNG DẪN QUẢN LÝ VOUCHER (Thêm vào dưới Sản phẩm) */}
+          <Link href="/admin/vouchers" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${pathname === '/admin/vouchers' ? 'bg-orange-50 text-orange-600' : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600'}`}>
+            <Ticket size={20} /> Quản lý Voucher
+          </Link>
+
+          <Link href="/admin/orders" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${pathname === '/admin/orders' ? 'bg-orange-50 text-orange-600' : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600'}`}>
+            <ShoppingCart size={20} /> Đơn hàng
+          </Link>
           
           <div className="pt-4 pb-2">
             <span className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Phân quyền Hệ thống</span>
           </div>
-          <Link href="/admin/roles" className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-lg">
+          <Link href="/admin/roles" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${pathname === '/admin/roles' ? 'bg-orange-50 text-orange-600' : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600'}`}>
             <ShieldAlert size={20} /> Vai trò (Roles)
           </Link>
-          <Link href="/admin/permissions" className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-lg">
+          <Link href="/admin/permissions" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${pathname === '/admin/permissions' ? 'bg-orange-50 text-orange-600' : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600'}`}>
             <KeyRound size={20} /> Quyền (Permissions)
           </Link>
         </nav>
 
-        {/* Nút Đăng xuất ở cuối Sidebar */}
         <div className="p-4 border-t border-gray-200">
           <button 
             onClick={handleLogout}
