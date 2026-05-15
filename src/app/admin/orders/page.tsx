@@ -25,6 +25,7 @@ export default function OrdersAdminPage() {
     setLoading(true);
     try {
       const res = await adminApi.getOrders();
+      console.log(res);
       let dataArray = [];
       if (res && res.data && Array.isArray(res.data.items)) dataArray = res.data.items;
       else if (res && Array.isArray(res.data)) dataArray = res.data;

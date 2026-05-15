@@ -18,8 +18,10 @@ export default function CategoriesAdminPage() {
     name: '',
     description: '',
     status: 'ACTIVE',
-    iconUrl: ''
+    image_url: ''
   });
+
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => { fetchCategories(); }, []);
 
@@ -27,6 +29,7 @@ export default function CategoriesAdminPage() {
     setLoading(true);
     try {
       const res = await adminApi.getCategories();
+      console.log('response: ', res)
       let dataArray = [];
       if (res && res.data && Array.isArray(res.data.items)) dataArray = res.data.items;
       else if (Array.isArray(res)) dataArray = res;
@@ -48,7 +51,7 @@ export default function CategoriesAdminPage() {
 
   const handleOpenAdd = () => {
     setEditingId(null);
-    setFormData({ name: '', description: '', status: 'ACTIVE', iconUrl: '' });
+    setFormData({ name: '', description: '', status: 'ACTIVE', image_url: '' });
     setIsModalOpen(true);
   };
 
@@ -58,9 +61,30 @@ export default function CategoriesAdminPage() {
       name: category.name, 
       description: category.description || '', 
       status: category.status || 'ACTIVE', 
-      iconUrl: category.iconUrl || '' 
+      image_url: category.image_url || '' 
     });
     setIsModalOpen(true);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const res = await adminApi.uploadImage(file);
+      // Giả sử API upload trả về { data: { url: '...' } } hoặc tương tự
+      // Dựa vào context common thì thường là res.data.url hoặc res.url
+      const imageUrl = res.data?.url || res.url;
+      if (imageUrl) {
+        setFormData(prev => ({ ...prev, image_url: imageUrl }));
+        alert('Tải ảnh lên thành công!');
+      }
+    } catch (error: any) {
+      alert('Lỗi tải ảnh: ' + error.message);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -68,7 +92,10 @@ export default function CategoriesAdminPage() {
     if (!formData.name.trim()) return;
     
     try {
-      const payload = { name: formData.name };
+      const payload = { 
+        name: formData.name,
+        image_url: formData.image_url
+      };
 
       if (editingId) {
         await adminApi.updateCategory(editingId, payload);
@@ -136,7 +163,8 @@ export default function CategoriesAdminPage() {
         <table className="w-full text-left">
           <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
-              <th className="p-4 font-semibold text-gray-600">ID</th>
+              <th className="p-4 font-semibold text-gray-600 w-16">ID</th>
+              <th className="p-4 font-semibold text-gray-600 w-20">Ảnh</th>
               <th className="p-4 font-semibold text-gray-600">Tên danh mục</th>
               <th className="p-4 font-semibold text-gray-600 text-right">Thao tác</th>
             </tr>
@@ -155,6 +183,15 @@ export default function CategoriesAdminPage() {
               filteredCategories.map((cat: any, index: number) => (
                 <tr key={cat.id || index} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                   <td className="p-4 text-gray-500">{cat.id}</td>
+                  <td className="p-4">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
+                      {cat.image_url ? (
+                        <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs text-center p-1">No Image</div>
+                      )}
+                    </div>
+                  </td>
                   <td className="p-4 font-medium text-gray-800">{cat.name}</td>
                   <td className="p-4 text-right">
                     <button onClick={() => handleOpenEdit(cat)} className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors mr-2" title="Sửa danh mục">
@@ -199,6 +236,51 @@ export default function CategoriesAdminPage() {
                   value={formData.name}
                   onChange={handleInputChange}
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Hình ảnh danh mục
+                </label>
+                <div className="flex items-start gap-4">
+                  <div className="w-24 h-24 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden bg-gray-50 relative group">
+                    {formData.image_url ? (
+                      <>
+                        <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                           <button 
+                            type="button" 
+                            onClick={() => setFormData(prev => ({ ...prev, image_url: '' }))}
+                            className="bg-white p-1 rounded-full text-red-500 hover:scale-110 transition-transform"
+                           >
+                            <Trash2 size={16} />
+                           </button>
+                        </div>
+                      </>
+                    ) : (
+                      <Plus className="text-gray-300" size={24} />
+                    )}
+                  </div>
+                  {!formData.image_url && (
+                    <div className="flex-1">
+                      <input 
+                        type="file" 
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={uploading}
+                        className="hidden" 
+                        id="category-image-upload"
+                      />
+                      <label 
+                        htmlFor="category-image-upload"
+                        className={`inline-flex items-center px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium cursor-pointer hover:bg-gray-50 transition-colors ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        {uploading ? 'Đang tải lên...' : 'Chọn ảnh'}
+                      </label>
+                      <p className="text-xs text-gray-500 mt-2">Dung lượng tối đa 5MB. Định dạng JPG, PNG, WEBP.</p>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">

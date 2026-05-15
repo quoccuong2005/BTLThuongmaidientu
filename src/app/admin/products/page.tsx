@@ -43,6 +43,7 @@ export default function ProductsAdminPage() {
 
     try {
       const prodRes = await adminApi.getProductLines();
+      console.log(prodRes)
       let prodArray = [];
       if (prodRes && prodRes.data && Array.isArray(prodRes.data.items)) prodArray = prodRes.data.items;
       else if (prodRes && Array.isArray(prodRes.data)) prodArray = prodRes.data;
@@ -150,7 +151,8 @@ export default function ProductsAdminPage() {
         <table className="w-full text-left">
           <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
-              <th className="p-4 font-semibold text-gray-600">ID</th>
+              <th className="p-4 font-semibold text-gray-600 w-16">ID</th>
+              <th className="p-4 font-semibold text-gray-600 w-20">Ảnh</th>
               <th className="p-4 font-semibold text-gray-600">Tên Sản Phẩm</th>
               <th className="p-4 font-semibold text-gray-600">Giá hiển thị</th>
               <th className="p-4 font-semibold text-gray-600 text-right">Thao tác</th>
@@ -170,6 +172,15 @@ export default function ProductsAdminPage() {
               filteredProducts.map((prod: any) => (
                 <tr key={prod.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                   <td className="p-4 text-gray-500">{prod.id}</td>
+                  <td className="p-4">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
+                      {prod.images && prod.images.length > 0 ? (
+                        <img src={prod.images[0].url} alt={prod.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs text-center p-1">No Image</div>
+                      )}
+                    </div>
+                  </td>
                   <td className="p-4 font-medium text-gray-800">{prod.name}</td>
                   <td className="p-4 text-orange-600 font-medium">
                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(prod.display_price || 0)}
