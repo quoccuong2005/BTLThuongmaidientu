@@ -85,11 +85,11 @@ export default function OrderDetailPage() {
       case 'pending_payment':
         return { label: 'Chờ thanh toán', icon: <Clock size={16} />, color: 'text-amber-600 bg-amber-50 border-amber-100' };
       case 'paid':
-        return { label: 'Chờ xác nhận', icon: <Package size={16} />, color: 'text-blue-600 bg-blue-50 border-blue-100' };
+        return { label: 'Đã thanh toán', icon: <CreditCard size={16} />, color: 'text-blue-600 bg-blue-50 border-blue-100' };
       case 'confirmed':
-        return { label: 'Chờ lấy hàng', icon: <Package size={16} />, color: 'text-blue-600 bg-blue-50 border-blue-100' };
+        return { label: 'Đã xác nhận', icon: <Package size={16} />, color: 'text-blue-600 bg-blue-50 border-blue-100' };
       case 'shipping':
-        return { label: 'Đang giao', icon: <Truck size={16} />, color: 'text-purple-600 bg-purple-50 border-purple-100' };
+        return { label: 'Đang giao hàng', icon: <Truck size={16} />, color: 'text-purple-600 bg-purple-50 border-purple-100' };
       case 'delivered':
         return { label: 'Đã giao hàng', icon: <CheckCircle2 size={16} />, color: 'text-teal-600 bg-teal-50 border-teal-100' };
       case 'completed':
@@ -97,14 +97,36 @@ export default function OrderDetailPage() {
       case 'cancelled':
         return { label: 'Đã hủy', icon: <XCircle size={16} />, color: 'text-red-600 bg-red-50 border-red-100' };
       case 'return_requested':
-        return { label: 'Yêu cầu hoàn', icon: <AlertCircle size={16} />, color: 'text-yellow-600 bg-yellow-50 border-yellow-100' };
+        return { label: 'Yêu cầu trả hàng', icon: <AlertCircle size={16} />, color: 'text-yellow-600 bg-yellow-50 border-yellow-100' };
       case 'returned':
-        return { label: 'Đã hoàn hàng', icon: <AlertCircle size={16} />, color: 'text-gray-600 bg-gray-50 border-gray-100' };
+        return { label: 'Đã trả hàng', icon: <AlertCircle size={16} />, color: 'text-gray-600 bg-gray-50 border-gray-100' };
       case 'refunded':
         return { label: 'Đã hoàn tiền', icon: <CheckCircle2 size={16} />, color: 'text-green-600 bg-green-50 border-green-100' };
       default:
         return { label: status, icon: <AlertCircle size={16} />, color: 'text-gray-600 bg-gray-50 border-gray-100' };
     }
+  };
+
+  const getTimelineSteps = (order: Order) => {
+    const steps = [
+      { status: 'pending_payment', label: 'Đặt hàng thành công', time: order.created_at, isCompleted: true },
+      { status: 'paid', label: 'Thanh toán thành công', time: order.paid_at, isCompleted: !!order.paid_at || ['paid', 'confirmed', 'shipping', 'delivered', 'completed'].includes(order.status) },
+      { status: 'confirmed', label: 'Đã xác nhận & Chuẩn bị hàng', time: null, isCompleted: ['confirmed', 'shipping', 'delivered', 'completed'].includes(order.status) },
+      { status: 'shipping', label: 'Đang giao hàng', time: null, isCompleted: ['shipping', 'delivered', 'completed'].includes(order.status) },
+      { status: 'delivered', label: 'Giao hàng thành công', time: order.delivered_at, isCompleted: ['delivered', 'completed'].includes(order.status) },
+      { status: 'completed', label: 'Hoàn thành', time: order.completed_at, isCompleted: order.status === 'completed' }
+    ];
+
+    if (order.status === 'cancelled') {
+      steps.push({ status: 'cancelled', label: 'Đã hủy đơn hàng', time: order.updated_at, isCompleted: true });
+    } else if (['return_requested', 'returned', 'refunded'].includes(order.status)) {
+      steps.push({ status: order.status, label: getStatusInfo(order.status).label, time: order.updated_at, isCompleted: true });
+    }
+
+    return steps.filter(step => {
+      if (step.status === 'paid' && order.payment_method === 'cod' && !order.paid_at) return false;
+      return true;
+    });
   };
 
   if (isLoading) {
@@ -190,23 +212,31 @@ export default function OrderDetailPage() {
             </div>
           </div>
 
-          {/* Delivery Timeline (Mock for now) */}
+          {/* Delivery Timeline */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <h2 className="font-bold text-lg mb-6 flex items-center gap-2">
               <Truck size={20} className="text-orange-500" /> Hành trình đơn hàng
             </h2>
             <div className="space-y-8 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100">
-              <div className="relative pl-8">
-                <div className="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-green-500 border-4 border-white shadow-sm flex items-center justify-center">
-                  <div className="w-2 h-2 bg-white rounded-full"></div>
-                </div>
-                <p className="text-sm font-bold text-gray-900">Đặt hàng thành công</p>
-                <p className="text-xs text-gray-400 mt-1">{createdAt}</p>
-              </div>
-              <div className="relative pl-8">
-                <div className="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-gray-200 border-4 border-white shadow-sm"></div>
-                <p className="text-sm font-bold text-gray-400">Người bán đang chuẩn bị hàng</p>
-              </div>
+              {getTimelineSteps(order).map((step, idx) => {
+                const stepTime = step.time ? new Date(step.time).toLocaleString('vi-VN', {
+                  hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'numeric', year: 'numeric'
+                }) : null;
+
+                return (
+                  <div key={idx} className="relative pl-8">
+                    <div className={`absolute left-0 top-1.5 w-6 h-6 rounded-full border-4 border-white shadow-sm flex items-center justify-center ${
+                      step.isCompleted ? 'bg-green-500' : 'bg-gray-200'
+                    }`}>
+                      {step.isCompleted && <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>}
+                    </div>
+                    <p className={`text-sm font-bold ${step.isCompleted ? 'text-gray-900' : 'text-gray-400'}`}>
+                      {step.label}
+                    </p>
+                    {stepTime && <p className="text-[10px] text-gray-400 mt-0.5">{stepTime}</p>}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

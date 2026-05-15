@@ -14,18 +14,10 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, variant = 'default' }: ProductCardProps) {
-  const { addToCart } = useCart();
-  const [isAdding, setIsAdding] = useState(false);
+
   const discount = ProductController.getDiscount(product.price, product.originalPrice);
   const relativeTime = ProductController.getRelativeTime(product.postedAt);
 
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsAdding(true);
-    addToCart(product);
-    toast.success('Đã thêm vào giỏ hàng');
-    window.setTimeout(() => setIsAdding(false), 280);
-  };
 
   if (variant === 'horizontal') {
     return (
@@ -129,17 +121,7 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
           </div>
 
           {/* Add to Cart Button */}
-          <button
-            onClick={handleAddToCart}
-            className={`w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200 ${
-              isAdding
-                ? 'bg-green-500 text-white scale-95'
-                : 'bg-orange-500 hover:bg-orange-600 text-white hover:shadow-md hover:shadow-orange-200'
-            }`}
-          >
-            <ShoppingCart size={14} />
-            {isAdding ? 'Đã thêm!' : 'Thêm vào giỏ'}
-          </button>
+
 
           {/* Meta Info */}
           <div className="flex items-center justify-between pt-3 border-t border-gray-50 text-[11px] text-gray-400 font-medium">

@@ -70,19 +70,18 @@ export function ProductActions({ product, variant = 'main', quantity = 1, wishli
             <MessageCircle size={14} /> Nhắn tin
           </button>
         </div>
-        <button 
+        <button
           onClick={handleWishlistButtonClick}
           disabled={!canWishlist}
           title={!canWishlist ? 'Chọn phân loại để lưu yêu thích' : (isWishlisted ? 'Bỏ yêu thích' : 'Lưu yêu thích')}
-          className={`w-full border py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm font-medium ${
-            !canWishlist
-              ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed'
-              : isWishlisted 
-                ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100' 
-                : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-          }`}
+          className={`w-full border py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm font-medium ${!canWishlist
+            ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed'
+            : isWishlisted
+              ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100'
+              : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+            }`}
         >
-          <Heart size={15} className={isWishlisted && canWishlist ? 'fill-red-600 text-red-600' : ''} /> 
+          <Heart size={15} className={isWishlisted && canWishlist ? 'fill-red-600 text-red-600' : ''} />
           {isWishlisted && canWishlist ? 'Đã lưu yêu thích' : 'Lưu yêu thích'}
         </button>
       </div>
@@ -108,13 +107,12 @@ export function ProductActions({ product, variant = 'main', quantity = 1, wishli
       <button
         onClick={handleWishlistButtonClick}
         disabled={!canWishlist}
-        className={`px-6 rounded-xl border-2 transition-all flex items-center justify-center transform min-h-[56px] ${
-          !canWishlist
-            ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed'
-            : isWishlisted 
-              ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100 active:scale-95' 
-              : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 active:scale-95'
-        }`}
+        className={`px-6 rounded-xl border-2 transition-all flex items-center justify-center transform min-h-[56px] ${!canWishlist
+          ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed'
+          : isWishlisted
+            ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100 active:scale-95'
+            : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 active:scale-95'
+          }`}
         title={!canWishlist ? 'Chọn phân loại để lưu yêu thích' : (isWishlisted ? 'Bỏ yêu thích' : 'Lưu yêu thích')}
       >
         <Heart size={24} className={isWishlisted && canWishlist ? 'fill-red-600 text-red-600' : ''} />

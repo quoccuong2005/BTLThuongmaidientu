@@ -13,10 +13,10 @@ interface ProductDetailsClientProps {
 export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
   const searchParams = useSearchParams();
   const variantParam = searchParams.get('variant');
-  
-  const initialVariant = product.variants?.find(v => v.id.toString() === variantParam) 
-                      || product.variants?.[0] 
-                      || null;
+  console.log("ddd", product)
+  const initialVariant = product.variants?.find(v => v.id.toString() === variantParam)
+    || product.variants?.[0]
+    || null;
 
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(initialVariant);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
