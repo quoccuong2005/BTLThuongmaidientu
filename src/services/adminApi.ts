@@ -74,7 +74,10 @@ export const adminApi = {
 
 
   // --- QUẢN LÝ ĐƠN HÀNG ---
-  getOrders: () => fetchWithAuth('/admin/orders', { method: 'GET' }),
+  getOrders: (params?: { page?: number; limit?: number; status?: string; user_id?: number; sort?: string; order?: string }) => {
+    const queryString = params ? '?' + new URLSearchParams(params as any).toString() : '';
+    return fetchWithAuth(`/admin/orders${queryString}`, { method: 'GET' });
+  },
   getOrderDetail: (id: string | number) => fetchWithAuth(`/admin/orders/${id}`, { method: 'GET' }),
   updateOrderStatus: (id: string | number, status: string) => fetchWithAuth(`/admin/orders/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
 
