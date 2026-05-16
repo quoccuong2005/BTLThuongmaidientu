@@ -35,14 +35,14 @@ export default function WishlistPage() {
       router.push('/login');
     }
   }, [router]);
-  
+
   // States cho modal
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [newListName, setNewListName] = useState('');
-  
-  const [deleteListConfirm, setDeleteListConfirm] = useState<{id: number, name: string} | null>(null);
-  const [deleteItemConfirm, setDeleteItemConfirm] = useState<{id: number, product_id: number, name: string} | null>(null);
-  
+
+  const [deleteListConfirm, setDeleteListConfirm] = useState<{ id: number, name: string } | null>(null);
+  const [deleteItemConfirm, setDeleteItemConfirm] = useState<{ id: number, product_id: number, name: string } | null>(null);
+
   // Fetch items khi chuyển tab
   useEffect(() => {
     if (activeWishlistId) {
@@ -130,7 +130,7 @@ export default function WishlistPage() {
     const [isMoving, setIsMoving] = useState(false);
     const [showNoteInput, setShowNoteInput] = useState(false);
     const [noteContent, setNoteContent] = useState(item.note || '');
-    
+
     // Alert states
     const [priceAlert, setPriceAlert] = useState(item.price_alert);
     const [stockAlert, setStockAlert] = useState(item.stock_alert);
@@ -146,17 +146,17 @@ export default function WishlistPage() {
         // Optimistic refresh items list
         setItems(prev => prev.filter(i => i.id !== item.id));
         addToCart({
-            id: item.product.id,
-            title: item.product.name,
-            price: item.product.price,
-            image: item.product.image_url || '',
-            quantity: 1,
-            location: '',
-            category: '',
-            categorySlug: '',
-            condition: 'new',
-            postedAt: new Date().toISOString(),
-            seller: 'System',
+          id: item.product.id,
+          title: item.product.name,
+          price: item.product.price,
+          image: item.product.image_url || '',
+          quantity: 1,
+          location: '',
+          category: '',
+          categorySlug: '',
+          condition: 'new',
+          postedAt: new Date().toISOString(),
+          seller: 'System',
         });
         toast.success('Đã chuyển sang giỏ hàng');
       } else {
@@ -222,7 +222,7 @@ export default function WishlistPage() {
             <Link href={`/product/${item.product.product_line_id}?variant=${item.product.id}`} className="text-base font-semibold text-gray-800 hover:text-blue-600 line-clamp-2 pr-4">
               {item.product.product_line_name} <span className="text-gray-500 font-normal">({item.product.name})</span>
             </Link>
-            <button 
+            <button
               onClick={handleRemoveItem}
               className="text-gray-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded transition-colors"
               title="Xoá khỏi danh sách"
@@ -231,7 +231,7 @@ export default function WishlistPage() {
             </button>
           </div>
           <div className="text-orange-500 font-bold mt-1">{ProductController.formatPrice(item.product.price)}</div>
-          
+
           <div className="mt-2 text-sm text-gray-600">
             {item.note && !showNoteInput ? (
               <div className="flex items-start gap-2 bg-yellow-50 p-2 rounded text-xs border border-yellow-100">
@@ -241,12 +241,12 @@ export default function WishlistPage() {
               </div>
             ) : showNoteInput ? (
               <div className="flex gap-2">
-                <input 
-                  type="text" 
-                  className="border text-xs rounded px-2 py-1 flex-1" 
-                  value={noteContent} 
-                  onChange={e => setNoteContent(e.target.value)} 
-                  placeholder="Ghi chú..." 
+                <input
+                  type="text"
+                  className="border text-xs rounded px-2 py-1 flex-1"
+                  value={noteContent}
+                  onChange={e => setNoteContent(e.target.value)}
+                  placeholder="Ghi chú..."
                   maxLength={500}
                 />
                 <button onClick={handleSaveNote} className="bg-blue-500 text-white text-xs px-2 rounded">Lưu</button>
@@ -260,15 +260,15 @@ export default function WishlistPage() {
           </div>
 
           <div className="mt-3 flex flex-wrap items-center gap-3">
-            <button 
-              onClick={handleMoveToCart} 
+            <button
+              onClick={handleMoveToCart}
               disabled={isMoving || item.product.is_out_of_stock}
               className="flex items-center gap-1.5 bg-orange-50 text-orange-600 hover:bg-orange-100 px-3 py-1.5 rounded-lg text-sm font-medium transition disabled:opacity-50"
             >
               {isMoving ? <Loader2 size={16} className="animate-spin" /> : <ShoppingCart size={16} />}
               Chuyển sang giỏ
             </button>
-            
+
             <div className="flex items-center gap-4 border-l pl-3 ml-auto">
               <label className="flex items-center gap-1.5 cursor-pointer text-xs text-gray-600 hover:text-gray-900">
                 <input type="checkbox" checked={priceAlert} onChange={handleTogglePriceAlert} className="rounded text-blue-500 w-3.5 h-3.5" />
@@ -297,30 +297,30 @@ export default function WishlistPage() {
         {/* TABS */}
         <div className="flex items-center overflow-x-auto border-b bg-gray-50/50 p-2 gap-2 hide-scrollbar">
           {wishlists.map((w) => (
-            <div 
-              key={w.id} 
+            <div
+              key={w.id}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition cursor-pointer whitespace-nowrap
                 ${activeWishlistId === w.id ? 'bg-white shadow-sm border text-blue-600' : 'text-gray-600 hover:bg-gray-100 border border-transparent'}
               `}
               onClick={() => setActiveWishlistId(w.id)}
             >
               <span>{w.is_default === 1 ? '⭐' : '📋'} {w.name}</span>
-              
+
               {activeWishlistId === w.id && (
                 <div className="flex items-center gap-1 ml-2 pl-2 border-l border-gray-200">
-                  <button onClick={(e) => { e.stopPropagation(); handleShareList(w.id); }} className="p-1 hover:bg-blue-50 rounded text-gray-400 hover:text-blue-500" title="Chia sẻ"><Share2 size={14}/></button>
+                  <button onClick={(e) => { e.stopPropagation(); handleShareList(w.id); }} className="p-1 hover:bg-blue-50 rounded text-gray-400 hover:text-blue-500" title="Chia sẻ"><Share2 size={14} /></button>
                   {w.is_default === 0 && (
                     <>
-                      <button onClick={(e) => { e.stopPropagation(); handleRenameList(w.id, w.name); }} className="p-1 hover:bg-blue-50 rounded text-gray-400 hover:text-blue-500" title="Đổi tên"><Edit2 size={14}/></button>
-                      <button onClick={(e) => handleDeleteListClick(e, w.id, w.name)} className="p-1 hover:bg-red-50 rounded text-gray-400 hover:text-red-500" title="Xóa danh sách"><Trash2 size={14}/></button>
+                      <button onClick={(e) => { e.stopPropagation(); handleRenameList(w.id, w.name); }} className="p-1 hover:bg-blue-50 rounded text-gray-400 hover:text-blue-500" title="Đổi tên"><Edit2 size={14} /></button>
+                      <button onClick={(e) => handleDeleteListClick(e, w.id, w.name)} className="p-1 hover:bg-red-50 rounded text-gray-400 hover:text-red-500" title="Xóa danh sách"><Trash2 size={14} /></button>
                     </>
                   )}
                 </div>
               )}
             </div>
           ))}
-          
-          <button 
+
+          <button
             onClick={() => setIsCreateModalOpen(true)}
             className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 whitespace-nowrap"
           >
@@ -343,7 +343,7 @@ export default function WishlistPage() {
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-1">Chưa có sản phẩm nào</h3>
               <p className="text-gray-500 mb-6">Hãy thêm các sản phẩm bạn yêu thích vào danh sách này.</p>
-              <Link href="/" className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition">
+              <Link href="/" className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-medium transition">
                 Tiếp tục mua sắm
               </Link>
             </div>
@@ -363,10 +363,10 @@ export default function WishlistPage() {
               <h3 className="text-lg font-bold">Tạo danh sách mới</h3>
             </div>
             <div className="p-5">
-              <input 
-                type="text" 
-                className="w-full border rounded-lg px-3 py-2 outline-none focus:border-blue-500" 
-                placeholder="Ví dụ: Mùa hè 2026, Công nghệ..." 
+              <input
+                type="text"
+                className="w-full border rounded-lg px-3 py-2 outline-none focus:border-blue-500"
+                placeholder="Ví dụ: Mùa hè 2026, Công nghệ..."
                 value={newListName}
                 onChange={e => setNewListName(e.target.value)}
                 autoFocus
