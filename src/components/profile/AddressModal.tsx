@@ -74,14 +74,14 @@ export function AddressModal({ isOpen, onClose, onSubmit, initialData, title }: 
   const handleProvinceChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const provinceId = Number(e.target.value);
     const provinceName = provinces.find(p => p.PROVINCE_ID === provinceId)?.PROVINCE_NAME || '';
-    
+
     setSelectedProvinceId(provinceId);
     setFormData({ ...formData, province: provinceName, district: '', ward: '' });
-    
+
     // Reset district/ward lists
     setDistricts([]);
     setWards([]);
-    
+
     if (provinceId) {
       const data = await LocationController.getDistricts(provinceId);
       setDistricts(data);
@@ -92,7 +92,7 @@ export function AddressModal({ isOpen, onClose, onSubmit, initialData, title }: 
   const handleDistrictChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const districtId = Number(e.target.value);
     const districtName = districts.find(d => d.DISTRICT_ID === districtId)?.DISTRICT_NAME || '';
-    
+
     setSelectedDistrictId(districtId);
     setFormData({ ...formData, district: districtName, ward: '' });
     setWards([]);
@@ -115,7 +115,7 @@ export function AddressModal({ isOpen, onClose, onSubmit, initialData, title }: 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+      <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 relative top-[8%]">
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <h2 className="text-xl font-black text-gray-900">{title}</h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">

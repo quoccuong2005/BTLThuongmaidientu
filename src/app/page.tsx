@@ -120,7 +120,7 @@ export default async function HomePage() {
           </a>
         </div>
       </section>
-
+      <CategoryGrid categories={categories} />
       <FlashSaleSection products={featuredProducts} />
 
       <section className="tech-card rounded-3xl border border-orange-100 bg-white p-4 shadow-sm md:p-5">
@@ -166,7 +166,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <CategoryGrid categories={categories} />
+
 
       <section className="tech-card bg-white rounded-3xl shadow-sm border border-orange-100 p-4 md:p-6">
         <SectionHeader title="Sản phẩm nổi bật" viewAllHref="/search?sort=popular" icon={<Radar size={18} />} />
@@ -278,7 +278,6 @@ export default async function HomePage() {
       </section>
 
       <TrustBadges />
-      <QuickPostBanner />
     </div>
   );
 }

@@ -22,25 +22,25 @@ export const BANNERS: Banner[] = [
   {
     id: '1',
     title: 'Flash Sale 6.6 - Giảm đến 50%',
-    image: 'https://images.unsplash.com/photo-1607082350899-7e105aa886ae?auto=format&fit=crop&w=1400&q=80',
+    image: 'https://static.vecteezy.com/system/resources/previews/008/128/792/non_2x/6-6-logo-for-sale-poster-6-6-online-super-sale-banner-template-on-yellow-background-flash-sale-banner-design-vector.jpg',
     link: '/search?sort=popular',
   },
   {
     id: '2',
     title: 'Mở bán công nghệ mới - Voucher độc quyền',
-    image: 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&w=1400&q=80',
+    image: 'https://files.shopeeanalytics.com/upload/images/2022/06/01/shopee-6.6-sieu-sale-giua-nam-4.jpg',
     link: '/category/do-dien-tu',
   },
   {
     id: '3',
     title: 'Siêu deal gia dụng - Freeship toàn quốc',
-    image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=1400&q=80',
+    image: '/san_deal_gia_dung_v3.jpg',
     link: '/category/do-gia-dung',
   },
   {
     id: '4',
     title: 'Thời trang hè - Giảm thêm với mã GIAM30',
-    image: '/banners/banner-04.jpg',
+    image: '/thoi_trang_he.jpg',
     link: '/category/thoi-trang',
   },
 ];

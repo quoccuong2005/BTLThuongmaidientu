@@ -11,8 +11,10 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Address } from '@/models/Address';
+import { GetProfile } from '@/app/api/user/user';
 
 export default function CartPage() {
+  const [user, setUser] = useState<any>(null);
   const {
     items,
     removeFromCart,
@@ -34,16 +36,32 @@ export default function CartPage() {
   const [selectedVoucher, setSelectedVoucher] = useState<MyVoucher | null>(null);
   const [appliedDiscountAmount, setAppliedDiscountAmount] = useState<number>(0);
   const [showVoucherModal, setShowVoucherModal] = useState(false);
+
+  const checkAuth = async () => {
+    const response = await GetProfile();
+    if (response.success) {
+      setUser(response.data.data);
+      return true;
+    } else {
+      toast.error('Vui lòng đăng nhập để tiếp tục xem giỏ hàng');
+      router.push('/login?redirect=/cart');
+      return false;
+    }
+  };
+
   useEffect(() => {
-    const fetchAddresses = async () => {
-      const addrList = await AddressController.getAddresses();
-      setAddresses(addrList);
-      const defaultAddr = addrList.find(a => a.is_default) || addrList[0];
-      if (defaultAddr) {
-        setSelectedAddressId(defaultAddr.id);
+    const initPage = async () => {
+      const isAuthenticated = await checkAuth();
+      if (isAuthenticated) {
+        const addrList = await AddressController.getAddresses();
+        setAddresses(addrList);
+        const defaultAddr = addrList.find(a => a.is_default) || addrList[0];
+        if (defaultAddr) {
+          setSelectedAddressId(defaultAddr.id);
+        }
       }
     };
-    fetchAddresses();
+    initPage();
   }, []);
 
   useEffect(() => {

@@ -6,6 +6,7 @@ import { ProductController } from '@/controllers/ProductController';
 import { Package, Calendar, MapPin, CreditCard, ArrowLeft, Clock, CheckCircle2, XCircle, AlertCircle, ShoppingBag, Truck } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { OrderItemReviewAction } from '@/components/review/OrderItemReviewAction';
 
 export default function OrderDetailPage() {
   const { id } = useParams();
@@ -191,22 +192,31 @@ export default function OrderDetailPage() {
             </div>
             <div className="divide-y divide-gray-50">
               {order.items?.map((item) => (
-                <div key={item.id} className="p-6 flex gap-4">
-                  <div className="w-20 h-20 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 overflow-hidden flex-shrink-0">
-                    <Package size={32} className="text-gray-200" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-gray-900 line-clamp-1 mb-1">{item.product_name}</h3>
-                    <p className="text-xs text-gray-400 mb-2 uppercase tracking-wider">SKU: {item.sku}</p>
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm text-gray-500">
-                        {ProductController.formatPrice(parseFloat(item.unit_price))} x {item.quantity}
-                      </p>
-                      <p className="font-bold text-gray-900">
-                        {ProductController.formatPrice(parseFloat(item.subtotal))}
-                      </p>
+                <div key={item.id} className="p-6">
+                  <div className="flex gap-4">
+                    <div className="w-20 h-20 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 overflow-hidden flex-shrink-0">
+                      <Package size={32} className="text-gray-200" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-gray-900 line-clamp-1 mb-1">{item.product_name}</h3>
+                      <p className="text-xs text-gray-400 mb-2 uppercase tracking-wider">SKU: {item.sku}</p>
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-gray-500">
+                          {ProductController.formatPrice(parseFloat(item.unit_price))} x {item.quantity}
+                        </p>
+                        <p className="font-bold text-gray-900">
+                          {ProductController.formatPrice(parseFloat(item.subtotal))}
+                        </p>
+                      </div>
                     </div>
                   </div>
+                  
+                  {/* Review Action */}
+                  <OrderItemReviewAction 
+                    orderItemId={item.id}
+                    productName={item.product_name}
+                    orderStatus={order.status}
+                  />
                 </div>
               ))}
             </div>

@@ -54,13 +54,13 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
     const collectedVoucher = vouchers.find(v => v.id === id);
     if (collectedVoucher) {
       const optimisticMyVoucher: MyVoucher = {
-        id: Date.now(), // Temp ID
+        id: Date.now(),
         user_id: 0,
         voucher_id: id,
         status: 'collected',
         collected_at: new Date().toISOString(),
         used_at: null,
-        days_left: 30, // Mock
+        days_left: 30,
         is_expired: false,
         voucher: collectedVoucher
       };
@@ -297,8 +297,8 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
                   </div>
 
                   <span className={`text-xs font-bold px-3 py-1.5 rounded-lg border ${myVoucher.status === 'used' ? 'bg-slate-50 border-slate-200 text-slate-500' :
-                      myVoucher.is_expired ? 'bg-red-50 border-red-200 text-red-500' :
-                        'bg-green-50 border-green-200 text-green-600'
+                    myVoucher.is_expired ? 'bg-red-50 border-red-200 text-red-500' :
+                      'bg-green-50 border-green-200 text-green-600'
                     }`}>
                     {myVoucher.status === 'used' ? 'Đã dùng' :
                       myVoucher.is_expired ? 'Hết hạn' :

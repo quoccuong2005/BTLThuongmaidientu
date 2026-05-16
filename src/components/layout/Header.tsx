@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import { LOCATIONS, POPULAR_SEARCHES } from '@/lib/db';
 import { useCart } from '@/context/CartContext';
+import { CategoryController } from '@/controllers/CategoryController';
+import { Category } from '@/models/Product';
 
 export function Header() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,11 +31,15 @@ export function Header() {
   const [showLocationDrop, setShowLocationDrop] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
   const { itemCount } = useCart();
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) setUser(JSON.parse(savedUser));
+
+    // Fetch categories
+    CategoryController.getTopCategories(8).then(setCategories);
   }, []);
 
   const quickSearches = useMemo(() => POPULAR_SEARCHES.slice(0, 6), []);
@@ -221,15 +227,15 @@ export function Header() {
           </button>
         </div>
 
-        <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
-          {quickSearches.map(keyword => (
-            <button
-              key={keyword}
-              onClick={() => handleSearch(keyword)}
-              className="tap-bounce tech-chip whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold hover:bg-orange-100"
+        <div className="mt-2 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+          {categories.map(cat => (
+            <Link
+              key={cat.id}
+              href={`/category/${cat.id}`}
+              className="tap-bounce tech-chip whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold hover:bg-orange-100 flex items-center gap-1.5"
             >
-              {keyword}
-            </button>
+              {cat.name}
+            </Link>
           ))}
         </div>
       </div>

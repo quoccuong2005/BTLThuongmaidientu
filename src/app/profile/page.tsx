@@ -401,8 +401,8 @@ export default function ProfilePage() {
                   value={passwordForm.confirm_password}
                   onChange={(e) => setPasswordForm({ ...passwordForm, confirm_password: e.target.value })}
                   className={`w-full px-4 py-3 rounded-xl border outline-none transition-all text-sm ${passwordForm.confirm_password && passwordForm.confirm_password !== passwordForm.new_password
-                      ? 'border-red-400 focus:ring-2 focus:ring-red-500/20 focus:border-red-400'
-                      : 'border-gray-200 focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500'
+                    ? 'border-red-400 focus:ring-2 focus:ring-red-500/20 focus:border-red-400'
+                    : 'border-gray-200 focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500'
                     }`}
                   placeholder="Nhập lại mật khẩu mới"
                   required
@@ -521,19 +521,15 @@ export default function ProfilePage() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h3 className="font-bold text-gray-900 text-lg mb-4">Hoạt động</h3>
               <div className="space-y-3">
-                <div className="flex justify-between items-center p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer group">
+                <div
+                  onClick={() => router.push('/profile/reviews')}
+                  className="flex justify-between items-center p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer group"
+                >
                   <div className="flex items-center gap-3">
-                    <ShoppingBag size={18} className="text-gray-400 group-hover:text-orange-500" />
-                    <span className="text-sm font-medium text-gray-600">Tin đã đăng</span>
+                    <Star size={18} className="text-gray-400 group-hover:text-yellow-500" />
+                    <span className="text-sm font-medium text-gray-600">Đánh giá của tôi</span>
                   </div>
-                  <span className="text-xs font-bold bg-gray-100 px-2 py-1 rounded-md text-gray-500">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer group">
-                  <div className="flex items-center gap-3">
-                    <Heart size={18} className="text-gray-400 group-hover:text-red-500" />
-                    <span className="text-sm font-medium text-gray-600">Yêu thích</span>
-                  </div>
-                  <span className="text-xs font-bold bg-gray-100 px-2 py-1 rounded-md text-gray-500">0</span>
+                  <ChevronRight size={14} className="text-gray-300 group-hover:text-gray-400 group-hover:translate-x-1 transition-all" />
                 </div>
               </div>
             </div>
@@ -552,7 +548,7 @@ export default function ProfilePage() {
                     <p className="text-sm text-gray-500">Nơi nhận hàng mặc định của bạn</p>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => router.push('/profile/addresses')}
                   className="px-5 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold rounded-xl transition-all flex items-center gap-2 border border-gray-100"
                 >
@@ -605,7 +601,7 @@ export default function ProfilePage() {
                   <p className="text-gray-500 text-center max-w-xs mb-8">
                     Bạn chưa có địa chỉ giao hàng nào. Thêm ngay để đặt hàng nhanh chóng hơn!
                   </p>
-                  <button 
+                  <button
                     onClick={() => router.push('/profile/addresses')}
                     className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition-all hover:shadow-lg hover:-translate-y-1"
                   >

@@ -1,5 +1,5 @@
 'use client';
-import { ShoppingCart, CreditCard, Phone, MessageCircle, Heart } from 'lucide-react';
+import { ShoppingCart, CreditCard, Phone, MessageCircle, Heart, Zap } from 'lucide-react';
 import { Product } from '@/models/Product';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
@@ -8,14 +8,9 @@ import { useRouter } from 'next/navigation';
 
 interface ProductActionsProps {
   product: Product;
-  variant?: 'main' | 'sidebar';
+  variant?: 'main' | 'sidebar' | 'premium';
   quantity?: number;
-  hasVariants?: boolean; // true nếu đã chọn 1 variant hợp lệ
-  /**
-   * ID hợp lệ của Product (variant) để lưu Wishlist.
-   * - Nếu sản phẩm CÓ variants: truyền vào selectedVariant.id
-   * - Nếu sản phẩm KHÔNG có variants: bỏ qua, nút Yêu thích sẽ bị disable
-   */
+  hasVariants?: boolean;
   wishlistTargetId?: number;
 }
 
@@ -24,28 +19,73 @@ export function ProductActions({ product, variant = 'main', quantity = 1, wishli
   const { wishlistedProductIds, handleWishlistClick } = useWishlist();
   const router = useRouter();
 
-  // Chỉ check isWishlisted nếu có wishlistTargetId hợp lệ
+  const checkLogin = () => {
+    const sessionId = typeof window !== 'undefined' ? localStorage.getItem('sessionId') : null;
+    if (!sessionId) {
+      toast.error('Vui lòng đăng nhập để sử dụng tính năng này');
+      router.push('/login');
+      return false;
+    }
+    return true;
+  };
+
   const isWishlisted = wishlistTargetId ? wishlistedProductIds.has(wishlistTargetId) : false;
-  // Nút Yêu thích chỉ hoạt động khi đã có targetId (tức là đã chọn variant)
   const canWishlist = !!wishlistTargetId;
 
   const handleAddToCart = () => {
+    if (!checkLogin()) return;
     addToCart(product, quantity);
     toast.success(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
   };
 
   const handleBuyNow = () => {
+    if (!checkLogin()) return;
     addToCart(product, quantity);
     router.push('/cart');
   };
 
   const handleWishlistButtonClick = () => {
+    if (!checkLogin()) return;
     if (!canWishlist) {
       toast.info('Vui lòng chọn phân loại sản phẩm trước');
       return;
     }
     handleWishlistClick(wishlistTargetId!);
   };
+
+  if (variant === 'premium') {
+    return (
+      <div className="space-y-3">
+        <button
+          onClick={handleBuyNow}
+          className="w-full bg-red-600 hover:bg-red-700 text-white p-4 rounded-xl flex flex-col items-center justify-center transition-all active:scale-[0.98] shadow-lg shadow-red-100"
+        >
+          <span className="font-bold text-base uppercase">MUA NGAY</span>
+          <span className="text-[10px] opacity-90">Giao tận nhà hoặc nhận tại cửa hàng</span>
+        </button>
+        <button
+          onClick={handleAddToCart}
+          className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg shadow-orange-100"
+        >
+          <ShoppingCart size={20} />
+          <span>THÊM VÀO GIỎ HÀNG</span>
+        </button>
+        <button
+          onClick={handleWishlistButtonClick}
+          disabled={!canWishlist}
+          className={`w-full py-3 border-2 rounded-xl flex items-center justify-center gap-2 font-bold transition-all ${!canWishlist
+              ? 'border-gray-100 text-gray-300 cursor-not-allowed'
+              : isWishlisted
+                ? 'border-red-200 bg-red-50 text-red-600'
+                : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+            }`}
+        >
+          <Heart size={18} className={isWishlisted && canWishlist ? 'fill-red-600 text-red-600' : ''} />
+          {isWishlisted && canWishlist ? 'ĐÃ LƯU YÊU THÍCH' : 'THÊM VÀO YÊU THÍCH'}
+        </button>
+      </div>
+    );
+  }
 
   if (variant === 'sidebar') {
     return (

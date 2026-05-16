@@ -14,10 +14,10 @@ export function BannerCarousel({ banners }: BannerCarouselProps) {
 
   useEffect(() => {
     if (banners.length === 0) return;
-    const timer = setInterval(() => {
-      setCurrent(i => (i + 1) % banners.length);
-    }, 4000);
-    return () => clearInterval(timer);
+    // const timer = setInterval(() => {
+    //   setCurrent(i => (i + 1) % banners.length);
+    // }, 4000);
+    // return () => clearInterval(timer);
   }, [banners.length]);
 
   const prev = () => setCurrent(i => (i - 1 + banners.length) % banners.length);
@@ -26,7 +26,7 @@ export function BannerCarousel({ banners }: BannerCarouselProps) {
   if (banners.length === 0) {
     return (
       <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-white">
-        <div className="aspect-[16/7] md:aspect-[16/5] flex items-center justify-center text-sm text-slate-500">
+        <div className="aspect-[16/7] md:aspect-[11/5] flex items-center justify-center text-sm text-slate-500">
           Chưa có banner để hiển thị
         </div>
       </div>
@@ -35,7 +35,7 @@ export function BannerCarousel({ banners }: BannerCarouselProps) {
 
   return (
     <div className="tech-card relative rounded-2xl overflow-hidden shadow-sm border border-slate-200 bg-white">
-      <div className="relative aspect-[16/7] md:aspect-[16/5] bg-gray-200">
+      <div className="relative aspect-[16/7] md:aspect-[11/5] bg-gray-200">
         {banners.map((banner, idx) => (
           <div
             key={banner.id}

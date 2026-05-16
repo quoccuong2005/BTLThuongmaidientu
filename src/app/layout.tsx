@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Roboto } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -6,6 +7,12 @@ import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { Toaster } from 'sonner';
 import { CartProvider } from '@/context/CartContext';
 import { WishlistProvider } from '@/context/WishlistContext';
+
+const roboto = Roboto({
+  subsets: ['latin', 'vietnamese'],
+  weight: ['300', '400', '500', '700'],
+  variable: '--font-roboto',
+});
 
 export const metadata: Metadata = {
   title: 'ChoViet Commerce - Mua sắm trực tuyến',
@@ -17,8 +24,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi">
-      <body>
+    <html lang="vi" className={roboto.variable}>
+      <body className={roboto.className}>
         <CartProvider>
           <WishlistProvider>
             <Toaster position="top-right" richColors />
