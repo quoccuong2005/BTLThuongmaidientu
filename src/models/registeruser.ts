@@ -4,4 +4,9 @@ export interface RegisterUserState {
     email: string;
     phone: string;
     password: string;
-}   
+}
+
+export interface VerifyOtpState {
+    email: string;
+    otp: string;
+}

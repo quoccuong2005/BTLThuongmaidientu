@@ -58,12 +58,7 @@ export function BannerCarousel({ banners }: BannerCarouselProps) {
                   Smart campaign
                 </p>
                 <h3 className="text-white text-base md:text-2xl font-bold max-w-xl leading-tight">{banner.title}</h3>
-                <Link
-                  href={banner.link}
-                  className="mt-3 inline-flex min-h-10 items-center rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-orange-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-orange-500"
-                >
-                  Mua ngay
-                </Link>
+
               </div>
             </div>
           </div>

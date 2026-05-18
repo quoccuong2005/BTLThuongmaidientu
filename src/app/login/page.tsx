@@ -42,131 +42,168 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Đăng nhập tài khoản
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Hoặc{' '}
-          <Link href="/register" className="font-medium text-primary-600 hover:text-primary-500 transition-colors">
-            đăng ký tài khoản mới ngay
-          </Link>
-        </p>
-      </div>
+    <main className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 px-4 py-10">
+      <div className="mx-auto grid min-h-[calc(100vh-120px)] max-w-7xl items-center gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        {/* LEFT HERO */}
+        <section className="relative hidden overflow-hidden rounded-[2rem] shadow-2xl lg:block">
+          {/* Background image */}
+          <img
+            src="./login-banner.png"
+            alt="Login Background"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-100">
-          <form className="space-y-6" onSubmit={handleLogin}>
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#FB6A01]/85 via-orange-500/70 to-rose-500/80" />
+
+          {/* Blur glow */}
+          <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-white/20 blur-3xl" />
+          <div className="absolute bottom-0 left-10 h-72 w-72 rounded-full bg-yellow-300/20 blur-3xl" />
+
+          {/* Content */}
+          <div className="relative z-10 flex min-h-[620px] flex-col justify-between p-10 text-white">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Địa chỉ Email
-              </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  value={formData.identifier}
-                  onChange={handleInputChange}
-                  id="identifier"
-                  name="identifier"
-                  type="text"
-                  autoComplete="identifier"
-                  required
-                  className="focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2.5 border"
-                  placeholder="you@example.com"
-                />
-              </div>
+              <span className="inline-flex rounded-full border border-white/20 bg-white/15 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] backdrop-blur-xl">
+                Welcome back
+              </span>
+
+              <h1 className="mt-8 max-w-xl text-5xl font-black leading-tight">
+                Đăng nhập để săn deal nhanh hơn
+              </h1>
+
+              <p className="mt-5 max-w-lg text-base leading-7 text-orange-50">
+                Theo dõi đơn hàng, lưu sản phẩm yêu thích, nhận voucher và mua sắm tiện lợi hơn trên ChoViet.
+              </p>
             </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Mật khẩu
-              </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2.5 border"
-                  placeholder="••••••••"
-                />
-              </div>
-            </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-                />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+          </div>
+        </section>
+
+        {/* FORM */}
+        <section className="mx-auto w-full max-w-md">
+          <div className="mb-8 text-center">
+            <h2 className="text-3xl font-black text-slate-900">
+              Đăng nhập tài khoản
+            </h2>
+
+            <p className="mt-2 text-sm text-slate-500">
+              Chưa có tài khoản?{' '}
+              <Link
+                href="/register"
+                className="font-bold text-[#FB6A01] hover:text-orange-600"
+              >
+                Đăng ký ngay
+              </Link>
+            </p>
+          </div>
+
+          <div className="rounded-[2rem] border border-orange-100 bg-white p-6 shadow-xl shadow-orange-500/10 sm:p-8">
+            <form className="space-y-5" onSubmit={handleLogin}>
+              <div>
+                <label
+                  htmlFor="identifier"
+                  className="mb-2 block text-sm font-bold text-slate-700"
+                >
+                  Email hoặc tên đăng nhập
+                </label>
+
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-orange-400" />
+
+                  <input
+                    value={formData.identifier}
+                    onChange={handleInputChange}
+                    id="identifier"
+                    name="identifier"
+                    type="text"
+                    autoComplete="username"
+                    required
+                    className="block w-full rounded-2xl border border-orange-100 bg-orange-50/50 py-3 pl-12 pr-4 text-sm font-semibold text-slate-800 outline-none transition focus:border-orange-400 focus:bg-white focus:ring-4 focus:ring-orange-500/10"
+                    placeholder="you@example.com"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="password"
+                  className="mb-2 block text-sm font-bold text-slate-700"
+                >
+                  Mật khẩu
+                </label>
+
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-orange-400" />
+
+                  <input
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    className="block w-full rounded-2xl border border-orange-100 bg-orange-50/50 py-3 pl-12 pr-4 text-sm font-semibold text-slate-800 outline-none transition focus:border-orange-400 focus:bg-white focus:ring-4 focus:ring-orange-500/10"
+                    placeholder="••••••••"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3">
+                <label className="flex items-center gap-2 text-sm font-medium text-slate-600">
+                  <input
+                    id="remember-me"
+                    name="remember-me"
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-orange-200 text-[#FB6A01] focus:ring-orange-500"
+                  />
                   Ghi nhớ đăng nhập
                 </label>
-              </div>
 
-              <div className="text-sm">
-                <a href="#" className="font-medium text-primary-600 hover:text-primary-500">
+                <a
+                  href="#"
+                  className="text-sm font-bold text-[#FB6A01] hover:text-orange-600"
+                >
                   Quên mật khẩu?
                 </a>
               </div>
-            </div>
 
-            <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors group"
+                className="group flex w-full items-center justify-center rounded-2xl bg-[#FB6A01] px-5 py-3 text-sm font-black text-white shadow-lg shadow-orange-500/25 transition hover:-translate-y-0.5 hover:bg-orange-600"
               >
                 Đăng nhập
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="ml-2 h-5 w-5 transition group-hover:translate-x-1" />
               </button>
-            </div>
-          </form>
+            </form>
 
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Hoặc tiếp tục với</span>
-              </div>
+            <div className="my-6 flex items-center gap-3">
+              <div className="h-px flex-1 bg-slate-200" />
+              <span className="text-xs font-semibold text-slate-400">
+                Hoặc tiếp tục với
+              </span>
+              <div className="h-px flex-1 bg-slate-200" />
             </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <div>
-                <a
-                  href="#"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors"
-                >
-                  <span className="sr-only">Đăng nhập với Facebook</span>
-                  <Facebook className="w-5 h-5 text-blue-600" />
-                </a>
-              </div>
+            <div className="grid grid-cols-2 gap-3">
+              <a
+                href="#"
+                className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white py-3 transition hover:bg-slate-50"
+              >
+                <Facebook className="h-5 w-5 text-blue-600" />
+              </a>
 
-              <div>
-                <a
-                  href="#"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors"
-                >
-                  <span className="sr-only">Đăng nhập với Google</span>
-                  <Github className="w-5 h-5 text-gray-900" />
-                </a>
-              </div>
+              <a
+                href="#"
+                className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white py-3 transition hover:bg-slate-50"
+              >
+                <Github className="h-5 w-5 text-slate-900" />
+              </a>
             </div>
           </div>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }
