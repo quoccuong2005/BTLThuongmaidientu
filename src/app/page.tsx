@@ -5,11 +5,29 @@ import { CategoryGrid } from '../components/ui/CategoryGrid';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { BannerCarousel } from '@/components/ui/BannerCarousel';
 import { FlashSaleSection } from '@/components/home/FlashSaleSection';
-import { TrustBadges } from '@/components/home/TrustBadges';
-import { QuickPostBanner } from '@/components/home/QuickPostBanner';
 import { VouchersClient } from '@/components/vouchers/VouchersClient';
+import { FeaturedVoucherCard } from '@/components/vouchers/FeaturedVoucherCard';
 import { BANNERS } from '@/lib/db';
-import { BadgeCheck, Cpu, CreditCard, Gauge, Heart, PackageCheck, Radar, RefreshCcw, ScanLine, ShieldCheck, ShoppingCart, Sparkles, Star, TicketPercent, Truck, UserCog, Users, Zap } from 'lucide-react';
+import {
+  BadgeCheck,
+  ChevronRight,
+  Cpu,
+  Gift,
+  Headphones,
+  PackageCheck,
+  Radar,
+  ScanLine,
+  ShieldCheck,
+  ShoppingBag,
+  ShoppingCart,
+  Sparkles,
+  Star,
+  TicketPercent,
+  Truck,
+  Zap,
+  Gem
+
+} from 'lucide-react';
 
 export default async function HomePage() {
   const categories = await CategoryController.getTopCategories(12);
@@ -17,267 +35,282 @@ export default async function HomePage() {
   const newProducts = await ProductController.getNewProducts(8);
 
   return (
-    <div className="max-w-7xl mx-auto px-3 md:px-4 py-6 space-y-6">
-      <section className="tech-shell rounded-3xl text-white overflow-hidden shadow-lg">
-        <div className="grid gap-6 lg:grid-cols-[1.7fr_1.3fr] p-6 md:p-8">
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              <span className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-orange-100">
-                <Radar size={13} /> Live commerce engine
-              </span>
-              <span className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-orange-100">
-                <Zap size={13} /> Siêu sale mỗi ngày
-              </span>
-            </div>
-            <h1 className="text-3xl sm:text-5xl font-extrabold leading-tight">Mua sắm thông minh trong giao diện thương mại thế hệ mới</h1>
-            <p className="max-w-2xl text-sm sm:text-base text-orange-100/85">
-              Khám phá sản phẩm chính hãng, flash sale realtime, voucher thông minh và gợi ý mua hàng được tối ưu cho trải nghiệm mobile-first.
+    <main className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-white">
+      <div className="mx-auto max-w-7xl px-3 py-5 md:px-4 md:py-8">
+        <section className="grid gap-4 lg:grid-cols-[280px_1fr_320px]">
+          {/* Left panel */}
+          <aside className="rounded-[2rem] border border-orange-100 bg-white p-5 shadow-sm">
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-orange-600">
+              Khám phá nhanh
             </p>
-            <div className="flex flex-wrap gap-3">
-              <a
-                href="/search?sort=popular"
-                className="inline-flex items-center justify-center rounded-xl bg-white text-orange-600 px-5 py-2.5 text-sm font-semibold transition-colors hover:bg-orange-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-orange-500"
-              >
-                Mua ngay
-              </a>
-              <a
-                href="/search?sort=newest"
-                className="inline-flex items-center justify-center rounded-xl border border-white/40 bg-white/10 px-5 py-2.5 text-sm font-semibold transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-orange-500"
-              >
-                Xem hàng mới
-              </a>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div className="tech-glass rounded-3xl p-4 text-center">
-                <p className="text-2xl font-semibold">500+</p>
-                <p className="text-xs uppercase tracking-[0.2em] text-orange-100/90">Thương hiệu</p>
-              </div>
-              <div className="tech-glass rounded-3xl p-4 text-center">
-                <p className="text-2xl font-semibold">20k+</p>
-                <p className="text-xs uppercase tracking-[0.2em] text-orange-100/90">Sản phẩm hot</p>
-              </div>
-              <div className="tech-glass rounded-3xl p-4 text-center">
-                <p className="text-2xl font-semibold">24h</p>
-                <p className="text-xs uppercase tracking-[0.2em] text-orange-100/90">Giao nhanh</p>
-              </div>
-            </div>
-          </div>
-          <div className="tech-glass relative overflow-hidden rounded-[1.75rem] p-5">
-            <div className="relative space-y-4">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-sm uppercase tracking-[0.3em] text-orange-100/90">Realtime deal hub</p>
-                <Cpu size={18} className="text-orange-100" />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-2xl border border-white/15 bg-white/10 p-4">
-                  <p className="text-xs uppercase tracking-[0.18em] text-orange-100">Flash sale</p>
-                  <p className="mt-2 text-2xl font-black">-50%</p>
-                  <p className="mt-1 text-xs text-orange-100/90">Deal có giới hạn</p>
-                </div>
-                <div className="rounded-2xl border border-white/15 bg-white/10 p-4">
-                  <p className="text-xs uppercase tracking-[0.18em] text-orange-100">Smart voucher</p>
-                  <p className="mt-2 text-2xl font-black">GIAM30</p>
-                  <p className="mt-1 text-xs text-orange-100/90">Tự áp dụng</p>
-                </div>
-              </div>
-              <div className="rounded-2xl border border-white/15 bg-white/10 p-4">
-                <div className="mb-2 flex items-center justify-between text-xs font-bold uppercase tracking-[0.18em] text-orange-100">
-                  <span>Conversion score</span>
-                  <span>98%</span>
-                </div>
-                <div className="h-2 overflow-hidden rounded-full bg-white/15">
-                  <div className="h-full w-[98%] rounded-full bg-orange-300" />
-                </div>
-                <p className="mt-2 text-sm text-orange-100/95">Ưu tiên sản phẩm có voucher, đánh giá tốt và tốc độ giao nhanh.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      <section className="grid gap-3 lg:grid-cols-[2fr_1fr]">
-        <BannerCarousel banners={BANNERS} />
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-          <a
-            href="/search?sort=popular"
-            className="tap-bounce tech-card rounded-2xl border border-orange-200 bg-orange-50 p-4 transition-colors hover:bg-orange-100"
-          >
-            <p className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-orange-700">
-              <Zap size={14} /> Deal sốc mỗi giờ
-            </p>
-            <p className="mt-1 text-sm font-bold text-slate-900">Săn giá tốt cho sản phẩm hot</p>
-            <p className="mt-1 text-xs text-slate-600">Nhiều mã giảm tự động áp dụng khi thanh toán.</p>
-          </a>
-          <a
-            href="/search?sort=newest"
-            className="tap-bounce tech-card rounded-2xl border border-orange-200 bg-white p-4 transition-colors hover:bg-orange-50"
-          >
-            <p className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-orange-700">
-              <Sparkles size={14} /> Gian hàng mới
-            </p>
-            <p className="mt-1 text-sm font-bold text-slate-900">Cập nhật liên tục thương hiệu mới</p>
-            <p className="mt-1 text-xs text-slate-600">Khám phá sản phẩm vừa mở bán trong tuần.</p>
-          </a>
-        </div>
-      </section>
-      <CategoryGrid categories={categories} />
-      <FlashSaleSection products={featuredProducts} />
+            <div className="mt-5 space-y-3">
+              {[
+                { icon: <Zap size={18} />, title: 'Flash Sale', desc: 'Deal hot mỗi ngày' },
+                { icon: <TicketPercent size={18} />, title: 'Voucher', desc: 'Lưu mã giảm giá' },
+                { icon: <ShoppingBag size={18} />, title: 'Hàng mới', desc: 'Sản phẩm vừa lên kệ' },
+                { icon: <Truck size={18} />, title: 'Freeship', desc: 'Ưu đãi vận chuyển' },
+              ].map((item) => (
+                <a
+                  key={item.title}
+                  href="/search"
+                  className="group flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 transition hover:border-orange-200 hover:bg-orange-50"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-orange-600 shadow-sm">
+                    {item.icon}
+                  </span>
+                  <span>
+                    <span className="block text-sm font-black text-slate-900">{item.title}</span>
+                    <span className="block text-xs text-slate-500">{item.desc}</span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          </aside>
 
-      <section className="tech-card rounded-3xl border border-orange-100 bg-white p-4 shadow-sm md:p-5">
-        <SectionHeader title="Product Boost Zone" viewAllHref="/search?sort=popular" icon={<Zap size={18} />} />
-        <div className="grid gap-3 lg:grid-cols-[1fr_1.5fr]">
-          <div className="tech-shell overflow-hidden rounded-2xl p-4 text-white">
-            <div className="relative z-[1] space-y-3">
-              <p className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.22em] text-orange-100">
-                <ShoppingCart size={13} /> Đẩy chốt đơn
-              </p>
-              <h2 className="text-2xl font-black leading-tight">Sản phẩm đang được ưu tiên hiển thị</h2>
-              <p className="text-sm text-orange-100/90">
-                Tập trung vào sản phẩm có lượt mua tốt, giá nổi bật và CTA thêm giỏ rõ ràng để tăng chuyển đổi.
-              </p>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="tech-glass rounded-xl p-3 text-center">
-                  <p className="text-xl font-black">+38%</p>
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-orange-100">Tỷ lệ click</p>
-                </div>
-                <div className="tech-glass rounded-xl p-3 text-center">
-                  <p className="text-xl font-black">2.4x</p>
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-orange-100">Thêm giỏ</p>
-                </div>
-                <div className="tech-glass rounded-xl p-3 text-center">
-                  <p className="text-xl font-black">99K</p>
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-orange-100">Freeship</p>
+          {/* Main hero */}
+          <section className="relative h-[420px]   overflow-hidden rounded-[2rem] shadow-[0_20px_60px_rgba(251,106,1,0.28)]">
+            <img
+              src="/bgtmdt.png"
+              alt="Hero thương mại điện tử"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+
+            {/* Content */}
+            <div className="relative top-[196px] z-10 flex min-h-[420px] flex-col  p-6 md:p-8">
+              <div>
+                <div className="mt-7 flex flex-wrap gap-3">
+                  <a
+                    href="/search?sort=popular"
+                    className="inline-flex items-center gap-2 rounded-2xl bg-white p-[9px] text-sm font-bold text-[#FB6A01] shadow-xl transition hover:-translate-y-0.5 hover:bg-orange-50"
+                  >
+                    Mua ngay <ChevronRight size={16} />
+                  </a>
+
+                  <a
+                    href="/vouchers"
+                    className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/10 p-[9px] text-sm font-bold text-white backdrop-blur-xl transition hover:bg-white/20"
+                  >
+                    Nhận voucher
+                  </a>
                 </div>
               </div>
+
+
+            </div>
+          </section>
+
+          {/* Right deal panel */}
+          <aside className="space-y-4">
+
+
+            <div className="rounded-[2rem] border border-orange-100 bg-white p-5 shadow-sm">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-orange-600">
+                Mã nổi bật
+              </p>
+
+              <FeaturedVoucherCard />
+            </div>
+          </aside>
+        </section>
+
+        <section className="mt-6 grid gap-4 lg:grid-cols-[2fr_1fr]">
+          <div className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-orange-100">
+            <BannerCarousel banners={BANNERS} />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+            <a
+              href="/search?sort=popular"
+              className="group rounded-3xl border border-orange-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-orange-300 hover:shadow-xl"
+            >
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+                <Zap size={22} />
+              </div>
+              <p className="text-sm font-black text-slate-900">Deal sốc mỗi giờ</p>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Sản phẩm hot, giá tốt, mã giảm tự động áp dụng.
+              </p>
+            </a>
+
+            <a
+              href="/search?sort=newest"
+              className="group rounded-3xl border border-orange-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-orange-300 hover:shadow-xl"
+            >
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-600">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-package-plus-icon lucide-package-plus"><path d="M12 22V12" /><path d="M16 17h6" /><path d="M19 14v6" /><path d="M21 10.535V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.729l7 4a2 2 0 0 0 2 .001l1.675-.955" /><path d="M3.29 7 12 12l8.71-5" /><path d="m7.5 4.27 8.997 5.148" /></svg>
+              </div>
+              <p className="text-sm font-black text-slate-900">Hàng mới cập nhật</p>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Khám phá sản phẩm mới mở bán trong tuần này.
+              </p>
+            </a>
+          </div>
+        </section>
+
+        <section className="mt-6">
+          <CategoryGrid categories={categories} />
+        </section>
+
+        <section className="mt-6">
+          <FlashSaleSection products={featuredProducts} />
+        </section>
+
+        <section className="mt-6 rounded-[2rem] border border-orange-100 bg-white p-4 shadow-sm md:p-6">
+          <SectionHeader
+            title="Mã giảm giá & ưu đãi"
+            viewAllHref="/vouchers"
+            icon={<TicketPercent size={18} />}
+          />
+
+          <div className="mt-4 grid gap-4 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+            <div className="relative overflow-hidden rounded-3xl shadow-xl w-[95%] h-[12rem]">
+              {/* Background Image */}
+              <img
+                src="/voucher.png"
+                alt="Voucher Banner"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+
+
+            </div>
+
+            <div>
+              <VouchersClient limit={2} compact={true} />
             </div>
           </div>
-          <div className="grid gap-2">
-            {featuredProducts.slice(0, 3).map(product => (
-              <ProductCard key={product.id} product={product} variant="horizontal" />
+        </section>
+
+        <section className="mt-6 rounded-[2rem] border border-orange-100 bg-white p-4 shadow-sm md:p-6">
+          <SectionHeader
+            title="Sản phẩm nổi bật"
+            viewAllHref="/search?sort=popular"
+            icon={<Radar size={18} />}
+          />
+
+          <div className="mb-5 mt-4 flex flex-wrap gap-2">
+            <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-3 py-1 text-xs font-bold text-orange-700">
+              <ScanLine size={13} /> Nhiều lượt xem
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-3 py-1 text-xs font-bold text-orange-700">
+              <Star size={13} /> Đánh giá tốt
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-3 py-1 text-xs font-bold text-orange-700">
+              <ShoppingCart size={13} /> Dễ chốt đơn
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {featuredProducts.map(product => (
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="tech-card bg-white rounded-3xl shadow-sm border border-orange-100 p-4 md:p-6">
-        <SectionHeader title="Mã Giảm Giá & Ưu Đãi" viewAllHref="/vouchers" icon={<TicketPercent size={18} />} />
-        <div className="mt-4">
-          <VouchersClient limit={2} compact={true} />
-        </div>
-      </section>
+        <section className="mt-6 rounded-[2rem] border border-orange-100 bg-white p-4 shadow-sm md:p-6">
+          <SectionHeader
+            title="Hàng mới về"
+            viewAllHref="/search?sort=newest"
+            icon={<Cpu size={18} />}
+          />
 
-
-
-      <section className="tech-card bg-white rounded-3xl shadow-sm border border-orange-100 p-4 md:p-6">
-        <SectionHeader title="Sản phẩm nổi bật" viewAllHref="/search?sort=popular" icon={<Radar size={18} />} />
-        <div className="mb-3 grid gap-2 md:grid-cols-3">
-          <div className="rounded-2xl border border-orange-200 bg-orange-50 px-3 py-2">
-            <p className="text-xs font-bold uppercase tracking-wide text-orange-700">Đẩy sản phẩm</p>
-            <p className="mt-1 text-sm font-bold text-slate-900">Ưu tiên sản phẩm có lượt mua cao</p>
-          </div>
-          <div className="rounded-2xl border border-orange-200 bg-orange-50 px-3 py-2">
-            <p className="text-xs font-bold uppercase tracking-wide text-orange-700">Deal nổi bật</p>
-            <p className="mt-1 text-sm font-bold text-slate-900">Hiển thị giá tốt và voucher trước</p>
-          </div>
-          <div className="rounded-2xl border border-orange-200 bg-orange-50 px-3 py-2">
-            <p className="text-xs font-bold uppercase tracking-wide text-orange-700">Chốt đơn nhanh</p>
-            <p className="mt-1 text-sm font-bold text-slate-900">CTA thêm giỏ nằm ngay trên card</p>
-          </div>
-        </div>
-        <div className="mb-3 flex flex-wrap gap-2">
-          <span className="tech-chip inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold">
-            <ScanLine size={13} /> Top sản phẩm nhiều lượt xem
-          </span>
-          <span className="tech-chip inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold">
-            <TicketPercent size={13} /> Voucher hiển thị nổi bật
-          </span>
-          <span className="tech-chip inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold">
-            <ShoppingCart size={13} /> Thêm giỏ nhanh
-          </span>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3">
-          {featuredProducts.map(product => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </section>
-
-      <section className="tech-card bg-white rounded-3xl shadow-sm border border-orange-100 p-4 md:p-6">
-        <SectionHeader title="Hàng mới về" viewAllHref="/search?sort=newest" icon={<Cpu size={18} />} />
-        <div className="mb-3 flex flex-wrap gap-2">
-          <span className="tech-chip inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold">
-            <Sparkles size={13} /> Sản phẩm vừa mở bán
-          </span>
-          <span className="tech-chip inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold">
-            <Radar size={13} /> Theo dõi xu hướng mới
-          </span>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3">
-          {newProducts.map(product => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </section>
-
-      <section className="tech-card bg-white rounded-3xl shadow-sm border border-orange-100 p-5">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-700">Trust layer</p>
-            <h2 className="mt-1 text-lg font-black text-slate-900">Hạ tầng mua sắm an toàn</h2>
-          </div>
-          <span className="tech-chip hidden rounded-full px-3 py-1 text-xs font-bold sm:inline-flex">Realtime protection</span>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="tech-card flex items-start gap-3 rounded-2xl border border-gray-200 p-4">
-            <ShieldCheck className="w-5 h-5 text-orange-600 mt-0.5" />
-            <div>
-              <p className="text-sm font-semibold text-slate-900">Chính hãng đảm bảo</p>
-              <p className="text-sm text-slate-600">Sản phẩm được kiểm duyệt từ nhà bán uy tín.</p>
-            </div>
-          </div>
-          <div className="tech-card flex items-start gap-3 rounded-2xl border border-gray-200 p-4">
-            <Truck className="w-5 h-5 text-orange-600 mt-0.5" />
-            <div>
-              <p className="text-sm font-semibold text-slate-900">Giao nhanh toàn quốc</p>
-              <p className="text-sm text-slate-600">Theo dõi đơn hàng theo thời gian thực.</p>
-            </div>
-          </div>
-          <div className="tech-card flex items-start gap-3 rounded-2xl border border-gray-200 p-4">
-            <BadgeCheck className="w-5 h-5 text-orange-600 mt-0.5" />
-            <div>
-              <p className="text-sm font-semibold text-slate-900">Thanh toán an toàn</p>
-              <p className="text-sm text-slate-600">Hỗ trợ nhiều phương thức thanh toán linh hoạt.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="tech-card rounded-3xl border border-orange-100 bg-white p-4 md:p-5">
-        <SectionHeader title="Hệ module E-commerce" icon={<Gauge size={18} />} />
-        <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
-          {[
-            { key: 'users', label: 'users', icon: Users, desc: 'Hồ sơ khách hàng và định danh tài khoản' },
-            { key: 'admin', label: 'admin', icon: UserCog, desc: 'Quản trị vận hành danh mục và gian hàng' },
-            { key: 'products', label: 'products', icon: PackageCheck, desc: 'Quản lý sản phẩm, biến thể, tồn kho' },
-            { key: 'orders', label: 'orders', icon: Truck, desc: 'Quy trình xử lý đơn và giao vận' },
-            { key: 'payments', label: 'payments', icon: CreditCard, desc: 'Thanh toán đa phương thức an toàn' },
-            { key: 'returns', label: 'returns', icon: RefreshCcw, desc: 'Đổi trả linh hoạt theo chính sách' },
-            { key: 'vouchers', label: 'vouchers', icon: TicketPercent, desc: 'Mã giảm giá và ưu đãi flash-sale' },
-            { key: 'reviews', label: 'reviews', icon: Star, desc: 'Đánh giá xác thực sau khi mua hàng' },
-            { key: 'wish_list', label: 'wish_list', icon: Heart, desc: 'Lưu yêu thích và gợi ý mua lại' },
-          ].map(item => (
-            <div key={item.key} className="tech-card rounded-2xl border border-slate-200 p-3">
-              <div className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-orange-50 text-orange-600">
-                <item.icon size={18} />
+          <div className="mb-5 mt-4 rounded-3xl bg-gradient-to-r from-orange-600 to-orange-400 p-5 text-white">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-orange-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-package-plus-icon lucide-package-plus"><path d="M12 22V12" /><path d="M16 17h6" /><path d="M19 14v6" /><path d="M21 10.535V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.729l7 4a2 2 0 0 0 2 .001l1.675-.955" /><path d="M3.29 7 12 12l8.71-5" /><path d="m7.5 4.27 8.997 5.148" /></svg> New arrival
+                </p>
+                <h2 className="mt-2 text-2xl font-black">Sản phẩm mới được cập nhật liên tục</h2>
               </div>
-              <p className="mt-2 text-sm font-bold text-slate-900">{item.label}</p>
-              <p className="mt-1 text-xs leading-5 text-slate-600">{item.desc}</p>
+              <a
+                href="/search?sort=newest"
+                className="inline-flex w-fit items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-bold text-slate-900 transition hover:bg-orange-50"
+              >
+                Xem tất cả <ChevronRight size={16} />
+              </a>
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
 
-      <TrustBadges />
-    </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {newProducts.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-6 rounded-[2rem] border border-orange-100 bg-white p-5 shadow-sm md:p-6">
+          <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-600">
+                Vì sao chọn chúng tôi?
+              </p>
+              <h2 className="mt-1 text-2xl font-black text-slate-900">
+                Mua sắm an toàn, giao hàng nhanh
+              </h2>
+            </div>
+            <p className="max-w-md text-sm leading-6 text-slate-500">
+              Tối ưu trải nghiệm từ lúc xem sản phẩm đến khi thanh toán và nhận hàng.
+            </p>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-3xl border border-slate-100 bg-slate-50 p-5">
+              <ShieldCheck className="h-7 w-7 text-orange-600" />
+              <p className="mt-4 text-sm font-black text-slate-900">Hàng chính hãng</p>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Sản phẩm được kiểm duyệt từ nhà bán uy tín.
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-slate-100 bg-slate-50 p-5">
+              <Truck className="h-7 w-7 text-orange-600" />
+              <p className="mt-4 text-sm font-black text-slate-900">Giao nhanh</p>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Theo dõi đơn hàng và cập nhật trạng thái rõ ràng.
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-slate-100 bg-slate-50 p-5">
+              <BadgeCheck className="h-7 w-7 text-orange-600" />
+              <p className="mt-4 text-sm font-black text-slate-900">Thanh toán an toàn</p>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Hỗ trợ nhiều hình thức thanh toán linh hoạt.
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-slate-100 bg-slate-50 p-5">
+              <Headphones className="h-7 w-7 text-orange-600" />
+              <p className="mt-4 text-sm font-black text-slate-900">Hỗ trợ nhanh</p>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Luôn sẵn sàng hỗ trợ khi bạn cần tư vấn.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-6 overflow-hidden rounded-[2rem] bg-gradient-to-r from-orange-600 to-rose-500 p-6 text-white shadow-2xl md:p-8">
+          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-orange-100">
+                <PackageCheck size={14} /> Bắt đầu mua sắm
+              </p>
+              <h2 className="mt-2 text-3xl font-black">
+                Tìm sản phẩm bạn yêu thích ngay hôm nay
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-orange-50">
+                Săn deal, lưu voucher và trải nghiệm mua sắm nhanh chóng chỉ trong vài bước.
+              </p>
+            </div>
+
+            <a
+              href="/search"
+              className="inline-flex w-fit items-center gap-2 rounded-2xl bg-white px-6 py-3 text-sm font-bold text-orange-600 shadow-lg transition hover:-translate-y-0.5 hover:bg-orange-50"
+            >
+              Khám phá sản phẩm <ChevronRight size={16} />
+            </a>
+          </div>
+        </section>
+      </div>
+    </main>
   );
 }

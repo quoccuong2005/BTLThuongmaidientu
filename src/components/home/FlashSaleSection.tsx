@@ -35,7 +35,7 @@ export function FlashSaleSection({ products }: FlashSaleSectionProps) {
 
   return (
     <section className="tech-card overflow-hidden rounded-3xl border border-orange-200 bg-white shadow-sm">
-      <div className="tech-shell p-4 text-white md:p-5">
+      <div className="tech-shell p-4 text-white md:p-5 !bg-[#f26522]">
         <div className="relative z-[1] flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-3">
             <div className="tech-glass flex h-12 w-12 items-center justify-center rounded-2xl">

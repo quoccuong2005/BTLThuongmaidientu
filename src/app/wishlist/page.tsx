@@ -150,14 +150,13 @@ export default function WishlistPage() {
           title: item.product.name,
           price: item.product.price,
           image: item.product.image_url || '',
-          quantity: 1,
           location: '',
           category: '',
           categorySlug: '',
           condition: 'new',
           postedAt: new Date().toISOString(),
           seller: 'System',
-        });
+        }, 1);
         toast.success('Đã chuyển sang giỏ hàng');
       } else {
         toast.error('Lỗi chuyển giỏ hàng');

@@ -9,27 +9,17 @@ interface CategoryGridProps {
 export function CategoryGrid({ categories }: CategoryGridProps) {
   return (
     <section className="tech-card overflow-hidden rounded-3xl border border-orange-200 bg-white shadow-sm">
-      <div className="tech-shell p-4 text-white md:p-5">
-        <div className="relative z-[1] flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.22em] text-orange-100">
-              <Radar className="h-3.5 w-3.5" /> Category scanner
-            </p>
-            <h2 className="mt-2 flex items-center gap-2 text-xl font-black text-white">
-              <LayoutGrid className="h-5 w-5 text-orange-200" />
-              Danh mục nổi bật
-            </h2>
-            <p className="mt-1 text-sm text-orange-100/85">
-              Lướt nhanh các ngành hàng chính, ưu tiên hiển thị deal và sản phẩm đang tăng trưởng.
-            </p>
-          </div>
-          <Link
-            href="/search"
-            className="tap-bounce inline-flex min-h-10 items-center justify-center rounded-xl bg-white px-4 text-sm font-bold text-orange-600 transition-colors hover:bg-orange-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-orange-500"
-          >
-            Xem tất cả
-          </Link>
-        </div>
+      <div className="relative overflow-hidden rounded-[2rem] w-full h-[15rem]">
+        {/* Background Image */}
+        <img
+          src="/category-banner.png"
+          alt="Category Banner"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+
+
+
+
       </div>
 
       <div className="grid grid-cols-4 gap-2 p-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8">
