@@ -1,5 +1,7 @@
+import Link from 'next/link';
 import { ProductController } from '@/controllers/ProductController';
 import { CategoryController } from '@/controllers/CategoryController';
+import { ContentController } from '@/controllers/ContentController';
 import { ProductCard } from '../components/ui/ProductCard';
 import { CategoryGrid } from '../components/ui/CategoryGrid';
 import { SectionHeader } from '@/components/ui/SectionHeader';
@@ -9,12 +11,32 @@ import { TrustBadges } from '@/components/home/TrustBadges';
 import { QuickPostBanner } from '@/components/home/QuickPostBanner';
 import { VouchersClient } from '@/components/vouchers/VouchersClient';
 import { BANNERS } from '@/lib/db';
-import { BadgeCheck, Cpu, CreditCard, Gauge, Heart, PackageCheck, Radar, RefreshCcw, ScanLine, ShieldCheck, ShoppingCart, Sparkles, Star, TicketPercent, Truck, UserCog, Users, Zap } from 'lucide-react';
+import { BadgeCheck, BookOpen, Cpu, CreditCard, Gauge, Heart, PackageCheck, Radar, RefreshCcw, ScanLine, ShieldCheck, ShoppingCart, Sparkles, Star, TicketPercent, Truck, UserCog, Users, Zap } from 'lucide-react';
+
+const formatDate = (value?: string) => {
+  if (!value) return '';
+  return new Intl.DateTimeFormat('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(new Date(value));
+};
+
+const getExcerpt = (summary?: string, content?: string) => {
+  const source = (summary || content || '').trim();
+  if (!source) return 'No summary available.';
+  return source.length > 120 ? `${source.slice(0, 117)}...` : source;
+};
 
 export default async function HomePage() {
   const categories = await CategoryController.getTopCategories(12);
   const featuredProducts = await ProductController.getFeaturedProducts(8);
   const newProducts = await ProductController.getNewProducts(8);
+  const latestContents = await ContentController.getPublicContents({
+    limit: 4,
+    sort: 'published_at',
+    order: 'DESC',
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-3 md:px-4 py-6 space-y-6">
@@ -165,6 +187,55 @@ export default async function HomePage() {
           <VouchersClient limit={2} compact={true} />
         </div>
       </section>
+
+      {latestContents.length > 0 && (
+        <section className="tech-card bg-white rounded-3xl shadow-sm border border-orange-100 p-4 md:p-6">
+          <div className="mb-5 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-orange-700">
+                <BookOpen size={13} /> Blog
+              </span>
+              <h2 className="text-lg md:text-xl font-black text-slate-900">Goc tin tuc</h2>
+            </div>
+            <Link
+              href="/content"
+              className="group text-orange-500 hover:text-orange-600 text-sm font-bold flex items-center gap-1 transition-all"
+            >
+              Xem tat ca
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </Link>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            {latestContents.map((post) => (
+              <Link
+                key={post.id}
+                href={`/content/${post.slug}`}
+                className="group flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition-all hover:-translate-y-0.5 hover:shadow-md"
+              >
+                <img
+                  src={
+                    post.coverImageUrl ||
+                    'https://placehold.co/600x360?text=Content'
+                  }
+                  alt={post.title}
+                  className="h-36 w-full rounded-xl object-cover"
+                />
+                <div className="space-y-2">
+                  <span className="text-xs text-slate-500">
+                    {formatDate(post.publishedAt)}
+                  </span>
+                  <h3 className="text-base font-black text-slate-900 group-hover:text-orange-600 line-clamp-2">
+                    {post.title}
+                  </h3>
+                  <p className="text-sm text-slate-600 line-clamp-2">
+                    {getExcerpt(post.summary, post.content)}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
 
 
