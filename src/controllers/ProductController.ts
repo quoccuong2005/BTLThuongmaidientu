@@ -22,7 +22,7 @@ export class ProductController {
       views: item.view_count,
       description: item.description,
       totalSold: item.total_sold,
-      rating: item.rate_count > 0 ? item.rate_total / item.rate_count / 100 : 5, // Mapping rate_total to 1-5 scale
+      rating: item.rate_count > 0 ? Math.min(5, item.rate_total / item.rate_count) : undefined,
       variants: item.products,
       isFeatured: item.is_featured === 1 || item.is_featured === true,
     };

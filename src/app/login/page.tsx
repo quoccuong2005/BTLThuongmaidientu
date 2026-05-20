@@ -29,6 +29,7 @@ export default function LoginPage() {
       // Lưu thông tin vào localStorage
       localStorage.setItem('sessionId', result.data.data.sessionId);
       localStorage.setItem('user', JSON.stringify(result.data.data.user));
+      window.dispatchEvent(new Event('cho-viet-auth'));
 
       // Chuyển hướng về trang chủ
       router.push('/');

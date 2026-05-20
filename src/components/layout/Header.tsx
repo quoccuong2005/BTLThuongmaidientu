@@ -36,11 +36,23 @@ export function Header() {
   const { itemCount } = useCart();
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) setUser(JSON.parse(savedUser));
+    const syncUser = () => {
+      const savedUser = localStorage.getItem('user');
+      setUser(savedUser ? JSON.parse(savedUser) : null);
+    };
+
+    syncUser();
+
+    window.addEventListener('storage', syncUser);
+    window.addEventListener('cho-viet-auth', syncUser);
 
     // Fetch categories
     CategoryController.getTopCategories(8).then(setCategories);
+
+    return () => {
+      window.removeEventListener('storage', syncUser);
+      window.removeEventListener('cho-viet-auth', syncUser);
+    };
   }, []);
 
   const quickSearches = useMemo(() => POPULAR_SEARCHES.slice(0, 6), []);

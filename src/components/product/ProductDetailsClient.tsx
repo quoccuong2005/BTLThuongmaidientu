@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Product, ProductVariant } from '@/models/Product';
 import { ProductController } from '@/controllers/ProductController';
 import { ProductActions } from './ProductActions';
-import { Star, CheckCircle2, ChevronRight, ChevronLeft, CreditCard, Heart, PackageCheck, RefreshCcw, TicketPercent, Truck, UserCog, Users, Info, MapPin, ShieldCheck, Zap, MessageSquare, Store } from 'lucide-react';
+import { Star, StarHalf, CheckCircle2, ChevronRight, ChevronLeft, CreditCard, Heart, PackageCheck, RefreshCcw, TicketPercent, Truck, UserCog, Users, Info, MapPin, ShieldCheck, Zap, MessageSquare, Store } from 'lucide-react';
 import { ProductReviews } from './ProductReviews';
 import { useSearchParams } from 'next/navigation';
 
@@ -27,12 +27,10 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
   const currentTitle = selectedVariant ? selectedVariant.name : product.title;
   const currentImage = selectedVariant ? selectedVariant.image_url : product.image;
   const currentId = selectedVariant ? selectedVariant.id : product.id;
-
   const handleQuantityChange = (val: number) => {
     if (val < 1) return;
     setQuantity(val);
   };
-  console.log("rating", product)
   return (
     <div className="max-w-[1200px] mx-auto px-4 py-4 space-y-4">
       {/* Breadcrumbs */}
@@ -105,17 +103,33 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
             <div className="mt-4 flex items-center justify-center gap-4 text-xs text-gray-500 font-medium">
               <div className="flex items-center gap-0.5">
                 {[...Array(5)].map((_, i) => {
-                  const ratingValue = product.rating || 5;
-                  const isFilled = i < Math.round(ratingValue);
-                  return (
+                  const ratingValue = product.rating ?? 0;
+                  const fullStars = Math.floor(ratingValue);
+                  const hasHalfStar = ratingValue - fullStars >= 0.5;
+                  const isFilled = i < fullStars;
+                  const isHalf = i === fullStars && hasHalfStar;
+
+                  return isFilled ? (
                     <Star
                       key={i}
                       size={14}
-                      className={isFilled ? "text-yellow-400 fill-yellow-400" : "text-gray-200 fill-gray-200"}
+                      className="text-yellow-400 fill-yellow-400"
+                    />
+                  ) : isHalf ? (
+                    <StarHalf
+                      key={i}
+                      size={14}
+                      className="text-yellow-400 fill-yellow-400"
+                    />
+                  ) : (
+                    <Star
+                      key={i}
+                      size={14}
+                      className="text-gray-200 fill-gray-200"
                     />
                   );
                 })}
-                <span className="ml-1.5 text-gray-400 text-[10px] font-bold">({product.rating || 5})</span>
+                <span className="ml-1.5 text-gray-400 text-[10px] font-bold">({(product.rating ?? 0).toFixed(1)})</span>
               </div>
               <span>•</span>
               <span>{(product.views || 0).toLocaleString('vi-VN')} lượt xem</span>
