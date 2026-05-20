@@ -32,10 +32,6 @@ export default function LoginPage() {
 
       // Chuyển hướng về trang chủ
       router.push('/');
-      // Refresh trang để header cập nhật trạng thái (cách đơn giản nhất)
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
     } else {
       toast.error('Tên đăng nhập hoặc mật khẩu không chính xác!');
     }
