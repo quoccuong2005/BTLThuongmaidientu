@@ -7,6 +7,18 @@ import { Package, Calendar, MapPin, CreditCard, ArrowLeft, Clock, CheckCircle2, 
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { OrderItemReviewAction } from '@/components/review/OrderItemReviewAction';
+import type { OrderItem } from '@/controllers/OrderController';
+
+// Lấy URL ảnh: ưu tiên product_line.images[0] (gallery), fallback product.image_url,
+// cuối cùng null để render placeholder icon.
+function getItemImageUrl(item: OrderItem): string | null {
+  const images = item.product?.product_line?.images;
+  if (images && images.length > 0) {
+    const sorted = [...images].sort((a, b) => a.sort_order - b.sort_order);
+    return sorted[0].url;
+  }
+  return item.product?.image_url ?? null;
+}
 
 export default function OrderDetailPage() {
   const { id } = useParams();
@@ -191,12 +203,27 @@ export default function OrderDetailPage() {
               <h2 className="font-bold text-lg">Sản phẩm đã chọn</h2>
             </div>
             <div className="divide-y divide-gray-50">
-              {order.items?.map((item) => (
+              {order.items?.map((item) => {
+                const imageUrl = getItemImageUrl(item);
+                return (
                 <div key={item.id} className="p-6">
                   <div className="flex gap-4">
-                    <div className="w-20 h-20 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 overflow-hidden flex-shrink-0">
-                      <Package size={32} className="text-gray-200" />
-                    </div>
+                    <Link
+                      href={item.product_id ? `/product/${item.product_id}` : '#'}
+                      className="w-20 h-20 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 overflow-hidden flex-shrink-0 hover:border-orange-200 transition-colors"
+                    >
+                      {imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={imageUrl}
+                          alt={item.product_name}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <Package size={32} className="text-gray-200" aria-hidden="true" />
+                      )}
+                    </Link>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-bold text-gray-900 line-clamp-1 mb-1">{item.product_name}</h3>
                       <p className="text-xs text-gray-400 mb-2 uppercase tracking-wider">SKU: {item.sku}</p>
@@ -212,13 +239,14 @@ export default function OrderDetailPage() {
                   </div>
                   
                   {/* Review Action */}
-                  <OrderItemReviewAction 
+                  <OrderItemReviewAction
                     orderItemId={item.id}
                     productName={item.product_name}
                     orderStatus={order.status}
                   />
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 

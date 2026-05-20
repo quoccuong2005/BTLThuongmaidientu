@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingBag, Ticket, Package, type LucideIcon } from "lucide-react";
+import {
+  ShoppingBag,
+  Ticket,
+  Package,
+  Truck,
+  type LucideIcon,
+} from "lucide-react";
 import {
   NOTIFICATION_TYPE,
   type Notification,
@@ -10,12 +16,14 @@ import {
 
 const ICON_BY_TYPE: Record<NotificationType, LucideIcon> = {
   [NOTIFICATION_TYPE.ORDER_PLACED]: ShoppingBag,
+  [NOTIFICATION_TYPE.ORDER_STATUS_CHANGED]: Truck,
   [NOTIFICATION_TYPE.VOUCHER_NEW]: Ticket,
   [NOTIFICATION_TYPE.PRODUCT_NEW]: Package,
 };
 
 const COLOR_BY_TYPE: Record<NotificationType, string> = {
   [NOTIFICATION_TYPE.ORDER_PLACED]: "text-emerald-600 bg-emerald-50",
+  [NOTIFICATION_TYPE.ORDER_STATUS_CHANGED]: "text-indigo-600 bg-indigo-50",
   [NOTIFICATION_TYPE.VOUCHER_NEW]: "text-orange-600 bg-orange-50",
   [NOTIFICATION_TYPE.PRODUCT_NEW]: "text-sky-600 bg-sky-50",
 };
@@ -24,6 +32,7 @@ function getHref(noti: Notification): string {
   const data = (noti.data ?? {}) as Record<string, unknown>;
   switch (noti.type) {
     case NOTIFICATION_TYPE.ORDER_PLACED:
+    case NOTIFICATION_TYPE.ORDER_STATUS_CHANGED:
       return data.orderId ? `/orders/${data.orderId}` : "/orders";
     case NOTIFICATION_TYPE.VOUCHER_NEW:
       return "/vouchers";
@@ -35,8 +44,11 @@ function getHref(noti: Notification): string {
 }
 
 // Time format: tương đối ngắn (vd "5 phút trước"); dùng Intl.DateTimeFormat làm fallback
-function formatTime(iso: string): string {
-  const date = new Date(iso);
+function formatTime(iso: string | Date | null | undefined): string {
+  if (!iso) return "";
+  const date = iso instanceof Date ? iso : new Date(iso);
+  // Guard Invalid Date (vd ISO sai, MySQL zero datetime, null)
+  if (Number.isNaN(date.getTime())) return "";
   const diffMs = Date.now() - date.getTime();
   const diffMin = Math.floor(diffMs / 60_000);
   if (diffMin < 1) return "vừa xong";
