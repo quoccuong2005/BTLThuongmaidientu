@@ -12,7 +12,7 @@ interface ProductPageProps {
 export default async function ProductPage({ params }: ProductPageProps) {
   const product = await ProductController.getProductById(params.id);
   if (!product) notFound();
-  console.log("product", product)
+  
 
   const related = (await ProductController.getProductsByCategory(product.categorySlug, 8))
     .filter(p => p.id !== product.id);

@@ -5,7 +5,12 @@ import api from '@/lib/axios';
 export class CategoryController {
   static async getAllCategories(): Promise<Category[]> {
     try {
-      const response = await api.get<CategoryApiResponse>('/categories?limit=100');
+      const response = await api.get<CategoryApiResponse>('/categories', {
+        params: {
+        page: 1,
+        limit: 200,
+      },
+      });
       if (response.data && response.data.data && response.data.data.items) {
         return response.data.data.items.map(item => ({
           id: item.id,

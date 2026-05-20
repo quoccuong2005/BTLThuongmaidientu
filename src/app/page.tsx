@@ -46,7 +46,7 @@ const getExcerpt = (summary?: string, content?: string) => {
 };
 
 export default async function HomePage() {
-  const categories = await CategoryController.getTopCategories(12);
+  const categories = await CategoryController.getTopCategories(200);
   const featuredProducts = await ProductController.getFeaturedProducts(8);
   const newProducts = await ProductController.getNewProducts(8);
   const latestContents = await ContentController.getPublicContents({

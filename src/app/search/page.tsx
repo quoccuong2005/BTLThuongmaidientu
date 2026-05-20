@@ -16,7 +16,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   });
 
   const categories = await CategoryController.getAllCategories();
-
+  
   return (
     <div className="max-w-7xl mx-auto px-3 md:px-4 py-4">
       <div className="flex gap-4">
