@@ -1,9 +1,19 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { OrderController, Order } from '@/controllers/OrderController';
+import { OrderController, Order, type OrderItem } from '@/controllers/OrderController';
 import { ProductController } from '@/controllers/ProductController';
 import { Package, Calendar, MapPin, CreditCard, ChevronRight, ArrowLeft, ShoppingBag, Clock, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+
+// Lấy URL ảnh: ưu tiên gallery product_line.images[0], fallback product.image_url
+function getItemImageUrl(item: OrderItem): string | null {
+  const images = item.product?.product_line?.images;
+  if (images && images.length > 0) {
+    const sorted = [...images].sort((a, b) => a.sort_order - b.sort_order);
+    return sorted[0].url;
+  }
+  return item.product?.image_url ?? null;
+}
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -113,6 +123,50 @@ export default function OrdersPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Product thumbnails */}
+              {order.items && order.items.length > 0 && (
+                <div className="px-5 pt-5 pb-2 flex items-center gap-2">
+                  <div className="flex -space-x-2">
+                    {order.items.slice(0, 4).map((item) => {
+                      const imageUrl = getItemImageUrl(item);
+                      return (
+                        <div
+                          key={item.id}
+                          className="w-12 h-12 rounded-xl bg-gray-50 border-2 border-white shadow-sm overflow-hidden flex items-center justify-center"
+                          title={item.product_name}
+                        >
+                          {imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={imageUrl}
+                              alt={item.product_name}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <Package size={20} className="text-gray-300" aria-hidden="true" />
+                          )}
+                        </div>
+                      );
+                    })}
+                    {order.items.length > 4 && (
+                      <div className="w-12 h-12 rounded-xl bg-gray-100 border-2 border-white shadow-sm flex items-center justify-center text-xs font-bold text-gray-600">
+                        +{order.items.length - 4}
+                      </div>
+                    )}
+                  </div>
+                  <div className="ml-2 text-sm">
+                    <p className="font-semibold text-gray-700 line-clamp-1">
+                      {order.items[0].product_name}
+                      {order.items.length > 1 && (
+                        <span className="text-gray-400 font-normal"> và {order.items.length - 1} sản phẩm khác</span>
+                      )}
+                    </p>
+                    <p className="text-xs text-gray-400">{order.items.length} sản phẩm</p>
+                  </div>
+                </div>
+              )}
 
               {/* Order Body */}
               <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">

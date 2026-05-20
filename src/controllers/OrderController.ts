@@ -11,6 +11,23 @@ export interface CreateOrderInput {
   payment_method: string;
 }
 
+export interface ProductLineImage {
+  id: number;
+  url: string;
+  sort_order: number;
+}
+
+export interface OrderItemProduct {
+  id: number;
+  name: string;
+  image_url?: string | null;
+  product_line?: {
+    id: number;
+    name: string;
+    images?: ProductLineImage[];
+  } | null;
+}
+
 export interface OrderItem {
   id: number;
   product_id: number;
@@ -19,6 +36,7 @@ export interface OrderItem {
   unit_price: string;
   quantity: number;
   subtotal: string;
+  product?: OrderItemProduct | null;
 }
 
 export interface Order {

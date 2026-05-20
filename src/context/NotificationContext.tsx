@@ -35,6 +35,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const abortRef = useRef<(() => void) | null>(null);
+  // Track seen noti IDs để dedup SSE duplicate (hot-reload, multi-Subject same user...)
+  const seenIdsRef = useRef<Set<number>>(new Set());
 
   // Detect login state qua localStorage. Re-check khi storage thay đổi (tab khác login).
   useEffect(() => {
@@ -57,6 +59,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         NotificationsApi.unreadCount(),
       ]);
       setNotifications(list);
+      // Seed seenIds với noti đã load → SSE redeliver các id này sẽ bị skip
+      seenIdsRef.current = new Set(list.map((n) => n.id));
       setUnreadCount(count);
     } catch {
       // Silent fail — không spam toast khi user mới load page mà chưa login
@@ -72,22 +76,33 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       abortRef.current = null;
       setNotifications([]);
       setUnreadCount(0);
+      seenIdsRef.current.clear();
       return;
     }
 
     refresh();
 
     const abort = startNotificationStream({
+      onOpen: () => {
+        console.log('[Notifications] SSE stream connected');
+      },
       onMessage: (noti) => {
-        setNotifications((prev) => [noti, ...prev].slice(0, 50));
+        // Dedup theo id — SSE có thể deliver cùng 1 noti nhiều lần
+        // (hot-reload BE đăng ký listener lặp, multi-Subject same user, ...).
+        // Chỉ tăng badge + toast + push list 1 lần / noti.id.
+        if (seenIdsRef.current.has(noti.id)) return;
+        seenIdsRef.current.add(noti.id);
+
+        console.log('[Notifications] SSE noti received:', noti);
+        setNotifications((prev) => [noti, ...prev.filter((n) => n.id !== noti.id)].slice(0, 50));
         setUnreadCount((c) => c + 1);
         toast(noti.title, {
           description: noti.message,
           duration: 4000,
         });
       },
-      onError: () => {
-        // fetch-event-source tự retry; không cần toast user
+      onError: (err) => {
+        console.warn('[Notifications] SSE error (auto-retry):', err);
       },
     });
     abortRef.current = abort;
@@ -104,11 +119,13 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     if (unreadCount > 0) {
       try {
         await NotificationsApi.markAllRead();
+        // Optimistic UI — trust BE markAllRead success.
+        // KHÔNG refetch unread-count vì browser cache 304 sẽ trả về count cũ stale.
+        // Nếu SSE deliver noti mới sau đây → onMessage tự tăng badge đúng.
         setUnreadCount(0);
-        // Cập nhật isNew local cho list
         setNotifications((prev) => prev.map((n) => ({ ...n, isNew: false })));
-      } catch {
-        // Silent
+      } catch (err) {
+        console.error('[Notifications] markAllRead failed:', err);
       }
     }
   }, [unreadCount]);

@@ -15,7 +15,8 @@ export function startNotificationStream(opts: {
   onOpen?: () => void;
 }): () => void {
   const controller = new AbortController();
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
+  // Strip trailing slash để tránh double slash khi NEXT_PUBLIC_API_URL có sẵn '/' cuối
+  const baseUrl = (process.env.NEXT_PUBLIC_API_URL ?? '').replace(/\/+$/, '');
   const sessionId =
     typeof window !== 'undefined'
       ? localStorage.getItem('sessionId') ?? ''
