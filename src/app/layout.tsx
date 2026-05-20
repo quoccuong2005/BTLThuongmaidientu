@@ -7,6 +7,7 @@ import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { Toaster } from 'sonner';
 import { CartProvider } from '@/context/CartContext';
 import { WishlistProvider } from '@/context/WishlistContext';
+import { NotificationProvider } from '@/context/NotificationContext';
 
 const roboto = Roboto({
   subsets: ['latin', 'vietnamese'],
@@ -28,11 +29,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={roboto.className}>
         <CartProvider>
           <WishlistProvider>
-            <Toaster position="top-right" richColors />
-            <Header />
-            <main className="min-h-screen pb-20 md:pb-0">{children}</main>
-            <Footer />
-            <MobileBottomNav />
+            <NotificationProvider>
+              <Toaster position="top-right" richColors />
+              <Header />
+              <main className="min-h-screen pb-20 md:pb-0">{children}</main>
+              <Footer />
+              <MobileBottomNav />
+            </NotificationProvider>
           </WishlistProvider>
         </CartProvider>
       </body>
