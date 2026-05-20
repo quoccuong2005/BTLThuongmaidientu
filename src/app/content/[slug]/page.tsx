@@ -15,13 +15,7 @@ const formatDate = (value?: string) => {
 const getCover = (value?: string) =>
   value || `https://placehold.co/1200x720?text=${encodeURIComponent('Content')}`;
 
-const toParagraphs = (value?: string) => {
-  if (!value) return [];
-  return value
-    .split(/\n{2,}/)
-    .map((chunk) => chunk.trim())
-    .filter(Boolean);
-};
+
 
 export default async function ContentDetailPage({
   params,
@@ -31,7 +25,7 @@ export default async function ContentDetailPage({
   const content = await ContentController.getContentBySlug(params.slug);
   if (!content) return notFound();
 
-  const paragraphs = toParagraphs(content.content || content.summary);
+
 
   return (
     <div className="max-w-5xl mx-auto px-3 md:px-4 py-6 space-y-6">
@@ -70,12 +64,20 @@ export default async function ContentDetailPage({
       </section>
 
       <article className="tech-card rounded-3xl border border-orange-100 bg-white p-6 text-slate-700">
-        {paragraphs.length > 0 ? (
-          <div className="space-y-4 text-sm leading-relaxed">
-            {paragraphs.map((paragraph, idx) => (
-              <p key={idx}>{paragraph}</p>
-            ))}
-          </div>
+        {content.content ? (
+          <div
+            className="prose prose-orange max-w-none text-sm leading-relaxed
+      prose-headings:text-slate-900
+      prose-p:text-slate-700
+      prose-a:text-orange-600
+      prose-img:rounded-2xl
+      prose-img:shadow-md"
+            dangerouslySetInnerHTML={{ __html: content.content }}
+          />
+        ) : content.summary ? (
+          <p className="text-sm leading-relaxed text-slate-700">
+            {content.summary}
+          </p>
         ) : (
           <p className="text-sm text-slate-500">No content available.</p>
         )}

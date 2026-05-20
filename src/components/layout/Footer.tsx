@@ -47,7 +47,7 @@ export function Footer() {
           <div>
             <div className="mb-4 flex items-center gap-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/15 bg-white/10 backdrop-blur-xl">
-                <Cpu className="h-5 w-5 text-orange-100" />
+                <img src="./Logochoviet.png" alt="ChoViet Commerce" />
               </div>
 
               <span className="text-lg font-black text-white">

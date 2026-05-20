@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useWishlist } from '@/context/WishlistContext';
 import { WishlistController, WishlistItem } from '@/controllers/WishlistController';
-import { Trash2, Edit2, Share2, Bell, BellOff, ShoppingCart, Info, Loader2, Heart } from 'lucide-react';
+import { Trash2, Edit2, Share2, Bell, BellOff, ShoppingCart, Info, Loader2, Heart, Sparkles, Plus, ShoppingBag } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCart } from '@/context/CartContext';
 import Link from 'next/link';
@@ -19,15 +19,29 @@ export default function WishlistPage() {
     deleteWishlist,
     renameWishlist,
     toggleWishlistItem,
-    isLoading: contextLoading
+    isLoading: contextLoading,
   } = useWishlist();
+
+  const router = useRouter();
 
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [isLoadingItems, setIsLoadingItems] = useState(false);
-  const router = useRouter();
 
-  // Kiểm tra đăng nhập
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [newListName, setNewListName] = useState('');
+
+  const [deleteListConfirm, setDeleteListConfirm] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
+
+  const [deleteItemConfirm, setDeleteItemConfirm] = useState<{
+    id: number;
+    product_id: number;
+    name: string;
+  } | null>(null);
+
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (!savedUser) {
@@ -36,14 +50,6 @@ export default function WishlistPage() {
     }
   }, [router]);
 
-  // States cho modal
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [newListName, setNewListName] = useState('');
-
-  const [deleteListConfirm, setDeleteListConfirm] = useState<{ id: number, name: string } | null>(null);
-  const [deleteItemConfirm, setDeleteItemConfirm] = useState<{ id: number, product_id: number, name: string } | null>(null);
-
-  // Fetch items khi chuyển tab
   useEffect(() => {
     if (activeWishlistId) {
       loadItems(activeWishlistId);
@@ -56,10 +62,12 @@ export default function WishlistPage() {
   const loadItems = async (wishlistId: number) => {
     setIsLoadingItems(true);
     const res = await WishlistController.getWishlistItems(wishlistId, { limit: 50 });
+
     if (res) {
       setItems(res.items);
       setTotalItems(res.total);
     }
+
     setIsLoadingItems(false);
   };
 
@@ -68,6 +76,7 @@ export default function WishlistPage() {
       toast.error('Vui lòng nhập tên danh sách');
       return;
     }
+
     await createWishlist(newListName);
     setNewListName('');
     setIsCreateModalOpen(false);
@@ -76,32 +85,44 @@ export default function WishlistPage() {
 
   const executeDeleteList = async () => {
     if (!deleteListConfirm) return;
+
     const success = await deleteWishlist(deleteListConfirm.id);
-    if (success) {
-      toast.success('Đã xóa danh sách');
-    } else {
-      toast.error('Không thể xóa danh sách này');
-    }
+
+    if (success) toast.success('Đã xóa danh sách');
+    else toast.error('Không thể xóa danh sách này');
+
     setDeleteListConfirm(null);
   };
 
   const executeDeleteItem = async () => {
     if (!deleteItemConfirm) return;
-    const success = await toggleWishlistItem(deleteItemConfirm.product_id, activeWishlistId || undefined);
+
+    const success = await toggleWishlistItem(
+      deleteItemConfirm.product_id,
+      activeWishlistId || undefined,
+    );
+
     if (success) {
       setItems(prev => prev.filter(i => i.id !== deleteItemConfirm.id));
-      setTotalItems(prev => prev - 1);
+      setTotalItems(prev => Math.max(prev - 1, 0));
+      toast.success('Đã xóa khỏi danh sách yêu thích');
     }
+
     setDeleteItemConfirm(null);
   };
 
-  const handleDeleteListClick = (e: React.MouseEvent, id: number, name: string) => {
+  const handleDeleteListClick = (
+    e: React.MouseEvent,
+    id: number,
+    name: string,
+  ) => {
     e.stopPropagation();
     setDeleteListConfirm({ id, name });
   };
 
   const handleRenameList = async (id: number, oldName: string) => {
     const newName = window.prompt('Nhập tên mới:', oldName);
+
     if (newName && newName.trim() !== '' && newName !== oldName) {
       const success = await renameWishlist(id, newName);
       if (success) toast.success('Đã đổi tên danh sách');
@@ -112,10 +133,11 @@ export default function WishlistPage() {
   const handleShareList = async (id: number) => {
     try {
       const token = await WishlistController.generateShareLink(id);
+
       if (token) {
         const url = `${window.location.origin}/wishlist/public/${token}`;
         await navigator.clipboard.writeText(url);
-        toast.success('Đã sao chép link chia sẻ vào clipboard!');
+        toast.success('Đã sao chép link chia sẻ');
       } else {
         toast.error('Không thể tạo link chia sẻ');
       }
@@ -124,14 +146,12 @@ export default function WishlistPage() {
     }
   };
 
-  // Component render item trong wishlist
   const WishlistItemCard = ({ item }: { item: WishlistItem }) => {
     const { addToCart } = useCart();
+
     const [isMoving, setIsMoving] = useState(false);
     const [showNoteInput, setShowNoteInput] = useState(false);
     const [noteContent, setNoteContent] = useState(item.note || '');
-
-    // Alert states
     const [priceAlert, setPriceAlert] = useState(item.price_alert);
     const [stockAlert, setStockAlert] = useState(item.stock_alert);
 
@@ -140,23 +160,31 @@ export default function WishlistPage() {
         toast.error('Sản phẩm đã hết hàng');
         return;
       }
+
       setIsMoving(true);
+
       const success = await WishlistController.moveToCart(item.id);
+
       if (success) {
-        // Optimistic refresh items list
         setItems(prev => prev.filter(i => i.id !== item.id));
-        addToCart({
-          id: item.product.id,
-          title: item.product.name,
-          price: item.product.price,
-          image: item.product.image_url || '',
-          location: '',
-          category: '',
-          categorySlug: '',
-          condition: 'new',
-          postedAt: new Date().toISOString(),
-          seller: 'System',
-        }, 1);
+        setTotalItems(prev => Math.max(prev - 1, 0));
+
+        addToCart(
+          {
+            id: item.product.id,
+            title: item.product.name,
+            price: item.product.price,
+            image: item.product.image_url || '',
+            location: '',
+            category: '',
+            categorySlug: '',
+            condition: 'new',
+            postedAt: new Date().toISOString(),
+            seller: 'System',
+          },
+          1,
+        );
+
         toast.success('Đã chuyển sang giỏ hàng');
       } else {
         toast.error('Lỗi chuyển giỏ hàng');
@@ -167,6 +195,7 @@ export default function WishlistPage() {
     const handleSaveNote = async () => {
       const val = noteContent.trim() || null;
       const success = await WishlistController.updateItemNote(item.id, val);
+
       if (success) {
         item.note = val;
         setShowNoteInput(false);
@@ -178,105 +207,178 @@ export default function WishlistPage() {
       setDeleteItemConfirm({
         id: item.id,
         product_id: item.product.id,
-        name: `${item.product.product_line_name} (${item.product.name})`
+        name: `${item.product.product_line_name} (${item.product.name})`,
       });
     };
 
     const handleTogglePriceAlert = async () => {
-      setPriceAlert(!priceAlert); // optimistic
+      setPriceAlert(!priceAlert);
+
       try {
         const res = await WishlistController.togglePriceAlert(item.id);
         if (res) {
-          toast.success(res.price_alert ? '🔔 Đã bật nhận thông báo giảm giá' : '🔕 Đã tắt thông báo giảm giá');
+          toast.success(
+            res.price_alert
+              ? 'Đã bật thông báo giảm giá'
+              : 'Đã tắt thông báo giảm giá',
+          );
         }
       } catch {
-        setPriceAlert(priceAlert); // rollback
+        setPriceAlert(priceAlert);
       }
     };
 
     const handleToggleStockAlert = async () => {
-      setStockAlert(!stockAlert); // optimistic
+      setStockAlert(!stockAlert);
+
       try {
         const res = await WishlistController.toggleStockAlert(item.id);
         if (res) {
-          toast.success(res.stock_alert ? '🔔 Đã bật nhận thông báo có hàng' : '🔕 Đã tắt thông báo có hàng');
+          toast.success(
+            res.stock_alert
+              ? 'Đã bật thông báo có hàng'
+              : 'Đã tắt thông báo có hàng',
+          );
         }
       } catch {
-        setStockAlert(stockAlert); // rollback
+        setStockAlert(stockAlert);
       }
     };
 
     return (
-      <div className="flex gap-4 p-4 border rounded-xl bg-white shadow-sm hover:shadow-md transition">
-        <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden relative">
-          <img src={item.product.image_url || ''} alt={item.product.name} className={`w-full h-full object-cover ${item.product.is_out_of_stock ? 'opacity-50 grayscale' : ''}`} />
-          {item.product.is_out_of_stock && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-              <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">HẾT HÀNG</span>
-            </div>
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex justify-between items-start">
-            <Link href={`/product/${item.product.product_line_id}?variant=${item.product.id}`} className="text-base font-semibold text-gray-800 hover:text-blue-600 line-clamp-2 pr-4">
-              {item.product.product_line_name} <span className="text-gray-500 font-normal">({item.product.name})</span>
-            </Link>
-            <button
-              onClick={handleRemoveItem}
-              className="text-gray-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded transition-colors"
-              title="Xoá khỏi danh sách"
-            >
-              <Trash2 size={16} />
-            </button>
-          </div>
-          <div className="text-orange-500 font-bold mt-1">{ProductController.formatPrice(item.product.price)}</div>
+      <div className="group overflow-hidden rounded-3xl border border-orange-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+        <div className="grid gap-4 p-4 sm:grid-cols-[140px_1fr]">
+          <Link
+            href={`/product/${item.product.product_line_id}?variant=${item.product.id}`}
+            className="relative h-40 overflow-hidden rounded-2xl bg-orange-50 sm:h-full"
+          >
+            <img
+              src={item.product.image_url || ''}
+              alt={item.product.name}
+              className={`h-full w-full object-cover transition duration-300 group-hover:scale-105 ${item.product.is_out_of_stock ? 'opacity-50 grayscale' : ''
+                }`}
+            />
 
-          <div className="mt-2 text-sm text-gray-600">
-            {item.note && !showNoteInput ? (
-              <div className="flex items-start gap-2 bg-yellow-50 p-2 rounded text-xs border border-yellow-100">
-                <Info size={14} className="text-yellow-600 flex-shrink-0 mt-0.5" />
-                <span className="flex-1">{item.note}</span>
-                <button onClick={() => setShowNoteInput(true)} className="text-gray-400 hover:text-gray-700"><Edit2 size={12} /></button>
+            {item.product.is_out_of_stock && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                <span className="rounded-full bg-red-500 px-3 py-1 text-xs font-black text-white">
+                  HẾT HÀNG
+                </span>
               </div>
-            ) : showNoteInput ? (
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  className="border text-xs rounded px-2 py-1 flex-1"
-                  value={noteContent}
-                  onChange={e => setNoteContent(e.target.value)}
-                  placeholder="Ghi chú..."
-                  maxLength={500}
-                />
-                <button onClick={handleSaveNote} className="bg-blue-500 text-white text-xs px-2 rounded">Lưu</button>
-                <button onClick={() => { setShowNoteInput(false); setNoteContent(item.note || ''); }} className="bg-gray-200 text-xs px-2 rounded">Hủy</button>
-              </div>
-            ) : (
-              <button onClick={() => setShowNoteInput(true)} className="text-xs text-blue-500 hover:underline">
-                + Thêm ghi chú
-              </button>
             )}
-          </div>
+          </Link>
 
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <button
-              onClick={handleMoveToCart}
-              disabled={isMoving || item.product.is_out_of_stock}
-              className="flex items-center gap-1.5 bg-orange-50 text-orange-600 hover:bg-orange-100 px-3 py-1.5 rounded-lg text-sm font-medium transition disabled:opacity-50"
-            >
-              {isMoving ? <Loader2 size={16} className="animate-spin" /> : <ShoppingCart size={16} />}
-              Chuyển sang giỏ
-            </button>
+          <div className="flex min-w-0 flex-col">
+            <div className="flex items-start justify-between gap-3">
+              <Link
+                href={`/product/${item.product.product_line_id}?variant=${item.product.id}`}
+                className="line-clamp-2 text-base font-black text-slate-900 transition hover:text-orange-600"
+              >
+                {item.product.product_line_name}
+                <span className="font-medium text-slate-500">
+                  {' '}
+                  ({item.product.name})
+                </span>
+              </Link>
 
-            <div className="flex items-center gap-4 border-l pl-3 ml-auto">
-              <label className="flex items-center gap-1.5 cursor-pointer text-xs text-gray-600 hover:text-gray-900">
-                <input type="checkbox" checked={priceAlert} onChange={handleTogglePriceAlert} className="rounded text-blue-500 w-3.5 h-3.5" />
-                Giảm giá
-              </label>
-              <label className="flex items-center gap-1.5 cursor-pointer text-xs text-gray-600 hover:text-gray-900">
-                <input type="checkbox" checked={stockAlert} onChange={handleToggleStockAlert} className="rounded text-blue-500 w-3.5 h-3.5" />
-                Có hàng
-              </label>
+              <button
+                onClick={handleRemoveItem}
+                className="rounded-xl p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-500"
+                title="Xóa khỏi danh sách"
+              >
+                <Trash2 size={17} />
+              </button>
+            </div>
+
+            <p className="mt-2 text-xl font-black text-[#FB6A01]">
+              {ProductController.formatPrice(item.product.price)}
+            </p>
+
+            <div className="mt-3">
+              {item.note && !showNoteInput ? (
+                <div className="flex items-start gap-2 rounded-2xl border border-yellow-100 bg-yellow-50 p-3 text-xs text-slate-700">
+                  <Info size={15} className="mt-0.5 shrink-0 text-yellow-600" />
+                  <span className="flex-1">{item.note}</span>
+                  <button
+                    onClick={() => setShowNoteInput(true)}
+                    className="text-slate-400 hover:text-slate-700"
+                  >
+                    <Edit2 size={13} />
+                  </button>
+                </div>
+              ) : showNoteInput ? (
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <input
+                    type="text"
+                    className="flex-1 rounded-xl border border-orange-100 px-3 py-2 text-xs outline-none focus:border-orange-400"
+                    value={noteContent}
+                    onChange={e => setNoteContent(e.target.value)}
+                    placeholder="Ghi chú sản phẩm..."
+                    maxLength={500}
+                  />
+                  <button
+                    onClick={handleSaveNote}
+                    className="rounded-xl bg-orange-500 px-3 py-2 text-xs font-bold text-white hover:bg-orange-600"
+                  >
+                    Lưu
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowNoteInput(false);
+                      setNoteContent(item.note || '');
+                    }}
+                    className="rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-200"
+                  >
+                    Hủy
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowNoteInput(true)}
+                  className="text-xs font-bold text-orange-500 hover:text-orange-600"
+                >
+                  + Thêm ghi chú
+                </button>
+              )}
+            </div>
+
+            <div className="mt-auto flex flex-col gap-3 pt-4 lg:flex-row lg:items-center lg:justify-between">
+              <button
+                onClick={handleMoveToCart}
+                disabled={isMoving || item.product.is_out_of_stock}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#FB6A01] px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-orange-500/20 transition hover:-translate-y-0.5 hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isMoving ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <ShoppingCart size={16} />
+                )}
+                Chuyển sang giỏ
+              </button>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={handleTogglePriceAlert}
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition ${priceAlert
+                    ? 'border-orange-200 bg-orange-50 text-orange-600'
+                    : 'border-slate-200 bg-slate-50 text-slate-500'
+                    }`}
+                >
+                  {priceAlert ? <Bell size={13} /> : <BellOff size={13} />}
+                  Giảm giá
+                </button>
+
+                <button
+                  onClick={handleToggleStockAlert}
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition ${stockAlert
+                    ? 'border-orange-200 bg-orange-50 text-orange-600'
+                    : 'border-slate-200 bg-slate-50 text-slate-500'
+                    }`}
+                >
+                  {stockAlert ? <Bell size={13} /> : <BellOff size={13} />}
+                  Có hàng
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -284,142 +386,321 @@ export default function WishlistPage() {
     );
   };
 
-  if (contextLoading) return <div className="p-8 text-center"><Loader2 className="animate-spin mx-auto text-blue-500" /></div>;
+  if (contextLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Danh sách yêu thích</h1>
-      </div>
+    <main className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-white">
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#FB6A01] via-orange-500 to-rose-500 p-6 text-white shadow-2xl md:p-8">
+          <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/20 blur-3xl" />
+          <div className="absolute -bottom-24 left-1/3 h-72 w-72 rounded-full bg-yellow-300/20 blur-3xl" />
 
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        {/* TABS */}
-        <div className="flex items-center overflow-x-auto border-b bg-gray-50/50 p-2 gap-2 hide-scrollbar">
-          {wishlists.map((w) => (
-            <div
-              key={w.id}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition cursor-pointer whitespace-nowrap
-                ${activeWishlistId === w.id ? 'bg-white shadow-sm border text-blue-600' : 'text-gray-600 hover:bg-gray-100 border border-transparent'}
-              `}
-              onClick={() => setActiveWishlistId(w.id)}
-            >
-              <span>{w.is_default === 1 ? '⭐' : '📋'} {w.name}</span>
+          <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] backdrop-blur-xl">
+                <Sparkles size={14} />
+                Wishlist Center
+              </p>
 
-              {activeWishlistId === w.id && (
-                <div className="flex items-center gap-1 ml-2 pl-2 border-l border-gray-200">
-                  <button onClick={(e) => { e.stopPropagation(); handleShareList(w.id); }} className="p-1 hover:bg-blue-50 rounded text-gray-400 hover:text-blue-500" title="Chia sẻ"><Share2 size={14} /></button>
-                  {w.is_default === 0 && (
-                    <>
-                      <button onClick={(e) => { e.stopPropagation(); handleRenameList(w.id, w.name); }} className="p-1 hover:bg-blue-50 rounded text-gray-400 hover:text-blue-500" title="Đổi tên"><Edit2 size={14} /></button>
-                      <button onClick={(e) => handleDeleteListClick(e, w.id, w.name)} className="p-1 hover:bg-red-50 rounded text-gray-400 hover:text-red-500" title="Xóa danh sách"><Trash2 size={14} /></button>
-                    </>
-                  )}
-                </div>
-              )}
+              <h1 className="mt-4 text-3xl font-black md:text-5xl">
+                Danh sách yêu thích
+              </h1>
+
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-orange-50">
+                Lưu sản phẩm bạn thích, theo dõi giá, nhận thông báo có hàng và chuyển nhanh sang giỏ hàng khi cần.
+              </p>
             </div>
-          ))}
 
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 whitespace-nowrap"
-          >
-            + Tạo danh sách mới
-          </button>
-        </div>
-
-        {/* ITEMS LIST */}
-        <div className="p-6">
-          <div className="mb-4 text-sm text-gray-500 font-medium">
-            Có {totalItems} sản phẩm trong danh sách này
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="inline-flex w-fit items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-black text-[#FB6A01] shadow-xl transition hover:-translate-y-0.5 hover:bg-orange-50"
+            >
+              <Plus size={17} />
+              Tạo danh sách mới
+            </button>
           </div>
+        </section>
 
-          {isLoadingItems ? (
-            <div className="py-12 text-center"><Loader2 className="animate-spin mx-auto text-blue-500" /></div>
-          ) : items.length === 0 ? (
-            <div className="py-16 text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Heart size={24} className="text-gray-400" />
+        <section className="mt-6 grid gap-6 lg:grid-cols-[300px_1fr]">
+          <aside className="h-fit rounded-[2rem] border border-orange-100 bg-white p-4 shadow-sm">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-orange-600">
+                  Bộ sưu tập
+                </p>
+                <p className="mt-1 text-sm text-slate-500">
+                  {wishlists.length} danh sách
+                </p>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-1">Chưa có sản phẩm nào</h3>
-              <p className="text-gray-500 mb-6">Hãy thêm các sản phẩm bạn yêu thích vào danh sách này.</p>
-              <Link href="/" className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-medium transition">
+
+              <button
+                onClick={() => setIsCreateModalOpen(true)}
+                className="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-50 text-orange-600 transition hover:bg-orange-100"
+              >
+                <Plus size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              {wishlists.map(w => (
+                <button
+                  key={w.id}
+                  onClick={() => setActiveWishlistId(w.id)}
+                  className={`group w-full rounded-2xl border p-3 text-left transition ${activeWishlistId === w.id
+                    ? 'border-orange-200 bg-orange-50 shadow-sm'
+                    : 'border-slate-100 bg-white hover:bg-slate-50'
+                    }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p
+                        className={`truncate text-sm font-black ${activeWishlistId === w.id
+                          ? 'text-orange-700'
+                          : 'text-slate-800'
+                          }`}
+                      >
+                        {w.is_default === 1 ? '⭐' : '📋'} {w.name}
+                      </p>
+
+                      <p className="mt-1 text-xs text-slate-500">
+                        Nhấn để xem sản phẩm
+                      </p>
+                    </div>
+
+                    {activeWishlistId === w.id && (
+                      <div className="flex shrink-0 items-center gap-1">
+                        <span
+                          onClick={e => {
+                            e.stopPropagation();
+                            handleShareList(w.id);
+                          }}
+                          className="rounded-lg p-1.5 text-slate-400 hover:bg-white hover:text-orange-600"
+                        >
+                          <Share2 size={14} />
+                        </span>
+
+                        {w.is_default === 0 && (
+                          <>
+                            <span
+                              onClick={e => {
+                                e.stopPropagation();
+                                handleRenameList(w.id, w.name);
+                              }}
+                              className="rounded-lg p-1.5 text-slate-400 hover:bg-white hover:text-orange-600"
+                            >
+                              <Edit2 size={14} />
+                            </span>
+
+                            <span
+                              onClick={e => handleDeleteListClick(e, w.id, w.name)}
+                              className="rounded-lg p-1.5 text-slate-400 hover:bg-white hover:text-red-500"
+                            >
+                              <Trash2 size={14} />
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </aside>
+
+          <section className="rounded-[2rem] border border-orange-100 bg-white p-4 shadow-sm md:p-6">
+            <div className="mb-5 flex flex-col gap-3 border-b border-orange-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-orange-600">
+                  Sản phẩm đã lưu
+                </p>
+                <h2 className="mt-1 text-2xl font-black text-slate-900">
+                  Có {totalItems} sản phẩm trong danh sách
+                </h2>
+              </div>
+
+              <Link
+                href="/"
+                className="inline-flex w-fit items-center gap-2 rounded-2xl border border-orange-100 bg-orange-50 px-4 py-2.5 text-sm font-bold text-orange-600 transition hover:bg-orange-100"
+              >
+                <ShoppingBag size={16} />
                 Tiếp tục mua sắm
               </Link>
             </div>
-          ) : (
-            <div className="grid gap-4">
-              {items.map(item => <WishlistItemCard key={item.id} item={item} />)}
-            </div>
-          )}
-        </div>
+
+            {isLoadingItems ? (
+              <div className="flex min-h-[300px] items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+              </div>
+            ) : items.length === 0 ? (
+              <div className="flex min-h-[360px] flex-col items-center justify-center rounded-3xl border border-dashed border-orange-200 bg-orange-50/60 p-8 text-center">
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white text-orange-500 shadow-sm">
+                  <Heart size={32} />
+                </div>
+
+                <h3 className="mt-5 text-xl font-black text-slate-900">
+                  Chưa có sản phẩm nào
+                </h3>
+
+                <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
+                  Hãy thêm sản phẩm bạn yêu thích để theo dõi giá, nhận thông báo có hàng và mua nhanh hơn.
+                </p>
+
+                <Link
+                  href="/"
+                  className="mt-6 rounded-2xl bg-[#FB6A01] px-6 py-3 text-sm font-black text-white shadow-lg shadow-orange-500/20 transition hover:-translate-y-0.5 hover:bg-orange-600"
+                >
+                  Khám phá sản phẩm
+                </Link>
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {items.map(item => (
+                  <WishlistItemCard key={item.id} item={item} />
+                ))}
+              </div>
+            )}
+          </section>
+        </section>
       </div>
 
-      {/* MODAL TẠO DANH SÁCH MỚI */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm overflow-hidden">
-            <div className="p-5 border-b">
-              <h3 className="text-lg font-bold">Tạo danh sách mới</h3>
-            </div>
-            <div className="p-5">
-              <input
-                type="text"
-                className="w-full border rounded-lg px-3 py-2 outline-none focus:border-blue-500"
-                placeholder="Ví dụ: Mùa hè 2026, Công nghệ..."
-                value={newListName}
-                onChange={e => setNewListName(e.target.value)}
-                autoFocus
-                onKeyDown={e => e.key === 'Enter' && handleCreateNewList()}
-              />
-            </div>
-            <div className="p-4 bg-gray-50 border-t flex justify-end gap-3">
-              <button onClick={() => setIsCreateModalOpen(false)} className="px-4 py-2 rounded-lg font-medium text-gray-600 hover:bg-gray-200">Hủy</button>
-              <button onClick={handleCreateNewList} className="px-4 py-2 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700">Tạo mới</button>
-            </div>
-          </div>
-        </div>
+        <ConfirmModal
+          title="Tạo danh sách mới"
+          onClose={() => setIsCreateModalOpen(false)}
+          footer={
+            <>
+              <button
+                onClick={() => setIsCreateModalOpen(false)}
+                className="rounded-xl px-4 py-2 font-bold text-slate-600 hover:bg-slate-100"
+              >
+                Hủy
+              </button>
+
+              <button
+                onClick={handleCreateNewList}
+                className="rounded-xl bg-[#FB6A01] px-4 py-2 font-bold text-white hover:bg-orange-600"
+              >
+                Tạo mới
+              </button>
+            </>
+          }
+        >
+          <input
+            type="text"
+            className="w-full rounded-2xl border border-orange-100 px-4 py-3 outline-none focus:border-orange-400"
+            placeholder="Ví dụ: Mùa hè 2026, Công nghệ..."
+            value={newListName}
+            onChange={e => setNewListName(e.target.value)}
+            autoFocus
+            onKeyDown={e => e.key === 'Enter' && handleCreateNewList()}
+          />
+        </ConfirmModal>
       )}
 
-      {/* MODAL XÁC NHẬN XÓA DANH SÁCH */}
       {deleteListConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm overflow-hidden">
-            <div className="p-5 border-b">
-              <h3 className="text-lg font-bold text-red-600 flex items-center gap-2">
-                <Trash2 size={20} /> Xóa danh sách
-              </h3>
-            </div>
-            <div className="p-5">
-              <p className="text-gray-700">Bạn có chắc chắn muốn xóa danh sách <strong>"{deleteListConfirm.name}"</strong> không?</p>
-              <p className="text-sm text-gray-500 mt-2">Hành động này sẽ xóa toàn bộ sản phẩm bên trong và không thể hoàn tác.</p>
-            </div>
-            <div className="p-4 bg-gray-50 border-t flex justify-end gap-3">
-              <button onClick={() => setDeleteListConfirm(null)} className="px-4 py-2 rounded-lg font-medium text-gray-600 hover:bg-gray-200">Hủy</button>
-              <button onClick={executeDeleteList} className="px-4 py-2 rounded-lg font-medium bg-red-600 text-white hover:bg-red-700">Xác nhận xóa</button>
-            </div>
-          </div>
-        </div>
+        <ConfirmModal
+          title="Xóa danh sách"
+          danger
+          onClose={() => setDeleteListConfirm(null)}
+          footer={
+            <>
+              <button
+                onClick={() => setDeleteListConfirm(null)}
+                className="rounded-xl px-4 py-2 font-bold text-slate-600 hover:bg-slate-100"
+              >
+                Hủy
+              </button>
+
+              <button
+                onClick={executeDeleteList}
+                className="rounded-xl bg-red-600 px-4 py-2 font-bold text-white hover:bg-red-700"
+              >
+                Xác nhận xóa
+              </button>
+            </>
+          }
+        >
+          <p className="text-sm leading-6 text-slate-600">
+            Bạn có chắc chắn muốn xóa danh sách{' '}
+            <strong>"{deleteListConfirm.name}"</strong> không?
+          </p>
+
+          <p className="mt-2 text-xs text-slate-500">
+            Hành động này sẽ xóa toàn bộ sản phẩm bên trong và không thể hoàn tác.
+          </p>
+        </ConfirmModal>
       )}
 
-      {/* MODAL XÁC NHẬN XÓA ITEM */}
       {deleteItemConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm overflow-hidden">
-            <div className="p-5 border-b">
-              <h3 className="text-lg font-bold text-red-600 flex items-center gap-2">
-                <Trash2 size={20} /> Bỏ lưu yêu thích
-              </h3>
-            </div>
-            <div className="p-5">
-              <p className="text-gray-700">Bạn có muốn xóa <strong>"{deleteItemConfirm.name}"</strong> khỏi danh sách không?</p>
-            </div>
-            <div className="p-4 bg-gray-50 border-t flex justify-end gap-3">
-              <button onClick={() => setDeleteItemConfirm(null)} className="px-4 py-2 rounded-lg font-medium text-gray-600 hover:bg-gray-200">Hủy</button>
-              <button onClick={executeDeleteItem} className="px-4 py-2 rounded-lg font-medium bg-red-600 text-white hover:bg-red-700">Xác nhận xóa</button>
-            </div>
-          </div>
-        </div>
+        <ConfirmModal
+          title="Bỏ lưu yêu thích"
+          danger
+          onClose={() => setDeleteItemConfirm(null)}
+          footer={
+            <>
+              <button
+                onClick={() => setDeleteItemConfirm(null)}
+                className="rounded-xl px-4 py-2 font-bold text-slate-600 hover:bg-slate-100"
+              >
+                Hủy
+              </button>
+
+              <button
+                onClick={executeDeleteItem}
+                className="rounded-xl bg-red-600 px-4 py-2 font-bold text-white hover:bg-red-700"
+              >
+                Xác nhận xóa
+              </button>
+            </>
+          }
+        >
+          <p className="text-sm leading-6 text-slate-600">
+            Bạn có muốn xóa <strong>"{deleteItemConfirm.name}"</strong> khỏi danh sách không?
+          </p>
+        </ConfirmModal>
       )}
+    </main>
+  );
+}
+
+function ConfirmModal({
+  title,
+  children,
+  footer,
+  danger = false,
+  onClose,
+}: {
+  title: string;
+  children: React.ReactNode;
+  footer: React.ReactNode;
+  danger?: boolean;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl">
+        <div className="border-b border-slate-100 p-5">
+          <h3
+            className={`flex items-center gap-2 text-lg font-black ${danger ? 'text-red-600' : 'text-slate-900'
+              }`}
+          >
+            {danger && <Trash2 size={20} />}
+            {title}
+          </h3>
+        </div>
+
+        <div className="p-5">{children}</div>
+
+        <div className="flex justify-end gap-3 border-t border-slate-100 bg-slate-50 p-4">
+          {footer}
+        </div>
+      </div>
     </div>
   );
 }
