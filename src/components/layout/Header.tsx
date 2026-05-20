@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
-  Bell,
   BookOpen,
   ChevronDown,
   Cpu,
@@ -25,6 +24,7 @@ import { LOCATIONS, POPULAR_SEARCHES } from '@/lib/db';
 import { useCart } from '@/context/CartContext';
 import { CategoryController } from '@/controllers/CategoryController';
 import { Category } from '@/models/Product';
+import { BellIcon } from '@/components/notifications/BellIcon';
 
 export function Header() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -160,6 +160,7 @@ export function Header() {
             >
               <Heart size={20} />
             </Link>
+            <BellIcon />
             <Link
               href="/cart"
               title="Giỏ hàng"
