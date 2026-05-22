@@ -158,6 +158,9 @@ export interface SearchFilters {
   maxPrice?: number;
   condition?: 'new' | 'used' | 'all';
   sortBy?: 'newest' | 'price_asc' | 'price_desc' | 'popular';
+  sort?: string;
+  order?: 'ASC' | 'DESC';
+  is_featured?: boolean;
 }
 
 export interface PaginatedResult<T> {

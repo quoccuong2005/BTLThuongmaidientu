@@ -27,11 +27,22 @@ export class ProductController {
       isFeatured: item.is_featured === 1 || item.is_featured === true,
     };
   }
+  static async getAllProducts(): Promise<Product[]> {
+    try {
+      const response = await api.get<ProductApiResponse>('/products?limit=100');
+      return response.data.data.items.map(this.mapApiProduct);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      return [];
+    }
+  }
 
   static async getFeaturedProducts(limit = 12): Promise<Product[]> {
     try {
       const response = await api.get<ProductApiResponse>(`/products?limit=${limit}&sort=view_count&order=DESC`);
-      return response.data.data.items.map(this.mapApiProduct);
+      return response.data.data.items
+        .filter((item: any) => item.is_featured === 1 || item.is_featured === true)
+        .map(this.mapApiProduct);
     } catch (error) {
       console.error("Error fetching featured products:", error);
       return [];
@@ -55,7 +66,8 @@ export class ProductController {
   static async searchProducts(
     filters: SearchFilters,
     page = 1,
-    pageSize = 20
+    pageSize = 200,
+    sessionId?: string
   ): Promise<PaginatedResult<Product>> {
     try {
       const params: any = {
@@ -63,38 +75,62 @@ export class ProductController {
         limit: pageSize,
       };
 
-      if (filters.keyword) params.keyword = filters.keyword;
-      if (filters.category) params.category_id = filters.category;
-
-      if (filters.sortBy === 'price_asc') {
-        params.sort = 'display_price';
-        params.order = 'ASC';
-      } else if (filters.sortBy === 'price_desc') {
-        params.sort = 'display_price';
-        params.order = 'DESC';
-      } else if (filters.sortBy === 'popular') {
-        params.sort = 'view_count';
-        params.order = 'DESC';
-      } else {
-        params.sort = 'created_at';
-        params.order = 'DESC';
-      }
-
-      const response = await api.get<ProductApiResponse>('/products', { params });
-      const { items, pagination } = response.data.data;
-
-      return {
-        data: items.map(this.mapApiProduct),
-        total: pagination.count * pagination.total_pages,
-        page: pagination.page,
-        pageSize: pagination.limit,
-        totalPages: pagination.total_pages,
-      };
-    } catch (error) {
-      console.error("Error searching products:", error);
-      return { data: [], total: 0, page, pageSize, totalPages: 0 };
+    if (filters.keyword) {
+      params.keyword = filters.keyword;
     }
+
+    if (filters.category) {
+      params.category_id = filters.category;
+    }
+
+    if (filters.is_featured !== undefined) {
+      params.is_featured = filters.is_featured ? 'true' : 'false';
+    }
+
+    // Sort
+    if (filters.sort) {
+      params.sort = filters.sort;
+      params.order = (filters.order || 'DESC').toUpperCase();
+    } else if (filters.sortBy === 'price_asc') {
+      params.sort = 'display_price';
+      params.order = 'ASC';
+    } else if (filters.sortBy === 'price_desc') {
+      params.sort = 'display_price';
+      params.order = 'DESC';
+    } else if (filters.sortBy === 'popular') {
+      params.sort = 'view_count';
+      params.order = 'DESC';
+    } else {
+      params.sort = 'created_at';
+      params.order = 'DESC';
+    }
+
+    const response = await api.get<ProductApiResponse>('/products', {
+      params,
+      ...(sessionId ? { headers: { 'x-auth-signature': sessionId } } : {}),
+    });
+
+    const { items, pagination } = response.data.data;
+
+    return {
+      data: items.map(this.mapApiProduct),
+      total: pagination.count,
+      page: pagination.page,
+      pageSize: pagination.limit,
+      totalPages: pagination.total_pages,
+    };
+  } catch (error) {
+    console.error('Error searching products:', error);
+
+    return {
+      data: [],
+      total: 0,
+      page,
+      pageSize,
+      totalPages: 0,
+    };
   }
+}
 
   static async getProductById(id: string): Promise<Product | null> {
     try {
@@ -120,14 +156,8 @@ export class ProductController {
     if (p === undefined || p === null || isNaN(p)) {
       return '0 đ';
     }
-    if (p >= 1_000_000_000) {
-      return `${(p / 1_000_000_000).toFixed(1)} tỷ`;
-    }
-    if (p >= 1_000_000) {
-      return `${(p / 1_000_000).toFixed(1)} triệu`;
-    }
+    return `${Math.round(p).toLocaleString('vi-VN')} đ`;  
 
-    return `${p.toLocaleString('vi-VN')} đ`;
   }
 
 
@@ -136,6 +166,10 @@ export class ProductController {
     return Math.round(((originalPrice - price) / originalPrice) * 100);
   }
 
+  static getPriceIncreasePercent(price: number, originalPrice?: number): number | null {
+    if (!originalPrice || price <= originalPrice) return null;
+    return Math.round(((price - originalPrice) / originalPrice) * 100);
+  }
 
   static getRelativeTime(dateStr: string): string {
     const date = new Date(dateStr);

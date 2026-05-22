@@ -39,21 +39,48 @@ const formatDate = (value?: string) => {
   }).format(new Date(value));
 };
 
+const LOCATION_KEYWORDS: Record<string, string[]> = {
+  'Toàn Quốc': [],
+  'TP. Hồ Chí Minh': ['tp hcm', 'hcm', 'hồ chí minh', 'ho chi minh'],
+  'Hà Nội': ['hà nội', 'ha noi'],
+  'Đà Nẵng': ['đà nẵng', 'da nang'],
+};
+
+const normalizeLocation = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/đ/g, 'd')
+    .replace(/\./g, '')
+    .replace(/\s+/g, '');
+
+const matchesLocation = (productLocation: string, selectedLocation: string) => {
+  if (!selectedLocation || selectedLocation === 'Toàn Quốc') return true;
+  const normalizedLocation = normalizeLocation(productLocation);
+  const keywords = LOCATION_KEYWORDS[selectedLocation] || [normalizeLocation(selectedLocation)];
+  return keywords.some(keyword => normalizedLocation.includes(normalizeLocation(keyword)));
+};
+
 const getExcerpt = (summary?: string, content?: string) => {
   const source = (summary || content || '').trim();
   if (!source) return 'No summary available.';
   return source.length > 120 ? `${source.slice(0, 117)}...` : source;
 };
 
-export default async function HomePage() {
+export default async function HomePage({ searchParams }: { searchParams?: { location?: string } }) {
   const categories = await CategoryController.getTopCategories(200);
   const featuredProducts = await ProductController.getFeaturedProducts(8);
+  const AllProducts = await ProductController.getAllProducts();
   const newProducts = await ProductController.getNewProducts(8);
   const latestContents = await ContentController.getPublicContents({
     limit: 4,
     sort: 'published_at',
     order: 'DESC',
   });
+
+  const selectedLocation = searchParams?.location || 'Toàn Quốc';
+  const filteredFeaturedProducts = featuredProducts.filter(product => matchesLocation(product.location, selectedLocation));
+  const filteredAllProducts = AllProducts.filter(product => matchesLocation(product.location, selectedLocation));
+  const filteredNewProducts = newProducts.filter(product => matchesLocation(product.location, selectedLocation));
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-white">
@@ -103,7 +130,7 @@ export default async function HomePage() {
             <div className="relative z-10 flex h-full flex-col justify-end p-6 md:p-8">
               <div className="flex flex-wrap gap-3">
                 <Link
-                  href="/search?sort=popular"
+                  href="/search"
                   className="inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-bold text-[#FB6A01] shadow-xl transition hover:-translate-y-0.5 hover:bg-orange-50"
                 >
                   Mua ngay <ChevronRight size={16} />
@@ -135,7 +162,7 @@ export default async function HomePage() {
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
             <Link
-              href="/search?sort=popular"
+              href="/search"
               className="group rounded-3xl border border-orange-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-orange-300 hover:shadow-xl"
             >
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
@@ -148,7 +175,7 @@ export default async function HomePage() {
             </Link>
 
             <Link
-              href="/search?sort=newest"
+              href="/search"
               className="group rounded-3xl border border-orange-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-orange-300 hover:shadow-xl"
             >
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-600">
@@ -167,7 +194,14 @@ export default async function HomePage() {
         </section>
 
         <section className="mt-6">
-          <FlashSaleSection products={featuredProducts} />
+          {filteredAllProducts.length > 0 ? (
+            <FlashSaleSection products={filteredAllProducts} />
+          ) : (
+            <div className="rounded-[2rem] border border-orange-100 bg-white p-8 text-center shadow-sm">
+              <p className="text-lg font-semibold text-slate-800">Không có sản phẩm phù hợp với địa điểm này.</p>
+              <p className="text-sm text-slate-500 mt-2">Hãy thử chọn một địa điểm khác hoặc để là Toàn Quốc.</p>
+            </div>
+          )}
         </section>
 
         {/* VOUCHERS */}
@@ -195,7 +229,7 @@ export default async function HomePage() {
         <section className="mt-6 rounded-[2rem] border border-orange-100 bg-white p-4 shadow-sm md:p-6">
           <SectionHeader
             title="Sản phẩm nổi bật"
-            viewAllHref="/search?sort=popular"
+            viewAllHref="/search"
             icon={<Radar size={18} />}
           />
 
@@ -212,9 +246,15 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {featuredProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {filteredFeaturedProducts.length > 0 ? (
+              filteredFeaturedProducts.map(product => (
+                <ProductCard key={product.id} product={product} />
+              ))
+            ) : (
+              <div className="col-span-full rounded-3xl border border-orange-100 bg-orange-50 p-6 text-center text-orange-700">
+                Không có sản phẩm nổi bật tại địa điểm này.
+              </div>
+            )}
           </div>
         </section>
 
@@ -222,7 +262,7 @@ export default async function HomePage() {
         <section className="mt-6 rounded-[2rem] border border-orange-100 bg-white p-4 shadow-sm md:p-6">
           <SectionHeader
             title="Hàng mới về"
-            viewAllHref="/search?sort=newest"
+            viewAllHref="/search"
             icon={<Cpu size={18} />}
           />
 
@@ -236,9 +276,15 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {newProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {filteredNewProducts.length > 0 ? (
+              filteredNewProducts.map(product => (
+                <ProductCard key={product.id} product={product} />
+              ))
+            ) : (
+              <div className="col-span-full rounded-3xl border border-orange-100 bg-orange-50 p-6 text-center text-orange-700">
+                Không có sản phẩm mới tại địa điểm này.
+              </div>
+            )}
           </div>
         </section>
 

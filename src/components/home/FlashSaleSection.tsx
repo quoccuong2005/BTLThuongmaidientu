@@ -49,7 +49,7 @@ export function FlashSaleSection({ products }: FlashSaleSectionProps) {
 
           <div className="grid gap-2 sm:grid-cols-3 lg:min-w-[520px]">
             <div className="tech-glass rounded-2xl px-3 py-2">
-              <p className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-orange-100">
+              <p className="inline-flex  gap-1 text-[11px] font-bold uppercase tracking-wide text-orange-100">
                 <Clock3 size={13} /> Kết thúc sau
               </p>
               <div className="mt-1 flex items-center gap-1 text-sm font-black">
@@ -61,7 +61,7 @@ export function FlashSaleSection({ products }: FlashSaleSectionProps) {
               </div>
             </div>
             <div className="tech-glass rounded-2xl px-3 py-2">
-              <p className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-orange-100">
+              <p className="inline-flex  gap-1 text-[11px] font-bold uppercase tracking-wide text-orange-100">
                 <Gauge size={13} /> Đã bán
               </p>
               <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/15">
@@ -70,7 +70,7 @@ export function FlashSaleSection({ products }: FlashSaleSectionProps) {
               <p className="mt-1 text-xs font-semibold text-orange-100">{soldPercent}% lượt mua mục tiêu</p>
             </div>
             <div className="tech-glass rounded-2xl px-3 py-2">
-              <p className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-orange-100">
+              <p className="inline-flex  gap-1 text-[11px] font-bold uppercase tracking-wide text-orange-100">
                 <ShieldCheck size={13} /> Bảo vệ đơn
               </p>
               <p className="mt-1 text-xs font-semibold text-orange-100">Thanh toán an toàn, đổi trả rõ ràng</p>
@@ -83,7 +83,7 @@ export function FlashSaleSection({ products }: FlashSaleSectionProps) {
         <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-orange-700">
           <Activity size={14} /> Live deal feed
         </p>
-        <a href="/search?sort=popular" className="text-xs font-bold text-orange-700 hover:text-orange-800">
+        <a href="/search" className="text-xs font-bold text-orange-700 hover:text-orange-800">
           Xem tất cả
         </a>
       </div>

@@ -106,6 +106,10 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
     }).format(amount);
   };
 
+  const formatPercent = (value: number) => {
+    return Number(value).toString().replace(/\.0+$/, '');
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('vi-VN');
   };
@@ -223,7 +227,7 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
                 <div className="text-center">
                   <span className="mb-1 block text-2xl font-black">
                     {voucher.type === 'percent'
-                      ? `${voucher.discount_value}%`
+                      ? `${formatPercent(voucher.discount_value)}%`
                       : formatCurrency(voucher.discount_value).replace('₫', '')}
                     {voucher.type === 'fixed' && (
                       <span className="text-sm font-normal">đ</span>
@@ -295,9 +299,9 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
                         <CheckCircle2 size={12} /> Đã lưu
                       </span>
                     ) : isLoggedIn ? (
-                      'Thu thập'
+                      'Nhận'
                     ) : (
-                      'Đăng nhập để nhận'
+                      'Nhận'
                     )}
                   </button>
                 </div>
@@ -321,7 +325,7 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
                 <div className="text-center">
                   <span className="mb-1 block text-2xl font-black">
                     {myVoucher.voucher.type === 'percent'
-                      ? `${myVoucher.voucher.discount_value}%`
+                      ? `${formatPercent(myVoucher.voucher.discount_value)}%`
                       : formatCurrency(myVoucher.voucher.discount_value).replace('₫', '')}
                     {myVoucher.voucher.type === 'fixed' && (
                       <span className="text-sm font-normal">đ</span>

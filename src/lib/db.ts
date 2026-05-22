@@ -23,7 +23,7 @@ export const BANNERS: Banner[] = [
     id: '1',
     title: 'Flash Sale 6.6 - Giảm đến 50%',
     image: 'https://static.vecteezy.com/system/resources/previews/008/128/792/non_2x/6-6-logo-for-sale-poster-6-6-online-super-sale-banner-template-on-yellow-background-flash-sale-banner-design-vector.jpg',
-    link: '/search?sort=popular',
+    link: '/search',
   },
   {
     id: '2',

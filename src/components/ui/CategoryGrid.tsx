@@ -9,7 +9,7 @@ interface CategoryGridProps {
 export function CategoryGrid({ categories }: CategoryGridProps) {
   return (
     <section className="tech-card overflow-hidden rounded-3xl border border-orange-200 bg-white shadow-sm">
-      <div className="relative overflow-hidden rounded-[2rem] w-full h-[15rem]">
+      <div className="relative overflow-hidden rounded-none w-full h-[15rem]">
         {/* Background Image */}
         <img
           src="/category-banner.png"
@@ -45,7 +45,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
 
       <div className="grid gap-2 border-t border-orange-100 bg-orange-50/50 p-3 md:grid-cols-3">
         <Link
-          href="/search?sort=popular"
+          href="/search"
           className="tap-bounce tech-card rounded-2xl border border-orange-200 bg-white px-3 py-3 transition-colors hover:bg-orange-50"
         >
           <p className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-orange-700">
@@ -55,7 +55,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
           <p className="mt-1 text-xs font-semibold text-slate-600">Tự động ưu tiên sản phẩm có voucher tốt.</p>
         </Link>
         <Link
-          href="/search?sort=newest"
+          href="/search"
           className="tap-bounce tech-card rounded-2xl border border-orange-200 bg-white px-3 py-3 transition-colors hover:bg-orange-50"
         >
           <p className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-orange-700">

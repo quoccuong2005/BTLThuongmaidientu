@@ -1,20 +1,29 @@
-import { ProductController } from '@/controllers/ProductController';
 import { CategoryController } from '@/controllers/CategoryController';
-import { ProductCard } from '@/components/ui/ProductCard';
-import { SectionHeader } from '@/components/ui/SectionHeader';
-import { Filter, SearchX, SlidersHorizontal } from 'lucide-react';
+import { Filter, SlidersHorizontal } from 'lucide-react';
+import SortSelect from '@/components/ui/SortSelection';
+import SearchResultsClient from '@/components/search/SearchResultsClient';
 
 interface SearchPageProps {
-  searchParams: { q?: string; category?: string; sort?: string; location?: string };
+  searchParams: { q?: string; category?: string; sort?: string; order?: string; location?: string; is_featured?: string; page?: string; limit?: string };
 }
 
-export default async function SearchPage({ searchParams }: SearchPageProps) {
-  const { data: products, total } = await ProductController.searchProducts({
-    keyword: searchParams.q,
-    category: searchParams.category,
-    sortBy: (searchParams.sort as any) || 'newest',
-  });
+const LOCATION_KEYWORDS: Record<string, string[]> = {
+  'Toàn Quốc': [],
+  'TP. Hồ Chí Minh': ['tp.hcm', 'hcm', 'hồ chí minh', 'ho chi minh'],
+  'Hà Nội': ['hà nội', 'ha noi'],
+  'Đà Nẵng': ['đà nẵng', 'da nang'],
+};
 
+const normalizeLocation = (value: string) => value.toLowerCase().replace(/\s+/g, '').replace(/\./g, '').replace(/đ/g, 'd');
+
+const matchesLocation = (productLocation: string, selectedLocation: string) => {
+  if (!selectedLocation || selectedLocation === 'Toàn Quốc') return true;
+  const normalizedLocation = normalizeLocation(productLocation);
+  const keywords = LOCATION_KEYWORDS[selectedLocation] || [normalizeLocation(selectedLocation)];
+  return keywords.some(keyword => normalizedLocation.includes(normalizeLocation(keyword)));
+};
+
+export default async function SearchPage({ searchParams }: SearchPageProps) {
   const categories = await CategoryController.getAllCategories();
   
   return (
@@ -29,14 +38,17 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </h3>
             <ul className="space-y-1">
               <li>
-                <a href="/search" className={`block px-2 py-1.5 rounded-lg text-sm ${!searchParams.category ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}>
+                <a
+                  href={`/search${searchParams.q ? `?q=${encodeURIComponent(searchParams.q)}` : ''}${searchParams.location && searchParams.location !== 'Toàn Quốc' ? `${searchParams.q ? '&' : '?'}location=${encodeURIComponent(searchParams.location)}` : ''}${searchParams.sort ? `&sort=${encodeURIComponent(searchParams.sort)}` : ''}${searchParams.order ? `&order=${encodeURIComponent(searchParams.order)}` : ''}${searchParams.is_featured ? `&is_featured=${encodeURIComponent(searchParams.is_featured)}` : ''}${searchParams.q || (searchParams.location && searchParams.location !== 'Toàn Quốc') || searchParams.sort || searchParams.order || searchParams.is_featured ? '&' : '?'}page=1&limit=15`}
+                  className={`block px-2 py-1.5 rounded-lg text-sm ${!searchParams.category ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
+                >
                   Tất cả
                 </a>
               </li>
               {categories.map(cat => (
                 <li key={cat.id}>
                   <a
-                    href={`/search?category=${cat.slug}`}
+                    href={`/search?category=${cat.slug}${searchParams.location && searchParams.location !== 'Toàn Quốc' ? `&location=${encodeURIComponent(searchParams.location)}` : ''}${searchParams.sort ? `&sort=${encodeURIComponent(searchParams.sort)}` : ''}${searchParams.order ? `&order=${encodeURIComponent(searchParams.order)}` : ''}${searchParams.is_featured ? `&is_featured=${encodeURIComponent(searchParams.is_featured)}` : ''}&page=1&limit=15`}
                     className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-sm ${searchParams.category === cat.slug ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
                   >
                     <span className="flex items-center gap-2">
@@ -53,36 +65,35 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               ))}
             </ul>
           </div>
-
-          {/* Price filter */}
+          {/* Featured filter */}
           <div className="bg-white rounded-xl p-4 shadow-sm">
-            <h3 className="font-bold text-gray-800 mb-3">Khoảng giá</h3>
-            <div className="space-y-2">
-              {[
-                ['Dưới 1 triệu', '0-1000000'],
-                ['1 - 5 triệu', '1000000-5000000'],
-                ['5 - 20 triệu', '5000000-20000000'],
-                ['Trên 20 triệu', '20000000-'],
-              ].map(([label, range]) => (
-                <label key={range} className="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" name="price" className="accent-orange-500" />
-                  <span className="text-sm text-gray-600">{label}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Product type filter */}
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <h3 className="font-bold text-gray-800 mb-3">Loại sản phẩm</h3>
-            <div className="space-y-2">
-              {[['Tất cả sản phẩm', 'all'], ['Hàng mới chính hãng', 'new']].map(([label, val]) => (
-                <label key={val} className="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" name="condition" className="accent-orange-500" defaultChecked={val === 'all'} />
-                  <span className="text-sm text-gray-600">{label}</span>
-                </label>
-              ))}
-            </div>
+            <h3 className="font-bold text-gray-800 mb-3">Sản phẩm nổi bật</h3>
+            <ul className="space-y-1 text-sm">
+              <li>
+                <a
+                  href={`/search${searchParams.q ? `?q=${encodeURIComponent(searchParams.q)}` : ''}${searchParams.category ? `${searchParams.q ? '&' : '?'}category=${encodeURIComponent(searchParams.category)}` : ''}${searchParams.location && searchParams.location !== 'Toàn Quốc' ? `${searchParams.q || searchParams.category ? '&' : '?'}location=${encodeURIComponent(searchParams.location)}` : ''}${searchParams.sort ? `${searchParams.q || searchParams.category || (searchParams.location && searchParams.location !== 'Toàn Quốc') ? '&' : '?'}sort=${encodeURIComponent(searchParams.sort)}` : ''}${searchParams.order ? `${searchParams.q || searchParams.category || (searchParams.location && searchParams.location !== 'Toàn Quốc') || searchParams.sort ? '&' : '?'}order=${encodeURIComponent(searchParams.order)}` : ''}&page=1&limit=15`}
+                  className={`block px-2 py-1.5 rounded-lg ${searchParams.is_featured === undefined ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
+                >
+                  Tất cả
+                </a>
+              </li>
+              <li>
+                <a
+                  href={`/search${searchParams.q ? `?q=${encodeURIComponent(searchParams.q)}` : ''}${searchParams.category ? `${searchParams.q ? '&' : '?'}category=${encodeURIComponent(searchParams.category)}` : ''}${searchParams.location && searchParams.location !== 'Toàn Quốc' ? `${searchParams.q || searchParams.category ? '&' : '?'}location=${encodeURIComponent(searchParams.location)}` : ''}${searchParams.sort ? `${searchParams.q || searchParams.category || (searchParams.location && searchParams.location !== 'Toàn Quốc') ? '&' : '?'}sort=${encodeURIComponent(searchParams.sort)}` : ''}${searchParams.order ? `${searchParams.q || searchParams.category || (searchParams.location && searchParams.location !== 'Toàn Quốc') || searchParams.sort ? '&' : '?'}order=${encodeURIComponent(searchParams.order)}` : ''}${searchParams.q || searchParams.category || (searchParams.location && searchParams.location !== 'Toàn Quốc') || searchParams.sort || searchParams.order ? '&' : '?'}is_featured=true&page=1&limit=15`}
+                  className={`block px-2 py-1.5 rounded-lg ${searchParams.is_featured === 'true' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
+                >
+                  Chỉ sản phẩm nổi bật
+                </a>
+              </li>
+              <li>
+                <a
+                  href={`/search${searchParams.q ? `?q=${encodeURIComponent(searchParams.q)}` : ''}${searchParams.category ? `${searchParams.q ? '&' : '?'}category=${encodeURIComponent(searchParams.category)}` : ''}${searchParams.location && searchParams.location !== 'Toàn Quốc' ? `${searchParams.q || searchParams.category ? '&' : '?'}location=${encodeURIComponent(searchParams.location)}` : ''}${searchParams.sort ? `${searchParams.q || searchParams.category || (searchParams.location && searchParams.location !== 'Toàn Quốc') ? '&' : '?'}sort=${encodeURIComponent(searchParams.sort)}` : ''}${searchParams.order ? `${searchParams.q || searchParams.category || (searchParams.location && searchParams.location !== 'Toàn Quốc') || searchParams.sort ? '&' : '?'}order=${encodeURIComponent(searchParams.order)}` : ''}${searchParams.q || searchParams.category || (searchParams.location && searchParams.location !== 'Toàn Quốc') || searchParams.sort || searchParams.order ? '&' : '?'}is_featured=false&page=1&limit=15`}
+                  className={`block px-2 py-1.5 rounded-lg ${searchParams.is_featured === 'false' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
+                >
+                  Không phải nổi bật
+                </a>
+              </li>
+            </ul>
           </div>
         </aside>
 
@@ -95,16 +106,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 <h1 className="font-bold text-gray-800">
                   {searchParams.q ? `Kết quả cho "${searchParams.q}"` : 'Tất cả sản phẩm'}
                 </h1>
-                <p className="text-sm text-gray-500 mt-0.5">{total} sản phẩm</p>
+                {searchParams.location && searchParams.location !== 'Toàn Quốc' && (
+                  <p className="text-sm text-gray-500 mt-0.5">{`Tại ${searchParams.location}`}</p>
+                )}
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">Sắp xếp:</span>
-                <select className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-orange-400">
-                  <option value="newest">Mới nhất</option>
-                  <option value="price_asc">Giá tăng dần</option>
-                  <option value="price_desc">Giá giảm dần</option>
-                  <option value="popular">Phổ biến nhất</option>
-                </select>
+                  <SortSelect searchParams={searchParams} />
                 {/* Mobile filter button */}
                 <button className="md:hidden flex items-center gap-1 border border-gray-200 rounded-lg px-3 py-1.5 text-sm">
                   <SlidersHorizontal size={14} /> Lọc
@@ -113,20 +120,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </div>
           </div>
 
-          {/* Products grid */}
-          {products.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {products.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          ) : (
-            <div className="bg-white rounded-xl p-12 text-center shadow-sm">
-              <SearchX size={36} className="mx-auto mb-3 text-orange-500" />
-              <p className="font-semibold text-gray-700">Không tìm thấy kết quả</p>
-              <p className="text-sm text-gray-400 mt-1">Thử tìm kiếm với từ khóa khác</p>
-            </div>
-          )}
+          <SearchResultsClient searchParams={searchParams} />
         </div>
       </div>
     </div>

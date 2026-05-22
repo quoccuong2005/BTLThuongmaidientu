@@ -14,11 +14,10 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, variant = 'default' }: ProductCardProps) {
-
+  console.log("Rendering ProductCard for product:", product);
   const discount = ProductController.getDiscount(product.price, product.originalPrice);
   const relativeTime = ProductController.getRelativeTime(product.postedAt);
-
-
+  const Increaseprice = ProductController.getPriceIncreasePercent(product.price, product.originalPrice);
   if (variant === 'horizontal') {
     return (
       <Link
@@ -70,11 +69,16 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
               ⭐ Nổi bật
             </span>
           )}
-          {discount && (
-            <span className="bg-green-500/90 backdrop-blur-md text-white text-[10px] font-black px-2 py-1 rounded-full shadow-lg border border-white/20">
-              -{discount}%
+          {Increaseprice && (
+            <span className="bg-yellow-500/90 backdrop-blur-md text-white text-[10px] font-black px-2 py-1 rounded-full shadow-lg border border-white/20">
+              +{Increaseprice}%
             </span>
           )}
+          {discount !== null && discount > 0 && (
+  <span className="bg-green-500/90 backdrop-blur-md text-white text-[10px] font-black px-2 py-1 rounded-full shadow-lg border border-white/20">
+    -{discount}%
+  </span>
+)}
         </div>
 
         {/* Condition Badge — top right */}
@@ -109,13 +113,13 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
               <span className="text-orange-500 font-extrabold text-lg tracking-tight">
                 {ProductController.formatPrice(product.price)}
               </span>
-              {product.originalPrice && (
+              {/* {product.originalPrice && (
                 <span className="text-gray-400 text-xs line-through decoration-gray-300">
                   {ProductController.formatPrice(product.originalPrice)}
                 </span>
-              )}
+              )} */}
             </div>
-            {product.totalSold != null && (
+            {product.totalSold != null && product.totalSold > 0 && (
               <span className="text-xs font-semibold text-slate-500 mt-0.5">Đã bán {product.totalSold}</span>
             )}
           </div>

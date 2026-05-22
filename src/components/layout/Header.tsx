@@ -49,6 +49,12 @@ export function Header() {
     // Fetch categories
     CategoryController.getTopCategories(8).then(setCategories);
 
+    const params = new URLSearchParams(window.location.search);
+    const locationFromUrl = params.get('location');
+    if (locationFromUrl) {
+      setSelectedLocation(locationFromUrl);
+    }
+
     return () => {
       window.removeEventListener('storage', syncUser);
       window.removeEventListener('cho-viet-auth', syncUser);
@@ -59,11 +65,17 @@ export function Header() {
 
   const handleSearch = (query: string) => {
     const finalQuery = query.trim();
-    if (!finalQuery) {
-      window.location.assign('/search');
-      return;
+    const params = new URLSearchParams();
+
+    if (finalQuery) {
+      params.set('q', finalQuery);
     }
-    window.location.assign(`/search?q=${encodeURIComponent(finalQuery)}`);
+    if (selectedLocation && selectedLocation !== 'Toàn Quốc') {
+      params.set('location', selectedLocation);
+    }
+
+    const queryString = params.toString();
+    window.location.assign(`/search${queryString ? `?${queryString}` : ''}`);
   };
 
   const handleLogout = () => {
@@ -111,6 +123,15 @@ export function Header() {
                     onClick={() => {
                       setSelectedLocation(loc);
                       setShowLocationDrop(false);
+
+                      const params = new URLSearchParams(window.location.search);
+                      if (loc === 'Toàn Quốc') {
+                        params.delete('location');
+                      } else {
+                        params.set('location', loc);
+                      }
+                      const queryString = params.toString();
+                      window.location.assign(`${window.location.pathname}${queryString ? `?${queryString}` : ''}`);
                     }}
                     className={`w-full px-3 py-2 text-left text-sm hover:bg-orange-50 ${selectedLocation === loc ? 'font-semibold text-orange-600' : 'text-slate-700'
                       }`}

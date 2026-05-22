@@ -14,14 +14,12 @@ interface ProductDetailsClientProps {
 export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
   const searchParams = useSearchParams();
   const variantParam = searchParams.get('variant');
-  const initialVariant = product.variants?.find(v => v.id.toString() === variantParam)
-    || product.variants?.[0]
-    || null;
+  const initialVariant = product.variants?.find(v => v.id.toString() === variantParam) || null;
 
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(initialVariant);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
-
+  console.log("Product details:", product);
   const images = product.images || [product.image];
   const currentPrice = selectedVariant ? parseFloat(selectedVariant.price) : product.price;
   const currentTitle = selectedVariant ? selectedVariant.name : product.title;
@@ -187,6 +185,9 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
                     </button>
                   ))}
                 </div>
+                {!selectedVariant && (
+                  <p className="text-sm text-orange-600 font-semibold mt-2">Vui lòng chọn phân loại sản phẩm để mua hàng.</p>
+                )}
               </div>
             )}
 
@@ -215,6 +216,8 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
                 product={{ ...product, id: currentId, title: currentTitle, image: currentImage, price: currentPrice }}
                 variant="premium"
                 quantity={quantity}
+                requiresVariantSelection={Boolean(product.variants && product.variants.length > 0)}
+                isVariantSelected={Boolean(selectedVariant)}
                 wishlistTargetId={selectedVariant?.id}
               />
             </div>
