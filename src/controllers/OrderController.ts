@@ -49,6 +49,10 @@ export interface Order {
   subtotal: string;
   shipping_fee: string;
   total_amount: string;
+  discount_amount?: string | number | null;
+  voucher_code?: string | null;
+  coupon_code?: string | null;
+  promotion_name?: string | null;
   recipient_name: string;
   phone: string;
   province: string;

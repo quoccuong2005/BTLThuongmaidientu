@@ -1,14 +1,24 @@
 import Link from 'next/link';
 import { Cpu, LayoutGrid, Radar, TicketPercent, Truck, Zap } from 'lucide-react';
+import { SectionHeader } from './SectionHeader';
 import { Category } from '@/models/Product';
 
 interface CategoryGridProps {
   categories: Category[];
+  title?: string;
+  viewAllHref?: string;
+  showExtras?: boolean;
 }
 
-export function CategoryGrid({ categories }: CategoryGridProps) {
+export function CategoryGrid({ categories, title, viewAllHref, showExtras = true }: CategoryGridProps) {
   return (
     <section className="tech-card overflow-hidden rounded-3xl border border-orange-200 bg-white shadow-sm">
+      {(title || viewAllHref) && (
+        <div className="px-4 pt-4">
+          <SectionHeader title={title ?? 'Danh mục'} viewAllHref={viewAllHref} />
+        </div>
+      )}
+
       <div className="relative overflow-hidden rounded-none w-full h-[15rem]">
         {/* Background Image */}
         <img
@@ -43,37 +53,39 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
         ))}
       </div>
 
-      <div className="grid gap-2 border-t border-orange-100 bg-orange-50/50 p-3 md:grid-cols-3">
-        <Link
-          href="/search"
-          className="tap-bounce tech-card rounded-2xl border border-orange-200 bg-white px-3 py-3 transition-colors hover:bg-orange-50"
-        >
-          <p className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-orange-700">
-            <Zap className="h-3.5 w-3.5" /> Deal giờ vàng
-          </p>
-          <p className="mt-1 text-sm font-bold text-slate-900">Giảm sâu đến 50%</p>
-          <p className="mt-1 text-xs font-semibold text-slate-600">Tự động ưu tiên sản phẩm có voucher tốt.</p>
-        </Link>
-        <Link
-          href="/search"
-          className="tap-bounce tech-card rounded-2xl border border-orange-200 bg-white px-3 py-3 transition-colors hover:bg-orange-50"
-        >
-          <p className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-orange-700">
-            <Radar className="h-3.5 w-3.5" /> Hàng mới về
-          </p>
-          <p className="mt-1 text-sm font-bold text-slate-900">Cập nhật theo ngày</p>
-          <p className="mt-1 text-xs font-semibold text-slate-600">Theo dõi sản phẩm vừa mở bán.</p>
-        </Link>
-        <div className="tech-card rounded-2xl border border-orange-200 bg-white px-3 py-3">
-          <p className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-orange-700">
-            <Truck className="h-3.5 w-3.5" /> Freeship
-          </p>
-          <p className="mt-1 text-sm font-bold text-slate-900">Đơn từ 99K miễn phí vận chuyển</p>
-          <p className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-orange-700">
-            <TicketPercent className="h-3.5 w-3.5" /> Có thể áp dụng cùng voucher
-          </p>
+      {showExtras && (
+        <div className="grid gap-2 border-t border-orange-100 bg-orange-50/50 p-3 md:grid-cols-3">
+          <Link
+            href="/search"
+            className="tap-bounce tech-card rounded-2xl border border-orange-200 bg-white px-3 py-3 transition-colors hover:bg-orange-50"
+          >
+            <p className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-orange-700">
+              <Zap className="h-3.5 w-3.5" /> Deal giờ vàng
+            </p>
+            <p className="mt-1 text-sm font-bold text-slate-900">Giảm sâu đến 50%</p>
+            <p className="mt-1 text-xs font-semibold text-slate-600">Tự động ưu tiên sản phẩm có voucher tốt.</p>
+          </Link>
+          <Link
+            href="/search"
+            className="tap-bounce tech-card rounded-2xl border border-orange-200 bg-white px-3 py-3 transition-colors hover:bg-orange-50"
+          >
+            <p className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-orange-700">
+              <Radar className="h-3.5 w-3.5" /> Hàng mới về
+            </p>
+            <p className="mt-1 text-sm font-bold text-slate-900">Cập nhật theo ngày</p>
+            <p className="mt-1 text-xs font-semibold text-slate-600">Theo dõi sản phẩm vừa mở bán.</p>
+          </Link>
+          <div className="tech-card rounded-2xl border border-orange-200 bg-white px-3 py-3">
+            <p className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-orange-700">
+              <Truck className="h-3.5 w-3.5" /> Freeship
+            </p>
+            <p className="mt-1 text-sm font-bold text-slate-900">Đơn từ 99K miễn phí vận chuyển</p>
+            <p className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-orange-700">
+              <TicketPercent className="h-3.5 w-3.5" /> Có thể áp dụng cùng voucher
+            </p>
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }
