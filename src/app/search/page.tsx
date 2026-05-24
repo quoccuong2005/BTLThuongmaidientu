@@ -25,7 +25,7 @@ const matchesLocation = (productLocation: string, selectedLocation: string) => {
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const categories = await CategoryController.getAllCategories();
-  
+
   return (
     <div className="max-w-7xl mx-auto px-3 md:px-4 py-4">
       <div className="flex gap-4">
@@ -71,7 +71,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             <ul className="space-y-1 text-sm">
               <li>
                 <a
-                  href={`/search${searchParams.q ? `?q=${encodeURIComponent(searchParams.q)}` : ''}${searchParams.category ? `${searchParams.q ? '&' : '?'}category=${encodeURIComponent(searchParams.category)}` : ''}${searchParams.location && searchParams.location !== 'Toàn Quốc' ? `${searchParams.q || searchParams.category ? '&' : '?'}location=${encodeURIComponent(searchParams.location)}` : ''}${searchParams.sort ? `${searchParams.q || searchParams.category || (searchParams.location && searchParams.location !== 'Toàn Quốc') ? '&' : '?'}sort=${encodeURIComponent(searchParams.sort)}` : ''}${searchParams.order ? `${searchParams.q || searchParams.category || (searchParams.location && searchParams.location !== 'Toàn Quốc') || searchParams.sort ? '&' : '?'}order=${encodeURIComponent(searchParams.order)}` : ''}&page=1&limit=15`}
+                  href={`/search`}
                   className={`block px-2 py-1.5 rounded-lg ${searchParams.is_featured === undefined ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
                 >
                   Tất cả
@@ -111,7 +111,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 )}
               </div>
               <div className="flex items-center gap-2">
-                  <SortSelect searchParams={searchParams} />
+                <SortSelect searchParams={searchParams} />
                 {/* Mobile filter button */}
                 <button className="md:hidden flex items-center gap-1 border border-gray-200 rounded-lg px-3 py-1.5 text-sm">
                   <SlidersHorizontal size={14} /> Lọc
