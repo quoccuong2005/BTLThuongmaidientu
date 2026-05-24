@@ -34,7 +34,7 @@ export default async function ContentPage() {
   const rest = latest.filter((item) => !featuredSlugs.has(item.slug));
   const hero = featured[0] ?? rest[0];
   const highlights = featured.length > 1 ? featured.slice(1, 3) : rest.slice(1, 3);
-  const gridItems = featured.length > 0 ? rest.slice(0, 8) : rest.slice(3, 11);
+  const gridItems = featured.length > 0 ? rest.slice(0, 20) : rest.slice(3, 20);
 
   return (
     <div className="max-w-7xl mx-auto px-3 md:px-4 py-6 space-y-6">
