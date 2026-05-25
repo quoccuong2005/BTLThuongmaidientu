@@ -5,7 +5,7 @@ import api from '@/lib/axios';
 export class VerifyemailController {
     static async verifyOtp(otpState: VerifyOtpState): Promise<{ success: boolean, message: string }> {
         try {
-            const response = await api.post('/verify-otp', otpState);
+            const response = await api.post('/auth/verify-otp', otpState);
             return { success: true, message: response.data?.message || 'Xác thực OTP thành công!' };
         } catch (error: any) {
             console.error('Error verifying OTP:', error);
