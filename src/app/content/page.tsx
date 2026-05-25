@@ -34,7 +34,7 @@ export default async function ContentPage() {
   const rest = latest.filter((item) => !featuredSlugs.has(item.slug));
   const hero = featured[0] ?? rest[0];
   const highlights = featured.length > 1 ? featured.slice(1, 3) : rest.slice(1, 3);
-  const gridItems = featured.length > 0 ? rest.slice(0, 8) : rest.slice(3, 11);
+  const gridItems = featured.length > 0 ? rest.slice(0, 20) : rest.slice(3, 20);
 
   return (
     <div className="max-w-7xl mx-auto px-3 md:px-4 py-6 space-y-6">
@@ -42,18 +42,18 @@ export default async function ContentPage() {
         <div className="relative p-6 md:p-8">
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-orange-100">
-              <Sparkles size={13} /> Content hub
+              <Sparkles size={13} /> Trung tâm nội dung
             </span>
             <span className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-orange-100">
-              <BookOpen size={13} /> Shopping insights
+              <BookOpen size={13} /> Thông tin mua sắm
             </span>
           </div>
           <h1 className="mt-4 text-3xl sm:text-5xl font-extrabold leading-tight">
-            Latest guides, deals, and shopping playbooks
+            Các hướng dẫn, ưu đãi và bí quyết mua sắm mới nhất
           </h1>
           <p className="mt-3 max-w-2xl text-sm sm:text-base text-orange-100/85">
-            Read quick tips curated for smart buyers. Filter by featured posts and
-            keep up with weekly deal strategies.
+            Đọc những mẹo nhanh được chọn lọc dành cho người mua thông minh. Lọc theo bài viết nổi bật và
+            cập nhật các chiến lược mua hàng ưu đãi hàng tuần.
           </p>
         </div>
       </section>
@@ -92,7 +92,7 @@ export default async function ContentPage() {
               >
                 <div className="flex items-center justify-between text-xs text-slate-500">
                   <span className="inline-flex items-center gap-1 rounded-full border border-orange-100 bg-orange-50 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-orange-700">
-                    Featured
+                    Nổi bật
                   </span>
                   <span className="inline-flex items-center gap-1">
                     <Calendar size={12} /> {formatDate(item.publishedAt)}
@@ -110,7 +110,7 @@ export default async function ContentPage() {
         </section>
       ) : (
         <section className="tech-card rounded-3xl border border-orange-100 bg-white p-6 text-center text-sm text-slate-500">
-          No content yet. Run the seed script to add sample posts.
+          Chưa có nội dung nào. Hãy chạy tập lệnh khởi tạo để thêm các bài đăng mẫu.
         </section>
       )}
 
@@ -119,17 +119,17 @@ export default async function ContentPage() {
           <div className="mb-5 flex items-center justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.28em] text-orange-600">
-                Latest updates
+                Cập nhật mới nhất
               </p>
               <h2 className="mt-2 text-2xl font-black text-slate-900">
-                Fresh reads for smart buyers
+                Những bài viết mới cho người mua thông minh
               </h2>
             </div>
             <Link
               href="/content"
               className="text-sm font-bold text-orange-500 hover:text-orange-600"
             >
-              View all
+              Xem tất cả
             </Link>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

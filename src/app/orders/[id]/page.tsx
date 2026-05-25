@@ -120,6 +120,13 @@ export default function OrderDetailPage() {
     }
   };
 
+  const getOrderStatusInfo = (order: Order) => {
+    if (order.status === 'pending_payment' && order.payment_method?.toLowerCase() === 'cod') {
+      return { label: 'Chờ xác nhận', icon: <Clock size={16} />, color: 'text-amber-600 bg-amber-50 border-amber-100' };
+    }
+    return getStatusInfo(order.status);
+  };
+
   const getTimelineSteps = (order: Order) => {
     const steps = [
       { status: 'pending_payment', label: 'Đặt hàng thành công', time: order.created_at, isCompleted: true },
@@ -169,7 +176,7 @@ export default function OrderDetailPage() {
     );
   }
 
-  const status = getStatusInfo(order.status);
+  const status = getOrderStatusInfo(order);
   const createdAt = new Date(order.created_at).toLocaleString('vi-VN', {
     year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
   });
@@ -206,45 +213,45 @@ export default function OrderDetailPage() {
               {order.items?.map((item) => {
                 const imageUrl = getItemImageUrl(item);
                 return (
-                <div key={item.id} className="p-6">
-                  <div className="flex gap-4">
-                    <Link
-                      href={item.product_id ? `/product/${item.product_id}` : '#'}
-                      className="w-20 h-20 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 overflow-hidden flex-shrink-0 hover:border-orange-200 transition-colors"
-                    >
-                      {imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={imageUrl}
-                          alt={item.product_name}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <Package size={32} className="text-gray-200" aria-hidden="true" />
-                      )}
-                    </Link>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-gray-900 line-clamp-1 mb-1">{item.product_name}</h3>
-                      <p className="text-xs text-gray-400 mb-2 uppercase tracking-wider">SKU: {item.sku}</p>
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm text-gray-500">
-                          {ProductController.formatPrice(parseFloat(item.unit_price))} x {item.quantity}
-                        </p>
-                        <p className="font-bold text-gray-900">
-                          {ProductController.formatPrice(parseFloat(item.subtotal))}
-                        </p>
+                  <div key={item.id} className="p-6">
+                    <div className="flex gap-4">
+                      <Link
+                        href={item.product_id ? `/product/${item.product_id}` : '#'}
+                        className="w-20 h-20 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 overflow-hidden flex-shrink-0 hover:border-orange-200 transition-colors"
+                      >
+                        {imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={imageUrl}
+                            alt={item.product_name}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <Package size={32} className="text-gray-200" aria-hidden="true" />
+                        )}
+                      </Link>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-gray-900 line-clamp-1 mb-1">{item.product_name}</h3>
+                        <p className="text-xs text-gray-400 mb-2 uppercase tracking-wider">SKU: {item.sku}</p>
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm text-gray-500">
+                            {ProductController.formatPrice(parseFloat(item.unit_price))} x {item.quantity}
+                          </p>
+                          <p className="font-bold text-gray-900">
+                            {ProductController.formatPrice(parseFloat(item.subtotal))}
+                          </p>
+                        </div>
                       </div>
                     </div>
+
+                    {/* Review Action */}
+                    <OrderItemReviewAction
+                      orderItemId={item.id}
+                      productName={item.product_name}
+                      orderStatus={order.status}
+                    />
                   </div>
-                  
-                  {/* Review Action */}
-                  <OrderItemReviewAction
-                    orderItemId={item.id}
-                    productName={item.product_name}
-                    orderStatus={order.status}
-                  />
-                </div>
                 );
               })}
             </div>
@@ -263,9 +270,8 @@ export default function OrderDetailPage() {
 
                 return (
                   <div key={idx} className="relative pl-8">
-                    <div className={`absolute left-0 top-1.5 w-6 h-6 rounded-full border-4 border-white shadow-sm flex items-center justify-center ${
-                      step.isCompleted ? 'bg-green-500' : 'bg-gray-200'
-                    }`}>
+                    <div className={`absolute left-0 top-1.5 w-6 h-6 rounded-full border-4 border-white shadow-sm flex items-center justify-center ${step.isCompleted ? 'bg-green-500' : 'bg-gray-200'
+                      }`}>
                       {step.isCompleted && <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>}
                     </div>
                     <p className={`text-sm font-bold ${step.isCompleted ? 'text-gray-900' : 'text-gray-400'}`}>
@@ -314,10 +320,25 @@ export default function OrderDetailPage() {
                 <span className="text-sm text-gray-500">Phương thức:</span>
                 <span className="text-sm font-bold text-gray-700 uppercase">{order.payment_method}</span>
               </div>
+              {(order.voucher_code || order.coupon_code || order.promotion_name) && (
+                <div className="rounded-2xl bg-orange-50 px-4 py-3 text-sm font-semibold text-orange-700">
+                  <span>Khuyến mãi áp dụng:</span> <span className="font-bold text-orange-800">{order.voucher_code || order.coupon_code || order.promotion_name}</span>
+                </div>
+              )}
               <div className="pt-4 border-t border-gray-50 space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Tạm tính:</span>
                   <span className="font-semibold text-gray-700">{ProductController.formatPrice(parseFloat(order.subtotal))}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Giảm giá:</span>
+                  <span className="text-green-600 font-semibold">-
+                    {ProductController.formatPrice(
+                      order.discount_amount !== undefined && order.discount_amount !== null
+                        ? Number(order.discount_amount)
+                        : Math.max(0, parseFloat(order.subtotal || '0') + parseFloat(order.shipping_fee || '0') - parseFloat(order.total_amount || '0'))
+                    )}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Phí vận chuyển:</span>

@@ -190,7 +190,7 @@ export default async function HomePage({ searchParams }: { searchParams?: { loca
         </section>
 
         <section className="mt-6">
-          <CategoryGrid categories={categories} />
+          <CategoryGrid categories={categories} title="Danh mục" viewAllHref="/categories" />
         </section>
 
         <section className="mt-6">

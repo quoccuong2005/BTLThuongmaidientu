@@ -33,7 +33,7 @@ export default async function ContentDetailPage({
         href="/content"
         className="inline-flex items-center gap-2 text-sm font-bold text-orange-600 hover:text-orange-700"
       >
-        <ArrowLeft size={16} /> Back to content
+        <ArrowLeft size={16} /> Quay lại
       </Link>
 
       <section className="tech-shell relative overflow-hidden rounded-3xl p-6 text-white">
