@@ -1,9 +1,10 @@
 import { RegisterUserState } from "@/models/registeruser";
 import axios from "axios";
+import api from '@/lib/axios';
 
 export async function RegisterUser(user: RegisterUserState) {
     try {
-        const response = await axios.post('http://152.42.220.73/api/v1/auth/register', user);
+        const response = await api.post('/auth/register', user);
         return { success: true, data: response.data };
     } catch (error: any) {
         if (error.response) {
