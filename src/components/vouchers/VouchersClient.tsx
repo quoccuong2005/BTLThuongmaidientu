@@ -184,8 +184,8 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
           <button
             onClick={() => setActiveTab('available')}
             className={`rounded-lg px-6 py-2 text-sm font-bold transition-all ${activeTab === 'available'
-                ? 'bg-orange-50 text-orange-600 shadow-sm'
-                : 'text-slate-500 hover:text-slate-700'
+              ? 'bg-orange-50 text-orange-600 shadow-sm'
+              : 'text-slate-500 hover:text-slate-700'
               }`}
           >
             Thu thập mã
@@ -195,8 +195,8 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
             <button
               onClick={() => setActiveTab('my')}
               className={`rounded-lg px-6 py-2 text-sm font-bold transition-all ${activeTab === 'my'
-                  ? 'bg-orange-50 text-orange-600 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
+                ? 'bg-orange-50 text-orange-600 shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'
                 }`}
             >
               Mã của tôi ({myVouchers.length})
@@ -289,10 +289,10 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
                     disabled={isLoggedIn && voucher.is_collected}
                     onClick={() => handleCollect(voucher.id)}
                     className={`rounded-lg px-4 py-2 text-xs font-bold transition-all ${isLoggedIn && voucher.is_collected
-                        ? 'cursor-not-allowed bg-slate-100 text-slate-400'
-                        : isLoggedIn
-                          ? 'bg-orange-50 text-orange-600 hover:bg-orange-500 hover:text-white'
-                          : 'bg-orange-500 text-white hover:bg-orange-600'
+                      ? 'cursor-not-allowed bg-slate-100 text-slate-400'
+                      : isLoggedIn
+                        ? 'bg-orange-50 text-orange-600 hover:bg-orange-500 hover:text-white'
+                        : 'bg-orange-500 text-white hover:bg-orange-600'
                       }`}
                   >
                     {isLoggedIn && voucher.is_collected ? (
@@ -318,8 +318,8 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
             >
               <div
                 className={`relative flex w-1/3 flex-col items-center justify-center p-4 text-white ${myVoucher.status === 'used' || myVoucher.is_expired
-                    ? 'bg-slate-400'
-                    : 'bg-gradient-to-br from-green-500 to-green-600'
+                  ? 'bg-slate-400'
+                  : 'bg-gradient-to-br from-green-500 to-green-600'
                   }`}
               >
                 <div className="absolute -right-3 -top-3 h-6 w-6 rounded-full bg-slate-50" />
@@ -327,10 +327,10 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
 
                 <div className="text-center">
                   <span className="mb-1 block text-2xl font-black">
-                    {myVoucher.voucher.type === 'percent'
+                    {myVoucher.voucher?.type === 'percent'
                       ? `${formatPercent(myVoucher.voucher.discount_value)}%`
-                      : formatCurrency(myVoucher.voucher.discount_value).replace('₫', '')}
-                    {myVoucher.voucher.type === 'fixed' && (
+                      : formatCurrency(myVoucher.voucher?.discount_value).replace('₫', '')}
+                    {myVoucher.voucher?.type === 'fixed' && (
                       <span className="text-sm font-normal">đ</span>
                     )}
                   </span>
@@ -348,11 +348,11 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
                   <div className="mb-1 flex items-start justify-between">
                     <span
                       className={`inline-block rounded-md px-2 py-1 text-[10px] font-bold uppercase ${myVoucher.status === 'used' || myVoucher.is_expired
-                          ? 'bg-slate-100 text-slate-500'
-                          : 'bg-green-100 text-green-700'
+                        ? 'bg-slate-100 text-slate-500'
+                        : 'bg-green-100 text-green-700'
                         }`}
                     >
-                      {myVoucher.voucher.code}
+                      {myVoucher.voucher?.code}
                     </span>
 
                     <button
@@ -365,11 +365,11 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
                   </div>
 
                   <h3 className="mb-1 text-sm font-bold leading-tight text-slate-800">
-                    {myVoucher.voucher.name}
+                    {myVoucher.voucher?.name}
                   </h3>
 
                   <p className="mb-2 line-clamp-2 text-xs text-slate-500">
-                    Đơn tối thiểu {formatCurrency(myVoucher.voucher.min_order_amount)}
+                    Đơn tối thiểu {formatCurrency(myVoucher.voucher?.min_order_amount)}
                   </p>
                 </div>
 
@@ -377,16 +377,16 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
                   <div className="flex flex-col gap-1 text-[10px] text-slate-400">
                     <span className="flex items-center gap-1">
                       <Clock size={10} /> HSD:{' '}
-                      {formatDate(myVoucher.voucher.end_date)}
+                      {formatDate(myVoucher.voucher?.end_date)}
                     </span>
                   </div>
 
                   <span
                     className={`rounded-lg border px-3 py-1.5 text-xs font-bold ${myVoucher.status === 'used'
-                        ? 'border-slate-200 bg-slate-50 text-slate-500'
-                        : myVoucher.is_expired
-                          ? 'border-red-200 bg-red-50 text-red-500'
-                          : 'border-green-200 bg-green-50 text-green-600'
+                      ? 'border-slate-200 bg-slate-50 text-slate-500'
+                      : myVoucher.is_expired
+                        ? 'border-red-200 bg-red-50 text-red-500'
+                        : 'border-green-200 bg-green-50 text-green-600'
                       }`}
                   >
                     {myVoucher.status === 'used'
