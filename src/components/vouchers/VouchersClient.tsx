@@ -326,8 +326,8 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
                   <span className="mb-1 block text-2xl font-black">
                     {myVoucher.voucher?.type === 'percent'
                       ? `${formatPercent(myVoucher.voucher.discount_value)}%`
-                      : formatCurrency(myVoucher.voucher.discount_value).replace('₫', '')}
-                    {myVoucher.voucher.type === 'fixed' && (
+                      : formatCurrency(myVoucher.voucher?.discount_value).replace('₫', '')}
+                    {myVoucher.voucher?.type === 'fixed' && (
                       <span className="text-sm font-normal">đ</span>
                     )}
                   </span>
@@ -349,7 +349,7 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
                         : 'bg-green-100 text-green-700'
                         }`}
                     >
-                      {myVoucher.voucher.code}
+                      {myVoucher.voucher?.code}
                     </span>
 
                     <button
@@ -362,11 +362,11 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
                   </div>
 
                   <h3 className="mb-1 text-sm font-bold leading-tight text-slate-800">
-                    {myVoucher.voucher.name}
+                    {myVoucher.voucher?.name}
                   </h3>
 
                   <p className="mb-2 line-clamp-2 text-xs text-slate-500">
-                    Đơn tối thiểu {formatCurrency(myVoucher.voucher.min_order_amount)}
+                    Đơn tối thiểu {formatCurrency(myVoucher.voucher?.min_order_amount)}
                   </p>
                 </div>
 
@@ -374,7 +374,7 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
                   <div className="flex flex-col gap-1 text-[10px] text-slate-400">
                     <span className="flex items-center gap-1">
                       <Clock size={10} /> HSD:{' '}
-                      {formatDate(myVoucher.voucher.end_date)}
+                      {formatDate(myVoucher.voucher?.end_date)}
                     </span>
                   </div>
 
