@@ -36,7 +36,8 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
 
       if (loggedIn) {
         const myData = await VoucherController.getMyVouchers();
-        setMyVouchers(myData);
+        // Lọc bỏ record có voucher null (voucher gốc đã bị xóa nhưng user_vouchers còn ref)
+        setMyVouchers((myData ?? []).filter((mv) => mv && mv.voucher));
       } else {
         setMyVouchers([]);
       }
@@ -308,7 +309,9 @@ export function VouchersClient({ limit, compact = false }: VouchersClientProps =
               </div>
             </div>
           ))
-          : displayedVouchers.map((myVoucher: any) => (
+          : displayedVouchers
+              .filter((myVoucher: any) => myVoucher && myVoucher.voucher)
+              .map((myVoucher: any) => (
             <div
               key={myVoucher.id}
               className="group relative flex overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-shadow hover:shadow-md"

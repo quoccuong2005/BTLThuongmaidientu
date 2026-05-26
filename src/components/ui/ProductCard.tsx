@@ -1,40 +1,61 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
-import { Clock, Eye, MapPin, ShoppingCart } from 'lucide-react';
-import { Product } from '@/models/Product';
-import { ProductController } from '@/controllers/ProductController';
-import { useCart } from '@/context/CartContext';
-import { toast } from 'sonner';
+import Link from "next/link";
+import { useState } from "react";
+import { Clock, Eye, MapPin, ShoppingCart } from "lucide-react";
+import { Product } from "@/models/Product";
+import { ProductController } from "@/controllers/ProductController";
+import { useCart } from "@/context/CartContext";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   product: Product;
-  variant?: 'default' | 'horizontal';
+  variant?: "default" | "horizontal";
 }
 
-export function ProductCard({ product, variant = 'default' }: ProductCardProps) {
-  console.log("Rendering ProductCard for product:", product);
-  const discount = ProductController.getDiscount(product.price, product.originalPrice);
+export function ProductCard({
+  product,
+  variant = "default",
+}: ProductCardProps) {
+  // console.log("Rendering ProductCard for product:", product);
+  const discount = ProductController.getDiscount(
+    product.price,
+    product.originalPrice,
+  );
   const relativeTime = ProductController.getRelativeTime(product.postedAt);
-  const Increaseprice = ProductController.getPriceIncreasePercent(product.price, product.originalPrice);
-  if (variant === 'horizontal') {
+  const Increaseprice = ProductController.getPriceIncreasePercent(
+    product.price,
+    product.originalPrice,
+  );
+  if (variant === "horizontal") {
     return (
       <Link
         href={`/product/${product.id}`}
         className="group flex cursor-pointer gap-3 rounded-xl border border-slate-200 bg-white p-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
       >
         <div className="relative h-20 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-slate-100">
-          <img src={product.image} alt={product.title} className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105" />
-          {discount && <span className="badge-urgent absolute left-1 top-1">-{discount}%</span>}
+          <img
+            src={product.image}
+            alt={product.title}
+            className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+          />
+          {discount && (
+            <span className="badge-urgent absolute left-1 top-1">
+              -{discount}%
+            </span>
+          )}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="line-clamp-2 text-sm font-semibold leading-snug text-slate-900">{product.title}</p>
-          <p className="mt-1 text-base font-extrabold text-orange-600">{ProductController.formatPrice(product.price)}</p>
+          <p className="line-clamp-2 text-sm font-semibold leading-snug text-slate-900">
+            {product.title}
+          </p>
+          <p className="mt-1 text-base font-extrabold text-orange-600">
+            {ProductController.formatPrice(product.price)}
+          </p>
           <div className="mt-1 flex items-center gap-2 text-xs text-slate-600">
             <span className="inline-flex items-center gap-0.5">
               <MapPin size={10} />
-              {product.location.split(',')[0]}
+              {product.location.split(",")[0]}
             </span>
             <span>·</span>
             <span>{relativeTime}</span>
@@ -75,16 +96,18 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
             </span>
           )}
           {discount !== null && discount > 0 && (
-  <span className="bg-green-500/90 backdrop-blur-md text-white text-[10px] font-black px-2 py-1 rounded-full shadow-lg border border-white/20">
-    -{discount}%
-  </span>
-)}
+            <span className="bg-green-500/90 backdrop-blur-md text-white text-[10px] font-black px-2 py-1 rounded-full shadow-lg border border-white/20">
+              -{discount}%
+            </span>
+          )}
         </div>
 
         {/* Condition Badge — top right */}
         <div className="absolute top-2 right-2 z-10">
-          <span className={`text-[10px] font-black px-2 py-1 rounded-full backdrop-blur-md border border-white/20 shadow-lg ${product.condition === 'new' ? 'bg-blue-500/90 text-white' : 'bg-gray-800/80 text-white'}`}>
-            {product.condition === 'new' ? 'MỚI' : 'CŨ'}
+          <span
+            className={`text-[10px] font-black px-2 py-1 rounded-full backdrop-blur-md border border-white/20 shadow-lg ${product.condition === "new" ? "bg-blue-500/90 text-white" : "bg-gray-800/80 text-white"}`}
+          >
+            {product.condition === "new" ? "MỚI" : "CŨ"}
           </span>
         </div>
 
@@ -92,7 +115,9 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
         {product.views && (
           <div className="absolute bottom-2 right-2 bg-black/40 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
             <Eye size={12} />
-            <span className="font-bold">{product.views.toLocaleString('vi-VN')}</span>
+            <span className="font-bold">
+              {product.views.toLocaleString("vi-VN")}
+            </span>
           </div>
         )}
 
@@ -120,18 +145,19 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
               )} */}
             </div>
             {product.totalSold != null && product.totalSold > 0 && (
-              <span className="text-xs font-semibold text-slate-500 mt-0.5">Đã bán {product.totalSold}</span>
+              <span className="text-xs font-semibold text-slate-500 mt-0.5">
+                Đã bán {product.totalSold}
+              </span>
             )}
           </div>
 
           {/* Add to Cart Button */}
 
-
           {/* Meta Info */}
           <div className="flex items-center justify-between pt-3 border-t border-gray-50 text-[11px] text-gray-400 font-medium">
             <div className="flex items-center gap-1 min-w-0">
               <MapPin size={12} className="text-gray-300 flex-shrink-0" />
-              <span className="truncate">{product.location.split(',')[0]}</span>
+              <span className="truncate">{product.location.split(",")[0]}</span>
             </div>
             <div className="flex items-center gap-1 flex-shrink-0">
               <Clock size={12} className="text-gray-300" />
